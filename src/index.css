@@ -1,0 +1,190 @@
+/* src/index.css */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* --- CSS Variables for Theming --- */
+:root {
+  /* Light Theme Defaults */
+  --bg-color: #f8f9fa; /* Light background */
+  --text-color: #343a40; /* Dark text */
+  --primary-color: #007bff;
+  --secondary-color: #6c757d;
+  --card-bg: #ffffff;
+  --navbar-bg: #f8f9fa;
+  --navbar-text: #343a40;
+  --border-color: #dee2e6;
+  --link-color: #007bff;
+  --link-hover-color: #0056b3;
+}
+
+[data-theme='dark'] {
+  --bg-color: #212529; /* Dark background */
+  --text-color: #f8f9fa; /* Light text */
+  --primary-color: #66b3ff; /* Lighter blue for dark theme */
+  --secondary-color: #adb5bd;
+  --card-bg: #343a40;
+  --navbar-bg: #343a40;
+  --navbar-text: #f8f9fa;
+  --border-color: #495057;
+  --link-color: #66b3ff;
+  --link-hover-color: #3399ff;
+}
+
+/* --- Global Styles --- */
+body {
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Ensure the root element fills the viewport for proper footer positioning */
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Bootstrap Overrides & Custom Styles --- */
+
+/* Navbar Theming */
+.learnhub-navbar {
+  background-color: var(--navbar-bg) !important;
+}
+
+.learnhub-navbar .navbar-brand,
+.learnhub-navbar .nav-link,
+.learnhub-navbar .theme-icon {
+  color: var(--navbar-text) !important;
+  transition: color 0.3s ease;
+}
+
+.learnhub-navbar .nav-link.active {
+  font-weight: bold;
+}
+
+.learnhub-navbar .nav-link:hover {
+  color: var(--primary-color) !important;
+}
+
+.theme-toggle-btn {
+  color: var(--navbar-text) !important; /* Ensure icon color matches navbar text */
+  background: none;
+  border: none;
+}
+
+.theme-toggle-btn:hover {
+  color: var(--primary-color) !important;
+}
+
+
+/* General Theming for Components */
+.text-primary { color: var(--primary-color) !important; }
+.text-secondary { color: var(--secondary-color) !important; }
+.bg-primary { background-color: var(--primary-color) !important; }
+.btn-primary {
+  background-color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+  color: var(--navbar-text) !important;
+}
+.btn-primary:hover {
+  filter: brightness(1.1); /* Slightly brighter on hover */
+}
+.btn-outline-primary {
+  color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+}
+.btn-outline-primary:hover {
+  background-color: var(--primary-color) !important;
+  color: var(--navbar-text) !important;
+}
+.btn-light {
+  color: var(--primary-color) !important;
+  background-color: var(--card-bg) !important;
+  border-color: var(--card-bg) !important;
+}
+.btn-light:hover {
+  filter: brightness(0.9);
+}
+
+.card {
+  background-color: var(--card-bg) !important;
+  color: var(--text-color) !important;
+  border-color: var(--border-color) !important;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.card-header {
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+.list-group-item {
+  background-color: var(--card-bg) !important;
+  color: var(--text-color) !important;
+  border-color: var(--border-color) !important;
+}
+
+.text-muted {
+  color: var(--secondary-color) !important; /* Adjust muted text for dark theme visibility */
+}
+
+
+/* Custom shapes and shadows */
+.rounded-4 {
+  border-radius: 1.5rem !important; /* Larger border-radius for more rounded look */
+}
+
+.rounded-circle-top {
+  border-top-left-radius: 50% !important;
+  border-top-right-radius: 50% !important;
+  border-bottom-left-radius: 1.5rem !important;
+  border-bottom-right-radius: 1.5rem !important;
+}
+
+.shadow-sm {
+  box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+}
+
+.shadow-lg {
+  box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important;
+}
+
+/* Image styling */
+.card-img-top {
+  height: 200px; /* Fixed height for consistent card image size */
+  object-fit: cover; /* Ensures the image covers the area without distortion */
+}
+
+/* Hero section specific styles */
+.hero-section {
+  position: relative;
+  overflow: hidden; /* Hide overflow from any potential background elements */
+  background-image: linear-gradient(to right, var(--primary-color), var(--primary-color) 70%, #fff); /* Example gradient for hero */
+}
+[data-theme='dark'] .hero-section {
+  background-image: linear-gradient(to right, #343a40, #343a40 70%, #212529);
+}
+
+/* Adjust hero section height for larger screens */
+@media (min-width: 992px) {
+  .hero-section {
+    min-height: 80vh; /* Make hero section take up more vertical space on desktop */
+  }
+}
+
+/* Section padding */
+.courses-section, .instructors-page, .course-details-page {
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+}
