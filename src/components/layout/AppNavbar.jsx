@@ -3,13 +3,15 @@
 import React from 'react';
 import { Navbar, Nav, Container, Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSun, faMoon, faBars } from '@fortawesome/free-solid-svg-icons'; // Import faBars
+import { faSun, faMoon, faBars } from '@fortawesome/free-solid-svg-icons';
+import { Link, useLocation } from 'react-router-dom'; // Import Link and useLocation
 import CustomButton from '../common/CustomButton';
 import { useTheme } from '../../hooks/UseTheme';
 import texts from '../../i18n/texts';
 
-const AppNavbar = ({ currentPage, setCurrentPage, handleShowSidebar }) => { // Add handleShowSidebar prop
+const AppNavbar = ({ handleShowSidebar }) => { // Removed currentPage prop
   const { theme, toggleTheme } = useTheme();
+  const location = useLocation(); // Hook to get current URL path
 
   const handleThemeToggle = () => {
     toggleTheme();
@@ -22,47 +24,48 @@ const AppNavbar = ({ currentPage, setCurrentPage, handleShowSidebar }) => { // A
         {/* Sidebar Toggle Button */}
         <Button
           variant="link"
-          onClick={handleShowSidebar} // Use the prop here
-          className="me-3 d-lg-none p-0" // Show only on small screens, hide on large
+          onClick={handleShowSidebar}
+          className="me-3 d-lg-none p-0"
           aria-label="Toggle sidebar"
         >
           <FontAwesomeIcon icon={faBars} size="lg" className="theme-icon" />
         </Button>
 
         <Navbar.Brand
-          href="#home"
+          as={Link} // Use Link component for brand
+          to="/" // Link to home page
           className="fw-bold fs-4"
-          onClick={() => setCurrentPage('home')}
         >
           {texts.appTitle}
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ms-auto align-items-center">
-            {/* These links will be visible on larger screens, duplicated in sidebar for small screens */}
+            {/* Nav links using Link component and active state from useLocation */}
             <Nav.Link
-              href="#home"
-              onClick={() => setCurrentPage('home')}
-              className={`d-none d-lg-block mx-2 ${currentPage === 'home' ? 'fw-bold active' : ''}`}
+              as={Link}
+              to="/"
+              className={`d-none d-lg-block mx-2 ${location.pathname === '/' ? 'fw-bold active' : ''}`}
             >
               {texts.nav.home}
             </Nav.Link>
             <Nav.Link
-              href="#courses"
-              onClick={() => setCurrentPage('courses')}
-              className={`d-none d-lg-block mx-2 ${currentPage === 'courses' ? 'fw-bold active' : ''}`}
+              as={Link}
+              to="/courses"
+              className={`d-none d-lg-block mx-2 ${location.pathname === '/courses' ? 'fw-bold active' : ''}`}
             >
               {texts.nav.courses}
             </Nav.Link>
             <Nav.Link
-              href="#instructors"
-              onClick={() => setCurrentPage('instructors')}
-              className={`d-none d-lg-block mx-2 ${currentPage === 'instructors' ? 'fw-bold active' : ''}`}
+              as={Link}
+              to="/instructors"
+              className={`d-none d-lg-block mx-2 ${location.pathname === '/instructors' ? 'fw-bold active' : ''}`}
             >
               {texts.nav.instructors}
             </Nav.Link>
-            <Nav.Link href="#about" className="d-none d-lg-block mx-2">{texts.nav.aboutUs}</Nav.Link>
-            <Nav.Link href="#contact" className="d-none d-lg-block mx-2">{texts.nav.contact}</Nav.Link>
+            {/* Placeholder links for About and Contact - adjust as needed for actual pages */}
+            <Nav.Link as={Link} to="/about" className="d-none d-lg-block mx-2">{texts.nav.aboutUs}</Nav.Link>
+            <Nav.Link as={Link} to="/contact" className="d-none d-lg-block mx-2">{texts.nav.contact}</Nav.Link>
 
             <CustomButton variant="primary" className="ms-3">{texts.nav.signUp}</CustomButton>
             <Button

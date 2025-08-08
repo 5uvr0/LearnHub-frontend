@@ -2,15 +2,17 @@
 
 import React from 'react';
 import { Container } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import InstructorCard from '../components/cards/InstructorCard';
 import texts from '../i18n/texts';
 
-const InstructorsPage = ({ setCurrentPage, setInstructorDetailId }) => {
+const InstructorsPage = () => { // Removed setCurrentPage, setInstructorDetailId props
+  const navigate = useNavigate();
+
   const handleViewProfileClick = (instructorId) => {
     // Implement navigation to instructor profile page if needed
     alert(`Viewing profile for instructor ID: ${instructorId}`);
-    // setInstructorDetailId(instructorId);
-    // setCurrentPage('instructorDetails'); // If you create an instructor details page
+    // navigate(`/instructors/${instructorId}`); // If you create an instructor details page
   };
 
   return (

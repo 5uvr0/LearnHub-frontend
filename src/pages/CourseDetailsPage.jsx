@@ -2,31 +2,45 @@
 
 import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Spinner, Alert } from 'react-bootstrap';
+import { useParams } from 'react-router-dom'; // Import useParams
 import ModuleCard from '../components/cards/ModuleCard';
 import texts from '../i18n/texts';
 
-const CourseDetailsPage = ({ courseId }) => {
+const CourseDetailsPage = () => { // Removed courseId prop
+  const { id: courseIdParam } = useParams(); // Get ID from URL
+  const courseId = parseInt(courseIdParam); // Convert to number if necessary
+
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     // In a real app, you would fetch course details and modules here
-    // For now, we'll simulate fetching from sample data
     setLoading(true);
     setError(null);
 
-    const fetchedCourse = texts.sampleCourses.find(c => c.id === courseId);
-    if (fetchedCourse) {
-      // Simulate API call for modules related to this course
-      const courseModules = texts.sampleModules.filter(m => m.courseId === courseId);
-      setCourse({ ...fetchedCourse, modules: courseModules });
-      setLoading(false);
-    } else {
-      setError("Course not found!");
-      setLoading(false);
-    }
-  }, [courseId]);
+    // Simulate fetching data with a slight delay
+    const timer = setTimeout(() => {
+      if (isNaN(courseId)) {
+        setError("Invalid course ID provided in URL.");
+        setLoading(false);
+        return;
+      }
+
+      const fetchedCourse = texts.sampleCourses.find(c => c.id === courseId);
+      if (fetchedCourse) {
+        // Simulate API call for modules related to this course
+        const courseModules = texts.sampleModules.filter(m => m.courseId === courseId);
+        setCourse({ ...fetchedCourse, modules: courseModules });
+        setLoading(false);
+      } else {
+        setError("Course not found!");
+        setLoading(false);
+      }
+    }, 500); // Simulate network delay
+
+    return () => clearTimeout(timer); // Cleanup timeout on unmount
+  }, [courseId]); // Dependency array: re-run effect if courseId changes
 
   if (loading) {
     return (

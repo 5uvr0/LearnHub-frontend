@@ -1,9 +1,10 @@
 // src/App.jsx
 
 import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; // Import routing components
 import AppNavbar from './components/layout/AppNavbar';
 import AppFooter from './components/layout/AppFooter';
-import AppSidebar from './components/layout/AppSidebar'; // Import the new sidebar
+import AppSidebar from './components/layout/AppSidebar';
 import HomePage from './pages/HomePage';
 import CoursesPage from './pages/CoursesPage';
 import InstructorsPage from './pages/InstructorsPage';
@@ -12,46 +13,37 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import './index.css'; // Global CSS
 
 function App() {
-  const [currentPage, setCurrentPage] = useState('home');
-  const [courseDetailId, setCourseDetailId] = useState(null);
   const [showSidebar, setShowSidebar] = useState(false); // State for sidebar visibility
 
   const handleCloseSidebar = () => setShowSidebar(false);
   const handleShowSidebar = () => setShowSidebar(true);
 
-  const renderPage = () => {
-    switch (currentPage) {
-      case 'home':
-        return <HomePage setCurrentPage={setCurrentPage} setCourseDetailId={setCourseDetailId} />;
-      case 'courses':
-        return <CoursesPage setCurrentPage={setCurrentPage} setCourseDetailId={setCourseDetailId} />;
-      case 'instructors':
-        return <InstructorsPage setCurrentPage={setCurrentPage} />;
-      case 'courseDetails':
-        return <CourseDetailsPage courseId={courseDetailId} />;
-      // Add more cases for other pages here
-      default:
-        return <HomePage setCurrentPage={setCurrentPage} setCourseDetailId={setCourseDetailId} />;
-    }
-  };
-
   return (
-    <ThemeProvider>
-      <div className="App d-flex flex-column min-vh-100">
-        <AppNavbar currentPage={currentPage} setCurrentPage={setCurrentPage} handleShowSidebar={handleShowSidebar} />
+    <ThemeProvider> {/* Wrap your entire app with ThemeProvider */}
+      <Router> {/* Wrap your entire app with Router */}
+        <div className="App d-flex flex-column min-vh-100">
+          {/* AppNavbar now receives handleShowSidebar prop and currentPage via location.pathname */}
+          <AppNavbar handleShowSidebar={handleShowSidebar} />
 
-        {/* The Sidebar Component */}
-        <AppSidebar
-          show={showSidebar}
-          handleClose={handleCloseSidebar}
-          setCurrentPage={setCurrentPage}
-        />
+          {/* The Sidebar Component */}
+          <AppSidebar
+            show={showSidebar}
+            handleClose={handleCloseSidebar}
+          />
 
-        <main className="flex-grow-1">
-          {renderPage()}
-        </main>
-        <AppFooter />
-      </div>
+          <main className="flex-grow-1">
+            <Routes> {/* Define your routes here */}
+              <Route path="/" element={<HomePage />} /> {/* Home Page */}
+              <Route path="/courses" element={<CoursesPage />} /> {/* All Courses Page */}
+              <Route path="/courses/:id" element={<CourseDetailsPage />} /> {/* Course Details Page */}
+              <Route path="/instructors" element={<InstructorsPage />} /> {/* All Instructors Page */}
+              {/* Add more routes for other pages like /about, /contact, /instructors/:id etc. */}
+              <Route path="*" element={<HomePage />} /> {/* Fallback to Home for unknown routes */}
+            </Routes>
+          </main>
+          <AppFooter />
+        </div>
+      </Router>
     </ThemeProvider>
   );
 }

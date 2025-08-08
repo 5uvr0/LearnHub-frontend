@@ -2,13 +2,15 @@
 
 import React from 'react';
 import { Container } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import CourseCard from '../components/cards/CourseCard';
 import texts from '../i18n/texts';
 
-const CoursesPage = ({ setCurrentPage, setCourseDetailId }) => {
+const CoursesPage = () => { // Removed setCurrentPage, setCourseDetailId props
+  const navigate = useNavigate();
+
   const handleCourseDetailsClick = (courseId) => {
-    setCourseDetailId(courseId);
-    setCurrentPage('courseDetails');
+    navigate(`/courses/${courseId}`); // Navigate to the /courses/:id path
   };
 
   return (

@@ -2,19 +2,21 @@
 
 import React from 'react';
 import { Container } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import CustomButton from '../components/common/CustomButton';
 import CourseCard from '../components/cards/CourseCard';
 import texts from '../i18n/texts';
 
-const HomePage = ({ setCurrentPage, setCourseDetailId }) => {
+const HomePage = () => { // Removed setCurrentPage, setCourseDetailId props
+    const navigate = useNavigate(); // Hook to get navigation function
+
     const handleExploreCoursesClick = () => {
         alert(texts.alerts.exploreCoursesClicked);
-        setCurrentPage('courses'); // Navigate to courses page
+        navigate('/courses'); // Navigate to the /courses path
     };
 
     const handleCourseDetailsClick = (courseId) => {
-        setCourseDetailId(courseId);
-        setCurrentPage('courseDetails');
+        navigate(`/courses/${courseId}`); // Navigate to /courses/:id path
     };
 
     return (

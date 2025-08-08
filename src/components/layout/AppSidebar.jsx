@@ -2,16 +2,12 @@
 
 import React from 'react';
 import { Offcanvas, Nav } from 'react-bootstrap';
+import { Link } from 'react-router-dom'; // Import Link
 import texts from '../../i18n/texts';
 import { useTheme } from '../../hooks/UseTheme';
 
-const AppSidebar = ({ show, handleClose, setCurrentPage }) => {
+const AppSidebar = ({ show, handleClose }) => { // Removed setCurrentPage prop
     const { theme } = useTheme();
-
-    const handleNavLinkClick = (page) => {
-        setCurrentPage(page);
-        handleClose(); // Close sidebar after navigation
-    };
 
     return (
         <Offcanvas show={show} onHide={handleClose} placement="start"
@@ -21,19 +17,20 @@ const AppSidebar = ({ show, handleClose, setCurrentPage }) => {
             </Offcanvas.Header>
             <Offcanvas.Body>
                 <Nav className="flex-column">
-                    <Nav.Link onClick={() => handleNavLinkClick('home')}>
+                    <Nav.Link as={Link} to="/" onClick={handleClose}> {/* Link to home, close sidebar */}
                         {texts.nav.home}
                     </Nav.Link>
-                    <Nav.Link onClick={() => handleNavLinkClick('courses')}>
+                    <Nav.Link as={Link} to="/courses" onClick={handleClose}> {/* Link to courses, close sidebar */}
                         {texts.nav.courses}
                     </Nav.Link>
-                    <Nav.Link onClick={() => handleNavLinkClick('instructors')}>
+                    <Nav.Link as={Link} to="/instructors" onClick={handleClose}> {/* Link to instructors, close sidebar */}
                         {texts.nav.instructors}
                     </Nav.Link>
-                    <Nav.Link onClick={() => handleNavLinkClick('about')}>
+                    {/* Placeholder links for About and Contact */}
+                    <Nav.Link as={Link} to="/about" onClick={handleClose}>
                         {texts.nav.aboutUs}
                     </Nav.Link>
-                    <Nav.Link onClick={() => handleNavLinkClick('contact')}>
+                    <Nav.Link as={Link} to="/contact" onClick={handleClose}>
                         {texts.nav.contact}
                     </Nav.Link>
                 </Nav>
