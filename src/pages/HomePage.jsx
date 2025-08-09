@@ -51,7 +51,7 @@ const HomePage = () => { // Removed setCurrentPage, setCourseDetailId props
                 <Container>
                     <h2 className="text-center mb-5 fw-bold text-primary">{texts.sections.popularCourses}</h2>
                     <div className="row g-4">
-                        {texts.sampleCourses.slice(0, 3).map((course) => ( // Show first 3 as popular
+                        {texts.sampleCourses?.slice(0, 3).map((course) => ( // Show first 3 as popular
                             <div className="col-md-6 col-lg-4" key={course.id}>
                                 <CourseCard
                                     course={course}

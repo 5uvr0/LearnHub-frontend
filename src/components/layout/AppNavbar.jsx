@@ -3,19 +3,19 @@
 import React from 'react';
 import { Navbar, Nav, Container, Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSun, faMoon, faBars } from '@fortawesome/free-solid-svg-icons';
-import { Link, useLocation } from 'react-router-dom'; // Import Link and useLocation
+import { faSun, faMoon, faBars, faChalkboardTeacher } from '@fortawesome/free-solid-svg-icons';
+import { Link, useLocation } from 'react-router-dom';
 import CustomButton from '../common/CustomButton';
-import { useTheme } from '../../hooks/UseTheme';
+import { useTheme } from '../../hooks/useTheme';
 import texts from '../../i18n/texts';
 
-const AppNavbar = ({ handleShowSidebar }) => { // Removed currentPage prop
+const AppNavbar = ({ handleShowSidebar }) => {
   const { theme, toggleTheme } = useTheme();
-  const location = useLocation(); // Hook to get current URL path
+  const location = useLocation();
 
   const handleThemeToggle = () => {
     toggleTheme();
-    alert(texts.alerts.themeChangedTo(theme === 'light' ? 'dark' : 'light'));
+    alert(texts.alerts?.themeChangedTo?.(theme === 'light' ? 'dark' : 'light'));
   };
 
   return (
@@ -32,8 +32,8 @@ const AppNavbar = ({ handleShowSidebar }) => { // Removed currentPage prop
         </Button>
 
         <Navbar.Brand
-          as={Link} // Use Link component for brand
-          to="/" // Link to home page
+          as={Link}
+          to="/"
           className="fw-bold fs-4"
         >
           {texts.appTitle}
@@ -47,27 +47,36 @@ const AppNavbar = ({ handleShowSidebar }) => { // Removed currentPage prop
               to="/"
               className={`d-none d-lg-block mx-2 ${location.pathname === '/' ? 'fw-bold active' : ''}`}
             >
-              {texts.nav.home}
+              {texts.nav?.home}
             </Nav.Link>
             <Nav.Link
               as={Link}
               to="/courses"
-              className={`d-none d-lg-block mx-2 ${location.pathname === '/courses' ? 'fw-bold active' : ''}`}
+              className={`d-none d-lg-block mx-2 ${location.pathname.startsWith('/courses') ? 'fw-bold active' : ''}`}
             >
-              {texts.nav.courses}
+              {texts.nav?.courses}
             </Nav.Link>
             <Nav.Link
               as={Link}
               to="/instructors"
               className={`d-none d-lg-block mx-2 ${location.pathname === '/instructors' ? 'fw-bold active' : ''}`}
             >
-              {texts.nav.instructors}
+              {texts.nav?.instructors}
             </Nav.Link>
-            {/* Placeholder links for About and Contact - adjust as needed for actual pages */}
-            <Nav.Link as={Link} to="/about" className="d-none d-lg-block mx-2">{texts.nav.aboutUs}</Nav.Link>
-            <Nav.Link as={Link} to="/contact" className="d-none d-lg-block mx-2">{texts.nav.contact}</Nav.Link>
+            {/* Teacher Dashboard Link */}
+            <Nav.Link
+              as={Link}
+              to="/teacher/dashboard"
+              className={`d-none d-lg-block mx-2 ${location.pathname.startsWith('/teacher/dashboard') ? 'fw-bold active' : ''}`}
+            >
+              <FontAwesomeIcon icon={faChalkboardTeacher} className="me-1" /> {texts.nav?.teacherDashboard}
+            </Nav.Link>
 
-            <CustomButton variant="primary" className="ms-3">{texts.nav.signUp}</CustomButton>
+            {/* Placeholder links for About and Contact - adjust as needed for actual pages */}
+            <Nav.Link as={Link} to="/about" className="d-none d-lg-block mx-2">{texts.nav?.aboutUs}</Nav.Link>
+            <Nav.Link as={Link} to="/contact" className="d-none d-lg-block mx-2">{texts.nav?.contact}</Nav.Link>
+
+            <CustomButton variant="primary" className="ms-3">{texts.nav?.signUp}</CustomButton>
             <Button
               variant="link"
               onClick={handleThemeToggle}
