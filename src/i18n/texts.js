@@ -40,14 +40,16 @@ const texts = {
     myCourses: "My Courses",
     incompleteContentDrafts: "Incomplete Content Drafts",
     noIncompleteContentDrafts: "No incomplete content drafts found or available via current APIs.",
-    contentVersions: "Content Versions", // NEW
-    quizConfigurator: "Quiz Configurator", // NEW
-    quizQuestions: "Quiz Questions", // NEW
-    addQuestion: "Add Question", // NEW
-    addOption: "Add Option", // NEW
-    questionText: "Question Text", // NEW
-    optionText: "Option Text", // NEW
-    isCorrect: "Is Correct?", // NEW
+    contentVersions: "Content Versions",
+    quizConfigurator: "Quiz Configurator",
+    quizQuestions: "Quiz Questions",
+    addQuestion: "Add Question",
+    addOption: "Add Option",
+    questionText: "Question Text",
+    optionText: "Option Text",
+    isCorrect: "Is Correct?",
+    options: "Options", // NEW: For quiz options
+    instructorPublicProfile: "Instructor Profile", // NEW
   },
   courseCard: {
     learnMore: "Learn More",
@@ -60,6 +62,7 @@ const texts = {
   },
   instructorCard: {
     viewProfile: "View Profile",
+    specialties: "Specialties", // Keeping this for now, but not used with current API schema
   },
   forms: {
     courseName: "Course Name",
@@ -107,10 +110,18 @@ const texts = {
     courseNotFound: "Course not found.",
     moduleNotFound: "Module not found.",
     contentNotFound: "Content not found.",
-    questionAddedSuccess: "Question added successfully!", // NEW
-    questionDeletedSuccess: "Question deleted successfully!", // NEW
-    optionAddedSuccess: "Option added successfully!", // NEW
-    optionDeletedSuccess: "Option deleted successfully!", // NEW
+    questionAddedSuccess: "Question added successfully!",
+    questionDeletedSuccess: "Question deleted successfully!",
+    optionAddedSuccess: "Option added successfully!",
+    optionDeletedSuccess: "Option deleted successfully!",
+    unenrolledCourse: "You are not enrolled in this course. Enroll to view its modules and content.",
+    unenrolledCourse: "Enroll to view the course contents!",
+    searchPlaceholder: "Search by name or email...",
+    filterBySpecialty: "Filter by Specialty",
+    allSpecialties: "All Specialties",
+    loadingInstructors: "Loading instructors...",
+    noInstructorsFound: "No instructors found matching your criteria.",
+    failedToLoadInstructors: "Failed to load instructors.",
   },
   footer: {
     copyright: "LearnHub. All rights reserved.",
@@ -118,3 +129,4 @@ const texts = {
 };
 
 export default texts;
+

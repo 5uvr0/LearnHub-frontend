@@ -4,7 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { Container, Spinner, Alert, ListGroup, Badge, Modal } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCloudUploadAlt, faEdit, faTrash, faExternalLinkAlt, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+// ADD THESE MISSING IMPORTS: faFileVideo, faQuestionCircle, faClipboardList
+import { faCloudUploadAlt, faEdit, faTrash, faExternalLinkAlt, faInfoCircle, faFileVideo, faQuestionCircle, faClipboardList } from '@fortawesome/free-solid-svg-icons';
 import CustomButton from '../components/common/CustomButton';
 import ContentForm from '../components/forms/ContentForm';
 import texts from '../i18n/texts';

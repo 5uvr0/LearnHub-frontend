@@ -13,8 +13,10 @@ import TeacherDashboardPage from './pages/TeacherDashboardPage';
 import CourseConfiguratorPage from './pages/CourseConfiguratorPage';
 import TeacherCourseDetailsPage from './pages/TeacherCourseDetailsPage';
 import CoursePublicView from './pages/CoursePublicView';
-import ContentVersionsPage from './pages/ContentVersionsPage'; // NEW
-import QuizConfiguratorPage from './pages/QuizConfiguratorPage'; // NEW
+import ContentVersionsPage from './pages/ContentVersionsPage';
+import QuizConfiguratorPage from './pages/QuizConfiguratorPage';
+// import InstructorDetailsPage from './pages/InstructorDetailsPage';
+import InstructorPublicViewPage from './pages/InstructorPublicViewPage'; // NEW: Import InstructorPublicViewPage
 import { ThemeProvider } from './contexts/ThemeContext';
 import './index.css'; // Global CSS
 
@@ -42,6 +44,8 @@ function App() {
               <Route path="/courses/:id" element={<StudentCourseDetailsPage />} />
               <Route path="/public-course-view/:id" element={<CoursePublicView />} />
               <Route path="/instructors" element={<InstructorsPage />} />
+              {/* <Route path="/instructors/:id" element={<InstructorDetailsPage />} /> */}
+              <Route path="/public-instructors/:id" element={<InstructorPublicViewPage />} /> {/* NEW: Public Instructor View */}
 
               {/* Teacher Dashboard & Course Management Routes */}
               <Route path="/teacher/dashboard" element={<TeacherDashboardPage />} />
@@ -49,7 +53,7 @@ function App() {
               <Route path="/teacher/courses/:id/edit" element={<CourseConfiguratorPage />} />
               <Route path="/teacher/courses/:id" element={<TeacherCourseDetailsPage />} />
 
-              {/* NEW: Content Management Routes */}
+              {/* Content Management Routes */}
               <Route path="/teacher/contents/:contentId/versions" element={<ContentVersionsPage />} />
               <Route path="/teacher/quizzes/:contentId" element={<QuizConfiguratorPage />} />
 

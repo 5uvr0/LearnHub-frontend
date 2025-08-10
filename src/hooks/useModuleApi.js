@@ -6,19 +6,19 @@ import useApi from './useApi';
 const useModuleApi = () => {
     const { data, loading, error, fetchData } = useApi();
 
-    const getAllModules = useCallback(() => fetchData('/api/modules', { method: 'GET' }), [fetchData]);
-    const createModule = useCallback((moduleData) => fetchData('/api/modules', {
+    const getAllModules = useCallback(() => fetchData('/modules', { method: 'GET' }), [fetchData]);
+    const createModule = useCallback((moduleData) => fetchData('/modules', {
         method: 'POST',
         body: JSON.stringify(moduleData),
     }), [fetchData]);
-    const getModuleById = useCallback((id) => fetchData(`/api/modules/${id}`, { method: 'GET' }), [fetchData]);
-    const updateModule = useCallback((id, moduleData) => fetchData(`/api/modules/${id}`, {
+    const getModuleById = useCallback((id) => fetchData(`/modules/${id}`, { method: 'GET' }), [fetchData]);
+    const updateModule = useCallback((id, moduleData) => fetchData(`/modules/${id}`, {
         method: 'PATCH',
         body: JSON.stringify(moduleData),
     }), [fetchData]);
-    const deleteModule = useCallback((id) => fetchData(`/api/modules/${id}`, { method: 'DELETE' }), [fetchData]);
-    const getModulesByCourse = useCallback((courseId) => fetchData(`/api/modules/byCourse/${courseId}`, { method: 'GET' }), [fetchData]);
-    const reorderModuleContents = useCallback((reorderData) => fetchData('/api/modules/contents/reorder', {
+    const deleteModule = useCallback((id) => fetchData(`/modules/${id}`, { method: 'DELETE' }), [fetchData]);
+    const getModulesByCourse = useCallback((courseId) => fetchData(`/modules/byCourse/${courseId}`, { method: 'GET' }), [fetchData]);
+    const reorderModuleContents = useCallback((reorderData) => fetchData('/modules/contents/reorder', {
         method: 'POST',
         body: JSON.stringify(reorderData),
     }), [fetchData]);

@@ -12,6 +12,7 @@ import useCourseApi from '../hooks/useCourseApi';
 import useModuleApi from '../hooks/useModuleApi';
 import useContentApi from '../hooks/useContentApi';
 import { faPlusCircle, faCloudUploadAlt, faEdit } from '@fortawesome/free-solid-svg-icons';
+import { getRandomModerateColor } from '../utils/colorUtils'; // Import the color utility
 
 
 const TeacherCourseDetailsPage = () => {
@@ -36,6 +37,22 @@ const TeacherCourseDetailsPage = () => {
     const [isCreatingNewContent, setIsCreatingNewContent] = useState(false);
     const [isCreatingNewContentRelease, setIsCreatingNewContentRelease] = useState(false);
 
+    // Generate a random color for this card
+    const cardColor = getRandomModerateColor();
+
+    // Function to generate a simple SVG icon based on the color
+    const generateCourseSvg = (bgColor) => {
+        // A simple book icon as an example
+        return `
+          <svg width="100%" height="100%" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+            <rect width="200" height="150" fill="${bgColor}"/>
+            <path d="M50 30 L150 30 L150 120 L100 100 L50 120 Z" fill="#FFFFFF" stroke="#333333" stroke-width="5" stroke-linejoin="round"/>
+            <line x1="100" y1="100" x2="100" y2="120" stroke="#333333" stroke-width="3"/>
+            <circle cx="100" cy="70" r="15" fill="#333333"/>
+            <text x="100" y="75" font-family="Arial" font-size="20" fill="${bgColor}" text-anchor="middle" font-weight="bold">📚</text>
+          </svg>
+        `;
+    };
 
     useEffect(() => {
         if (isNaN(courseId)) {
@@ -289,13 +306,11 @@ const TeacherCourseDetailsPage = () => {
                 </div>
 
                 <div className="row mb-5 align-items-center">
-                    <div className="col-md-4 text-center">
-                        <img
-                            src={course?.imageUrl || "https://placehold.co/300x200/cccccc/333333?text=Course"}
-                            alt={course?.name || 'Course Image'}
-                            className="img-fluid rounded-4 shadow-sm"
-                        />
-                    </div>
+                    <div
+                        className="card-img-top d-flex align-items-center justify-content-center rounded"
+                        style={{ width: '300px', height: '300px', backgroundColor: cardColor }}
+                        dangerouslySetInnerHTML={{ __html: generateCourseSvg(cardColor) }}
+                    ></div>
                     <div className="col-md-8">
                         <p className="lead text-secondary">{course?.description}</p>
                         <p className="mb-0"><strong>Instructor:</strong> {course?.instructorName}</p>

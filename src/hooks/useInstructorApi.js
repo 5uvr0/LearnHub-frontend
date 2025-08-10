@@ -1,30 +1,36 @@
 // src/hooks/useInstructorApi.js
 
-import { useCallback } from 'react'; // Import useCallback
+import { useCallback } from 'react';
 import useApi from './useApi';
 
 const useInstructorApi = () => {
+  // useApi already provides data, loading, and error states
   const { data, loading, error, fetchData } = useApi();
 
   // Public/Catalog Instructor Endpoints
-  const getAllInstructorsPublic = useCallback(() => fetchData('/api/instructors/public', { method: 'GET' }), [fetchData]);
-  const getInstructorByIdPublic = useCallback((id) => fetchData(`/api/instructors/public/${id}`, { method: 'GET' }), [fetchData]);
+  // Added '' prefix to all endpoints
+  const getAllInstructorsPublic = useCallback(() => fetchData('/instructors/public', { method: 'GET' }), [fetchData]);
+  const getInstructorByIdPublic = useCallback((id) => fetchData(`/instructors/public/${id}`, { method: 'GET' }), [fetchData]);
 
   // Teacher/Configurator Instructor Endpoints
-  const getAllInstructors = useCallback(() => fetchData('/api/instructors', { method: 'GET' }), [fetchData]);
-  const createInstructor = useCallback((instructorData) => fetchData('/api/instructors', {
+  // Added '' prefix to all endpoints
+  const getAllInstructors = useCallback(() => fetchData('/instructors', { method: 'GET' }), [fetchData]);
+  const createInstructor = useCallback((instructorData) => fetchData('/instructors', {
     method: 'POST',
     body: JSON.stringify(instructorData),
   }), [fetchData]);
-  const getInstructorById = useCallback((id) => fetchData(`/api/instructors/${id}`, { method: 'GET' }), [fetchData]);
-  const updateInstructor = useCallback((id, instructorData) => fetchData(`/api/instructors/${id}`, {
+  const getInstructorById = useCallback((id) => fetchData(`/instructors/${id}`, { method: 'GET' }), [fetchData]);
+  const updateInstructor = useCallback((id, instructorData) => fetchData(`/instructors/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(instructorData),
   }), [fetchData]);
-  const softDeleteInstructor = useCallback((id) => fetchData(`/api/instructors/${id}`, { method: 'DELETE' }), [fetchData]);
+  const softDeleteInstructor = useCallback((id) => fetchData(`/instructors/${id}`, { method: 'DELETE' }), [fetchData]);
 
   return {
-    data, loading, error,
+    // These states are directly from the underlying useApi hook
+    data,
+    loading, // This is your loading feature
+    error,
     getAllInstructorsPublic, getInstructorByIdPublic,
     getAllInstructors, createInstructor, getInstructorById, updateInstructor, softDeleteInstructor
   };

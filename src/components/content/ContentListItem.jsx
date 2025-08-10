@@ -3,17 +3,17 @@
 import React, { useState } from 'react';
 import { ListGroup, Badge, Collapse, Button, Alert } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileVideo, faQuestionCircle, faClipboardList, faInfoCircle, faAngleDown, faAngleUp, faEdit, faTrash, faCloudUploadAlt, faExternalLinkAlt, faCodeBranch, faTasks } from '@fortawesome/free-solid-svg-icons'; // Import faCodeBranch, faTasks
+import { faFileVideo, faQuestionCircle, faClipboardList, faInfoCircle, faAngleDown, faAngleUp, faEdit, faTrash, faCloudUploadAlt, faExternalLinkAlt, faCodeBranch, faTasks, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import CustomButton from '../common/CustomButton';
 import texts from '../../i18n/texts';
 
 // Helper to determine icon and type label based on content type (from DTO or CatalogDTO)
 const getContentInfo = (content) => {
-    let icon = faClipboardList;
+    let icon = faInfoCircle;
     let typeLabel = "Content";
-    let variant = "secondary"; // Bootstrap variant for badge
+    let variant = "secondary";
 
-    const contentType = content?.type || content?.contentType;
+    const contentType = content?.currentContentRelease?.type;
 
     switch (contentType) {
         case "LECTURE":
@@ -69,7 +69,7 @@ const ContentListItem = ({ content, isTeacherView = false, onEditContent, onDele
                             {content?.title} <Badge bg={variant} className="ms-2">{typeLabel}</Badge>
                         </h5>
                         {!isTeacherView && currentReleaseForDisplay?.description && (
-                            <p className="text-muted mb-0 mt-1">{currentReleaseForDisplay.description}</p>
+                            <p className="text-muted mb-0 mt-1" dangerouslySetInnerHTML={{ __html: currentReleaseForDisplay.description }}></p>
                         )}
                         {isTeacherView && (
                             <small className="text-muted">
@@ -84,13 +84,12 @@ const ContentListItem = ({ content, isTeacherView = false, onEditContent, onDele
 
                 {isTeacherView && isParentContentDTO && (
                     <div className="d-flex align-items-center flex-wrap justify-content-end">
-                        {/* Teacher actions for the overall content item */}
-                        <CustomButton variant="outline-primary" size="sm" icon={faEdit} className="mb-1 me-2" onClick={() => onEditContent(content, false)}>Edit Metadata</CustomButton>
-                        <CustomButton variant="outline-info" size="sm" icon={faCodeBranch} className="mb-1 me-2" onClick={() => onViewContentVersions(content?.id, content?.title)}>View Versions</CustomButton> {/* NEW */}
-                        {content?.type === 'QUIZ' && ( // Show "Manage Quiz" button only for Quiz content
-                            <CustomButton variant="outline-warning" size="sm" icon={faTasks} className="mb-1 me-2" onClick={() => onManageQuiz(content?.id, content?.title)}>Manage Quiz</CustomButton> // NEW
+                        <CustomButton variant="outline-primary" size="sm" icon={faEdit} className="mb-1 me-2" onClick={() => onEditContent?.(content, false)}>Edit Metadata</CustomButton>
+                        <CustomButton variant="outline-info" size="sm" icon={faCodeBranch} className="mb-1 me-2" onClick={() => onViewContentVersions?.(content?.currentContentRelease?.id, content?.title)}>View Versions</CustomButton>
+                        {content?.type === 'QUIZ' && (
+                            <CustomButton variant="outline-warning" size="sm" icon={faTasks} className="mb-1 me-2" onClick={() => onManageQuiz?.(content?.id, content?.title)}>Manage Quiz</CustomButton>
                         )}
-                        <CustomButton variant="outline-danger" size="sm" icon={faTrash} className="mb-1 me-2" onClick={() => onDeleteContent(content?.id, content?.title)}>Delete Content</CustomButton>
+                        <CustomButton variant="outline-danger" size="sm" icon={faTrash} className="mb-1 me-2" onClick={() => onDeleteContent?.(content?.id, content?.title)}>Delete Content</CustomButton>
                         <Button
                             variant="link"
                             onClick={() => setOpen(!open)}
@@ -115,10 +114,10 @@ const ContentListItem = ({ content, isTeacherView = false, onEditContent, onDele
                                     ?.map((release) => (
                                         <ListGroup.Item key={release?.id} className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center bg-light-subtle py-2 px-3">
                                             <div>
-                                                <strong className="text-dark">Version {release?.releaseNum}</strong> - {release?.title} (<Badge bg={getContentInfo(release).variant}>{getContentInfo(release).typeLabel}</Badge>)
+                                                <strong className="text-dark">Version {release?.releaseNum}</strong> - {release?.title} (<Badge bg={getContentInfo(release).variant}>{release?.type}</Badge>)
                                                 <br />
                                                 {release?.id && <small className="text-muted">Release ID: {release.id}</small>}
-                                                {release?.description && <small className="d-block text-muted">{release.description}</small>}
+                                                {release?.description && <small className="d-block text-muted" dangerouslySetInnerHTML={{ __html: release.description }}></small>}
                                                 {release?.videoUrl && <small className="d-block text-muted">Video: <a href={release.videoUrl} target="_blank" rel="noopener noreferrer">Watch <FontAwesomeIcon icon={faExternalLinkAlt} size="xs" /></a></small>}
                                                 {release?.resourceLink && <small className="d-block text-muted">Resource: <a href={release.resourceLink} target="_blank" rel="noopener noreferrer">Download <FontAwesomeIcon icon={faExternalLinkAlt} size="xs" /></a></small>}
                                             </div>
@@ -126,10 +125,10 @@ const ContentListItem = ({ content, isTeacherView = false, onEditContent, onDele
                                                 {content?.currentContentRelease && release?.id === content.currentContentRelease?.id ? (
                                                     <Badge bg="success" className="me-2 mb-md-2">Published</Badge>
                                                 ) : (
-                                                    <CustomButton variant="outline-success" size="sm" icon={faCloudUploadAlt} className="me-2 mb-md-2" onClick={() => onPublishContent(release?.id, release?.title, content?.id)}>Publish</CustomButton>
+                                                    <CustomButton variant="outline-success" size="sm" icon={faCloudUploadAlt} className="me-2 mb-md-2" onClick={() => onPublishContent?.(release?.id, release?.title, content?.id)}>Publish</CustomButton>
                                                 )}
-                                                <CustomButton variant="outline-primary" size="sm" icon={faEdit} className="me-2 mb-md-2" onClick={() => onEditContent(release, true)}>Edit Release</CustomButton>
-                                                <CustomButton variant="outline-danger" size="sm" icon={faTrash} onClick={() => onDeleteContent(release?.id, release?.title, true)}>Delete Release</CustomButton>
+                                                <CustomButton variant="outline-primary" size="sm" icon={faEdit} className="me-2 mb-md-2" onClick={() => onEditContent?.(release, true)}>Edit Release</CustomButton>
+                                                <CustomButton variant="outline-danger" size="sm" icon={faTrash} onClick={() => onDeleteContent?.(release?.id, release?.title, true)}>Delete Release</CustomButton>
                                             </div>
                                         </ListGroup.Item>
                                     ))}
@@ -138,7 +137,7 @@ const ContentListItem = ({ content, isTeacherView = false, onEditContent, onDele
                             <p className="text-muted text-center">No content releases found for this content.</p>
                         )}
                         <div className="text-end mt-3">
-                            <CustomButton variant="success" size="sm" icon={faPlusCircle} onClick={() => onEditContent(null, true, content?.id)}>Add New Release</CustomButton>
+                            <CustomButton variant="success" size="sm" icon={faPlusCircle} onClick={() => onEditContent?.(null, true, content?.id)}>Add New Release</CustomButton>
                         </div>
                     </div>
                 </Collapse>
@@ -147,6 +146,9 @@ const ContentListItem = ({ content, isTeacherView = false, onEditContent, onDele
             {/* Student View (collapsed content details) */}
             {!isTeacherView && currentReleaseForDisplay && (
                 <div className="mt-2">
+                    {currentReleaseForDisplay?.description && (
+                        <p className="mb-1" dangerouslySetInnerHTML={{ __html: currentReleaseForDisplay.description }}></p>
+                    )}
                     {currentReleaseForDisplay?.videoUrl && (
                         <p className="mb-1">Video: <a href={currentReleaseForDisplay.videoUrl} target="_blank" rel="noopener noreferrer">Watch <FontAwesomeIcon icon={faExternalLinkAlt} size="xs" /></a></p>
                     )}
