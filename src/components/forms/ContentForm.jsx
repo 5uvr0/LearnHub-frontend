@@ -74,11 +74,11 @@ const ContentForm = ({ initialData = {}, onSubmit, isEditMode = false, isLoading
         }
         if (!contentType) errors.type = texts.alerts.contentFormSelectType;
 
-        if (contentType === 'LectureCatalogDTO') {
+        if (contentType === 'LECTURE') {
             // Add validation specific to Lecture
-        } else if (contentType === 'QuizCatalogDTO') {
+        } else if (contentType === 'QUIZ') {
             // Add validation specific to Quiz (e.g., at least one question)
-        } else if (contentType === 'SubmissionCatalogueDTO') {
+        } else if (contentType === 'SUBMISSION') {
             // Add validation specific to Submission
         }
 
@@ -96,13 +96,13 @@ const ContentForm = ({ initialData = {}, onSubmit, isEditMode = false, isLoading
                 type: contentType,
             };
 
-            if (contentType === 'LectureCatalogDTO') {
+            if (contentType === 'LECTURE') {
                 payload.description = formData.description;
                 payload.videoUrl = formData.videoUrl;
                 payload.resourceLink = formData.resourceLink;
-            } else if (contentType === 'QuizCatalogDTO') {
+            } else if (contentType === 'QUIZ') {
                 payload.questions = formData.questions; // Simplified: in a real app, you'd manage quiz questions dynamically
-            } else if (contentType === 'SubmissionCatalogueDTO') {
+            } else if (contentType === 'SUBMISSION') {
                 payload.description = formData.description;
                 payload.resourceLink = formData.resourceLink;
             }
@@ -150,14 +150,14 @@ const ContentForm = ({ initialData = {}, onSubmit, isEditMode = false, isLoading
                     disabled={isEditMode} // Usually type isn't editable after creation
                 >
                     <option value="">Select content type...</option>
-                    <option value="LectureCatalogDTO">Lecture</option>
-                    <option value="QuizCatalogDTO">Quiz</option>
-                    <option value="SubmissionCatalogueDTO">Submission</option>
+                    <option value="LECTURE">Lecture</option>
+                    <option value="QUIZ">Quiz</option>
+                    <option value="SUBMISSION">Submission</option>
                 </Form.Select>
                 <Form.Control.Feedback type="invalid">{formErrors.type}</Form.Control.Feedback>
             </Form.Group>
 
-            {contentType === 'LectureCatalogDTO' && (
+            {contentType === 'LECTURE' && (
                 <>
                     <Form.Group className="mb-3" controlId="lectureDescription">
                         <Form.Label>{texts.forms.lectureDescription}</Form.Label>
@@ -193,13 +193,13 @@ const ContentForm = ({ initialData = {}, onSubmit, isEditMode = false, isLoading
                 </>
             )}
 
-            {contentType === 'QuizCatalogDTO' && (
+            {contentType === 'QUIZ' && (
                 <Alert variant="info" className="mb-4">
                     Quiz question management is not yet implemented in this form. You would add a sub-form here.
                 </Alert>
             )}
 
-            {contentType === 'SubmissionCatalogueDTO' && (
+            {contentType === 'SUBMISSION' && (
                 <>
                     <Form.Group className="mb-3" controlId="submissionDescription">
                         <Form.Label>{texts.forms.submissionDescription}</Form.Label>

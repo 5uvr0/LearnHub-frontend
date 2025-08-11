@@ -36,7 +36,7 @@ const ModuleCard = ({
       <Accordion.Header>
         <div className="d-flex justify-content-between align-items-center w-100 pe-3">
           <span className="fw-bold text-primary">
-            {module?.orderIndex + 1}. {module?.title}
+            {module?.orderIndex}. {module?.title}
             <span className="ms-3 badge bg-secondary">
               {module?.contents?.length || 0} {module?.contents?.length === 1 ? 'Content' : 'Contents'}
             </span>

@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileVideo, faQuestionCircle, faClipboardList, faInfoCircle, faAngleDown, faAngleUp, faEdit, faTrash, faCloudUploadAlt, faExternalLinkAlt, faCodeBranch, faTasks, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import CustomButton from '../common/CustomButton';
 import texts from '../../i18n/texts';
+import MarkdownRenderer from '../common/MarkdownRender';
 
 // Helper to determine icon and type label based on content type (from DTO or CatalogDTO)
 const getContentInfo = (content) => {
@@ -69,7 +70,7 @@ const ContentListItem = ({ content, isTeacherView = false, onEditContent, onDele
                             {content?.title} <Badge bg={variant} className="ms-2">{typeLabel}</Badge>
                         </h5>
                         {!isTeacherView && currentReleaseForDisplay?.description && (
-                            <p className="text-muted mb-0 mt-1" dangerouslySetInnerHTML={{ __html: currentReleaseForDisplay.description }}></p>
+                            <MarkdownRenderer markdownText={currentReleaseForDisplay.description} className="text-muted mb-0 mt-1" />
                         )}
                         {isTeacherView && (
                             <small className="text-muted">
@@ -85,7 +86,7 @@ const ContentListItem = ({ content, isTeacherView = false, onEditContent, onDele
                 {isTeacherView && isParentContentDTO && (
                     <div className="d-flex align-items-center flex-wrap justify-content-end">
                         <CustomButton variant="outline-primary" size="sm" icon={faEdit} className="mb-1 me-2" onClick={() => onEditContent?.(content, false)}>Edit Metadata</CustomButton>
-                        <CustomButton variant="outline-info" size="sm" icon={faCodeBranch} className="mb-1 me-2" onClick={() => onViewContentVersions?.(content?.currentContentRelease?.id, content?.title)}>View Versions</CustomButton>
+                        <CustomButton variant="outline-info" size="sm" icon={faCodeBranch} className="mb-1 me-2" onClick={() => onViewContentVersions?.(content?.id, content?.title)}>View Versions</CustomButton>
                         {content?.type === 'QUIZ' && (
                             <CustomButton variant="outline-warning" size="sm" icon={faTasks} className="mb-1 me-2" onClick={() => onManageQuiz?.(content?.id, content?.title)}>Manage Quiz</CustomButton>
                         )}

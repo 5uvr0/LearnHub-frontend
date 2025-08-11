@@ -1,32 +1,40 @@
 // src/pages/TeacherDashboardPage.jsx
 
 import React, { useEffect, useState } from 'react';
-import { Container, Alert, Spinner, Row, Col, Card, Nav } from 'react-bootstrap';
+import { Container, Alert, Spinner, Row, Col, Card, Nav, Modal } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import CustomButton from '../components/common/CustomButton';
 import texts from '../i18n/texts';
 import useCourseApi from '../hooks/useCourseApi';
 import { faPlusCircle, faEdit, faEye, faCloudUploadAlt, faTrash } from '@fortawesome/free-solid-svg-icons';
-
+import CourseForm from '../components/forms/CourseForm'
 const TEACHER_ID = 1; // Hardcoded instructor ID for demonstration
 
 const TeacherDashboardPage = () => {
   const navigate = useNavigate();
+
+  const {
+    createCourse
+  } = useCourseApi();
   const {
     data: myCourses,
     loading: loadingMyCourses,
     error: myCoursesError,
     getCourseByInstructorId,
-    data: draftCourses, // Renamed to avoid conflict with 'myCourses'
-    loading: loadingDraftCourses,
-    error: draftCoursesError,
-    getAllDraftCourses,
     deleteCourse,
     publishCourse,
   } = useCourseApi();
 
+  const {
+    getAllDraftCourses,
+    data: draftCourses, // Renamed to avoid conflict with 'myCourses'
+    loading: loadingDraftCourses,
+    error: draftCoursesError,
+  } = useCourseApi();
+
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [activeTab, setActiveTab] = useState('myCourses'); // State for active tab
+  const [showCreateCourseModal, setShowCreateCourseModal] = useState(false); // NEW: State for create course modal
 
   useEffect(() => {
     // Fetch courses by instructor ID
@@ -44,8 +52,28 @@ const TeacherDashboardPage = () => {
     }
   }, [refreshTrigger, getCourseByInstructorId, getAllDraftCourses]); // Dependencies for useCallback stability
 
-  const handleCreateNewCourse = () => {
-    navigate('/teacher/courses/new');
+  console.log("drafts:" + draftCourses?.length);
+
+  // NEW: Handle opening the create course modal
+  const handleOpenCreateCourseModal = () => {
+    setShowCreateCourseModal(true);
+  };
+
+  // NEW: Handle closing the create course modal
+  const handleCloseCreateCourseModal = () => {
+    setShowCreateCourseModal(false);
+  };
+
+  // NEW: Handle submission of the create course form
+  const handleCreateCourseSubmit = async (formData) => {
+    try {
+      await createCourse?.(formData); // Call the createCourse API
+      alert(texts.alerts?.courseCreatedSuccess);
+      handleCloseCreateCourseModal(); // Close modal on success
+      setRefreshTrigger((prev) => prev + 1); // Refresh dashboard data
+    } catch (err) {
+      alert(texts.alerts?.apiError?.(err?.message || "Failed to create course."));
+    }
   };
 
   const handleEditCourse = (courseId) => {
@@ -178,7 +206,7 @@ const TeacherDashboardPage = () => {
               <Nav.Link eventKey="incompleteContentDrafts">{texts.sections?.incompleteContentDrafts}</Nav.Link>
             </Nav.Item>
           </Nav>
-          <CustomButton variant="primary" icon={faPlusCircle} onClick={handleCreateNewCourse}>
+          <CustomButton variant="primary" icon={faPlusCircle} onClick={handleOpenCreateCourseModal}>
             {texts.sections?.createCourse}
           </CustomButton>
         </div>
@@ -193,6 +221,7 @@ const TeacherDashboardPage = () => {
         {activeTab === 'draftCourses' && (
           <>
             <h3 className="mb-4 text-secondary">{texts.sections?.draftCourses}</h3>
+            {JSON.stringify(draftCourses.length)}
             {renderCourseCards(draftCourses, loadingDraftCourses, draftCoursesError)}
           </>
         )}
@@ -206,6 +235,19 @@ const TeacherDashboardPage = () => {
           </>
         )}
       </Container>
+
+      {/* NEW: Create Course Modal */}
+      <Modal show={showCreateCourseModal} onHide={handleCloseCreateCourseModal} centered size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>{texts.sections?.createCourse}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <CourseForm
+            onSubmit={handleCreateCourseSubmit}
+            isEditMode={false} // Always false for creation
+          />
+        </Modal.Body>
+      </Modal>
     </section>
   );
 };

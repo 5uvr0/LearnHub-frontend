@@ -47,7 +47,7 @@ const CoursesPage = () => {
 
         {!loading && !error && courses && courses?.length > 0 && (
           <Row className="g-4">
-            {courses?.map((course) => (
+            {courses?.map((course, key = course.id) => (
               <Col md={6} lg={4} key={course?.courseId}>
                 <CourseCard
                   course={course}

@@ -1,7 +1,7 @@
 // src/pages/TeacherCourseDetailsPage.jsx
 
 import React, { useEffect, useState } from 'react';
-import { Container, Row, Col, Spinner, Alert, Modal, Form, Accordion } from 'react-bootstrap'; // Import Accordion
+import { Container, Row, Col, Spinner, Alert, Modal, Form, Accordion } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
 import ModuleCard from '../components/cards/ModuleCard';
 import ModuleForm from '../components/forms/ModuleForm';
@@ -11,8 +11,10 @@ import texts from '../i18n/texts';
 import useCourseApi from '../hooks/useCourseApi';
 import useModuleApi from '../hooks/useModuleApi';
 import useContentApi from '../hooks/useContentApi';
-import { faPlusCircle, faCloudUploadAlt, faEdit } from '@fortawesome/free-solid-svg-icons';
-import { getRandomModerateColor } from '../utils/colorUtils'; // Import the color utility
+import { faPlusCircle, faCloudUploadAlt, faEdit, faArrowsUpDown } from '@fortawesome/free-solid-svg-icons'; // Import faArrowsUpDown
+import { getRandomModerateColor } from '../utils/colorUtils';
+import MarkdownRenderer from '../components/common/MarkdownRender';
+import ModuleReorderModal from '../components/modals/ModuleReorderModal'; // NEW: Import Reorder Modal
 
 
 const TeacherCourseDetailsPage = () => {
@@ -21,7 +23,7 @@ const TeacherCourseDetailsPage = () => {
     const navigate = useNavigate();
 
     // API Hooks
-    const { data: course, loading: loadingCourse, error: courseError, getCourseDetails, publishCourse } = useCourseApi();
+    const { data: course, loading: loadingCourse, error: courseError, getCourseDetails, publishCourse, reorderModules } = useCourseApi(); // Add reorderModules
     const { createModule, updateModule, deleteModule, loading: loadingModuleApi, error: moduleApiError } = useModuleApi();
     const { createContent, editContentMetadata, publishContentRelease, deleteContentRelease, loading: loadingContentApi, error: contentApiError, getContentReleaseById } = useContentApi();
 
@@ -37,12 +39,13 @@ const TeacherCourseDetailsPage = () => {
     const [isCreatingNewContent, setIsCreatingNewContent] = useState(false);
     const [isCreatingNewContentRelease, setIsCreatingNewContentRelease] = useState(false);
 
+    const [showReorderModal, setShowReorderModal] = useState(false); // NEW: State for reorder modal
+
     // Generate a random color for this card
     const cardColor = getRandomModerateColor();
 
     // Function to generate a simple SVG icon based on the color
     const generateCourseSvg = (bgColor) => {
-        // A simple book icon as an example
         return `
           <svg width="100%" height="100%" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
             <rect width="200" height="150" fill="${bgColor}"/>
@@ -60,7 +63,7 @@ const TeacherCourseDetailsPage = () => {
             return;
         }
         fetchCourseDetails();
-    }, [courseId, refreshTrigger, getCourseDetails]); // Add getCourseDetails to dependencies
+    }, [courseId, refreshTrigger, getCourseDetails]);
 
     const fetchCourseDetails = async () => {
         try {
@@ -109,8 +112,26 @@ const TeacherCourseDetailsPage = () => {
         }
     };
 
+    // NEW: Handle Reorder Modules
+    const handleReorderModules = () => {
+        setShowReorderModal(true);
+    };
+
+    const handleSaveReorderedModules = async (reorderData) => {
+        try {
+            // The API expects an array of ReorderDTO: [{ id: moduleId, orderIndex: newIndex }]
+            await reorderModules?.(reorderData);
+            alert(texts.alerts?.modulesReorderedSuccess);
+            setShowReorderModal(false);
+            setRefreshTrigger((prev) => prev + 1); // Refresh page to show new order
+        } catch (err) {
+            alert(texts.alerts?.apiError?.(courseError?.message || err?.message));
+        }
+    };
+
     // --- Content Management Handlers ---
     const handleAddContent = (moduleId) => {
+        console.log(moduleId + " + pressed, adding content");
         setEditingContentData(null);
         setActiveModuleIdForContent(moduleId);
         setIsCreatingNewContent(true);
@@ -143,6 +164,7 @@ const TeacherCourseDetailsPage = () => {
 
 
     const handleContentFormSubmit = async (formData) => {
+        console.log(JSON.stringify(formData));
         try {
             if (isCreatingNewContent) {
                 const payload = { ...formData, moduleId: activeModuleIdForContent };
@@ -150,7 +172,7 @@ const TeacherCourseDetailsPage = () => {
                 alert(texts.alerts?.contentCreatedSuccess);
             } else if (isCreatingNewContentRelease && activeModuleIdForContent) {
                 const payload = { ...formData, moduleId: activeModuleIdForContent };
-                await publishContentRelease?.(activeModuleIdForContent, payload); // Reusing publish endpoint for new release
+                await publishContentRelease?.(activeModuleIdForContent, payload);
                 alert(texts.alerts?.contentPublishedSuccess);
             } else if (editingContentData) {
                 await editContentMetadata?.(editingContentData?.id, formData);
@@ -306,27 +328,45 @@ const TeacherCourseDetailsPage = () => {
                 </div>
 
                 <div className="row mb-5 align-items-center">
-                    <div
-                        className="card-img-top d-flex align-items-center justify-content-center rounded"
-                        style={{ width: '300px', height: '300px', backgroundColor: cardColor }}
-                        dangerouslySetInnerHTML={{ __html: generateCourseSvg(cardColor) }}
-                    ></div>
-                    <div className="col-md-8">
-                        <p className="lead text-secondary">{course?.description}</p>
+                    {/* Wrap the image/SVG placeholder in a Col */}
+                    <Col md={4} className="text-center"> {/* Use Col for grid alignment */}
+                        {course?.imageUrl ? (
+                            <img
+                                src={course.imageUrl}
+                                alt={course?.name || 'Course Image'}
+                                className="img-fluid rounded-4 shadow-sm"
+                                style={{ width: '300px', height: '300px', objectFit: 'cover' }} // Ensure image fills its space
+                                onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/300x300/cccccc/333333?text=Course"; }}
+                            />
+                        ) : (
+                            <div
+                                className="d-flex align-items-center justify-content-center rounded-4 shadow-sm"
+                                style={{ width: '300px', height: '300px', backgroundColor: cardColor, margin: '0 auto' }} // Center the div
+                                dangerouslySetInnerHTML={{ __html: generateCourseSvg(cardColor) }}
+                            ></div>
+                        )}
+                    </Col>
+                    <Col md={8} className=''> {/* This is already a Col */}
+                        <MarkdownRenderer markdownText={course?.description} className="lead text-secondary" /> {/* Use course.description first */}
                         <p className="mb-0"><strong>Instructor:</strong> {course?.instructorName}</p>
                         <p><strong>Course ID:</strong> {course?.id}</p>
                         <p><strong>Current Published Version:</strong> {course?.currentRelease || 'N/A'}</p>
-                    </div>
+                    </Col>
                 </div>
 
                 <h3 className="mb-4 fw-bold text-secondary d-flex justify-content-between align-items-center">
                     {texts.sections?.modules}
-                    <CustomButton variant="primary" icon={faPlusCircle} onClick={handleAddModule} isLoading={loadingModuleApi}>
-                        Add Module
-                    </CustomButton>
+                    <div> {/* Wrap buttons for spacing */}
+                        <CustomButton variant="primary" icon={faPlusCircle} onClick={handleAddModule} isLoading={loadingModuleApi} className="me-2">
+                            Add Module
+                        </CustomButton>
+                        <CustomButton variant="info" icon={faArrowsUpDown} onClick={handleReorderModules} isLoading={loadingModuleApi}>
+                            {texts.sections?.reorderModules}
+                        </CustomButton>
+                    </div>
                 </h3>
                 {course?.modules && course.modules?.length > 0 ? (
-                    <Accordion defaultActiveKey="0" className="g-4"> {/* Use Accordion */}
+                    <Accordion defaultActiveKey="0" className="g-4">
                         {course.modules
                             ?.sort((a, b) => (a?.orderIndex || 0) - (b?.orderIndex || 0))
                             ?.map((module, index) => (
@@ -337,12 +377,12 @@ const TeacherCourseDetailsPage = () => {
                                     onAddContent={handleAddContent}
                                     onEditContent={handleEditContent}
                                     onDeleteContent={handleDeleteContent}
-                                    onPublishContent={handlePublishContent} // Pass the handler
-                                    onViewContentVersions={handleViewContentVersions} // Pass new handler
-                                    onManageQuiz={handleManageQuiz} // Pass new handler
+                                    onPublishContent={handlePublishContent}
+                                    onViewContentVersions={handleViewContentVersions}
+                                    onManageQuiz={handleManageQuiz}
                                     onEditModule={handleEditModule}
                                     onDeleteModule={handleDeleteModule}
-                                    eventKey={String(index)} // Unique eventKey for each accordion item
+                                    eventKey={String(index)}
                                 />
                             ))}
                     </Accordion>
@@ -385,6 +425,15 @@ const TeacherCourseDetailsPage = () => {
                     />
                 </Modal.Body>
             </Modal>
+
+            {/* NEW: Module Reorder Modal */}
+            <ModuleReorderModal
+                show={showReorderModal}
+                onHide={() => setShowReorderModal(false)}
+                modules={course?.modules} // Pass the current modules to the modal
+                onSaveOrder={handleSaveReorderedModules}
+                isLoading={loadingModuleApi} // Use module API loading state for save button
+            />
 
         </section>
     );

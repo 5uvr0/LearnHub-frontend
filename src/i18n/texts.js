@@ -50,6 +50,10 @@ const texts = {
     isCorrect: "Is Correct?",
     options: "Options", // NEW: For quiz options
     instructorPublicProfile: "Instructor Profile", // NEW
+    noCoursesTaughtPublic: "No published course available to show",
+    reorderModules: "Reorder Modules", // NEW
+    saveOrder: "Save Order", // NEW
+    reorderModulesModalTitle: "Reorder Course Modules", // NEW
   },
   courseCard: {
     learnMore: "Learn More",
@@ -59,6 +63,9 @@ const texts = {
     delete: "Delete",
     confirmDelete: (name) => `Are you sure you want to delete "${name}"? This action cannot be undone.`,
     confirmPublish: (name) => `Are you sure you want to publish "${name}"? This will make it visible to students.`,
+  },
+  courseDetails: {
+    addModule: "Add Module",
   },
   instructorCard: {
     viewProfile: "View Profile",
@@ -122,10 +129,48 @@ const texts = {
     loadingInstructors: "Loading instructors...",
     noInstructorsFound: "No instructors found matching your criteria.",
     failedToLoadInstructors: "Failed to load instructors.",
+    modulesReorderedSuccess: "Modules reordered successfully!", // NEW
   },
   footer: {
     copyright: "LearnHub. All rights reserved.",
   },
+  sampleMarkdownDescription: `
+    # Course Overview
+
+    This is a **comprehensive** course designed to teach you the fundamentals of React.js.
+
+    ## What you'll learn:
+
+    * React Basics (Components, Props, State)
+    * React Hooks (useState, useEffect, useContext)
+    * Routing with React Router
+    * API Integration
+
+    ### Key Features:
+
+    * **Interactive lessons**
+    * *Hands-on projects*
+    * Quizzes to test your knowledge
+
+    \`\`\`javascript
+    // Example code block
+    function greet(name) {
+      return \`Hello, \${name}!\`;
+    }
+    \`\`\`
+
+    You can find more resources [here](https://react.dev/).
+
+    | Feature      | Status     | Notes           |
+    | :----------- | :--------- | :-------------- |
+    | Markdown     | ✅ Done    | Tables, bold, italics |
+    | Code Blocks  | ✅ Done    | Syntax highlighting (basic) |
+    | Links        | ✅ Done    | External links  |
+    | Lists        | ✅ Done    | Unordered/Ordered |
+
+    - [ ] Task list item 1
+    - [x] Task list item 2
+    `,
 };
 
 export default texts;
