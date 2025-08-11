@@ -9,8 +9,8 @@ const useInstructorApi = () => {
 
   // Public/Catalog Instructor Endpoints
   // Added '' prefix to all endpoints
-  const getAllInstructorsPublic = useCallback(() => fetchData('/instructors/public', { method: 'GET' }), [fetchData]);
-  const getInstructorByIdPublic = useCallback((id) => fetchData(`/instructors/public/${id}`, { method: 'GET' }), [fetchData]);
+  const getAllInstructorsPublic = useCallback(() => fetchData('/public/instructors', { method: 'GET' }), [fetchData]);
+  const getInstructorByIdPublic = useCallback((id) => fetchData(`/public/instructors/${id}`, { method: 'GET' }), [fetchData]);
 
   // Teacher/Configurator Instructor Endpoints
   // Added '' prefix to all endpoints

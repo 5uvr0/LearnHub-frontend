@@ -5,18 +5,18 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import AppNavbar from './components/layout/AppNavbar';
 import AppFooter from './components/layout/AppFooter';
 import AppSidebar from './components/layout/AppSidebar';
-import HomePage from './pages/HomePage';
-import CoursesPage from './pages/CoursesPage';
-import InstructorsPage from './pages/InstructorsPage';
-import StudentCourseDetailsPage from './pages/StudentCourseDetailsPage';
-import TeacherDashboardPage from './pages/TeacherDashboardPage';
-import CourseConfiguratorPage from './pages/CourseConfiguratorPage';
-import TeacherCourseDetailsPage from './pages/TeacherCourseDetailsPage';
-import CoursePublicView from './pages/CoursePublicView';
-import ContentVersionsPage from './pages/ContentVersionsPage';
-import QuizConfiguratorPage from './pages/QuizConfiguratorPage';
-// import InstructorDetailsPage from './pages/InstructorDetailsPage';
-import InstructorPublicViewPage from './pages/InstructorPublicViewPage'; // NEW: Import InstructorPublicViewPage
+import HomePage from './course-pages/HomePage';
+import CoursesPage from './course-pages/CoursesPage';
+import InstructorsPage from './course-pages/InstructorsPage';
+import StudentCourseDetailsPage from './course-pages/StudentCourseDetailsPage';
+import TeacherDashboardPage from './course-pages/TeacherDashboardPage';
+import CourseConfiguratorPage from './course-pages/CourseConfiguratorPage';
+import TeacherCourseDetailsPage from './course-pages/TeacherCourseDetailsPage';
+import CoursePublicView from './course-pages/CoursePublicView';
+import ContentVersionsPage from './course-pages/ContentVersionsPage';
+import QuizConfiguratorPage from './course-pages/QuizConfiguratorPage';
+// import InstructorDetailsPage from './course-pages/InstructorDetailsPage';
+import InstructorPublicViewPage from './course-pages/InstructorPublicViewPage'; // NEW: Import InstructorPublicViewPage
 import { ThemeProvider } from './contexts/ThemeContext';
 import './index.css'; // Global CSS
 
