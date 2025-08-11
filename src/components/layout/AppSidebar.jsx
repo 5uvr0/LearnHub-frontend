@@ -2,39 +2,43 @@
 
 import React from 'react';
 import { Offcanvas, Nav } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import texts from '../../i18n/texts';
-import { useTheme } from '../../hooks/UseTheme';
+import { useTheme } from '../../hooks/useTheme';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChalkboardTeacher } from '@fortawesome/free-solid-svg-icons';
 
-const AppSidebar = ({ show, handleClose, setCurrentPage }) => {
+
+const AppSidebar = ({ show, handleClose }) => {
     const { theme } = useTheme();
-
-    const handleNavLinkClick = (page) => {
-        setCurrentPage(page);
-        handleClose(); // Close sidebar after navigation
-    };
 
     return (
         <Offcanvas show={show} onHide={handleClose} placement="start"
             className={`bg-${theme} text-${theme === 'light' ? 'dark' : 'white'} sidebar-offcanvas`}>
             <Offcanvas.Header closeButton closeVariant={theme === 'dark' ? 'white' : undefined}>
-                <Offcanvas.Title className="fw-bold">{texts.sidebar.title}</Offcanvas.Title>
+                <Offcanvas.Title className="fw-bold">{texts.sidebar?.title}</Offcanvas.Title>
             </Offcanvas.Header>
             <Offcanvas.Body>
                 <Nav className="flex-column">
-                    <Nav.Link onClick={() => handleNavLinkClick('home')}>
-                        {texts.nav.home}
+                    <Nav.Link as={Link} to="/" onClick={handleClose}>
+                        {texts.nav?.home}
                     </Nav.Link>
-                    <Nav.Link onClick={() => handleNavLinkClick('courses')}>
-                        {texts.nav.courses}
+                    <Nav.Link as={Link} to="/courses" onClick={handleClose}>
+                        {texts.nav?.courses}
                     </Nav.Link>
-                    <Nav.Link onClick={() => handleNavLinkClick('instructors')}>
-                        {texts.nav.instructors}
+                    <Nav.Link as={Link} to="/instructors" onClick={handleClose}>
+                        {texts.nav?.instructors}
                     </Nav.Link>
-                    <Nav.Link onClick={() => handleNavLinkClick('about')}>
-                        {texts.nav.aboutUs}
+                    {/* Teacher Dashboard Link in Sidebar */}
+                    <Nav.Link as={Link} to="/teacher/dashboard" onClick={handleClose}>
+                        <FontAwesomeIcon icon={faChalkboardTeacher} className="me-2" /> {texts.nav?.teacherDashboard}
                     </Nav.Link>
-                    <Nav.Link onClick={() => handleNavLinkClick('contact')}>
-                        {texts.nav.contact}
+                    {/* Placeholder links for About and Contact */}
+                    <Nav.Link as={Link} to="/about" onClick={handleClose}>
+                        {texts.nav?.aboutUs}
+                    </Nav.Link>
+                    <Nav.Link as={Link} to="/contact" onClick={handleClose}>
+                        {texts.nav?.contact}
                     </Nav.Link>
                 </Nav>
             </Offcanvas.Body>

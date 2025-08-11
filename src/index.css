@@ -188,3 +188,44 @@ body {
     padding-top: 5rem;
     padding-bottom: 5rem;
 }
+
+.reorder-list .list-group-item {
+  cursor: grab; /* Indicate draggable */
+  user-select: none; /* Prevent text selection during drag */
+  border: 1px solid var(--border-color);
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease; /* Add transform to transition */
+}
+
+.reorder-list .list-group-item.dragging-item {
+  background-color: var(--bs-primary-bg-subtle) !important; /* Highlight when dragging */
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Lift effect */
+  /* No need for transform here, @dnd-kit applies it directly via inline style */
+}
+
+.reorder-list .list-group-item:hover {
+  background-color: var(--bs-light); /* Subtle hover effect */
+}
+
+.reorder-list .drag-handle {
+  cursor: grab;
+  color: var(--secondary-color);
+  padding: 0.5rem; /* Make handle easier to grab */
+  margin-right: 0.5rem;
+}
+
+/* Dark theme adjustments for reorder list */
+[data-theme='dark'] .reorder-list .list-group-item {
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  border-color: var(--border-color);
+}
+
+[data-theme='dark'] .reorder-list .list-group-item.dragging-item {
+  background-color: rgba(var(--primary-color-rgb, 102, 179, 255), 0.2) !important;
+  border-color: var(--primary-color) !important;
+}
+
+[data-theme='dark'] .reorder-list .list-group-item:hover {
+  background-color: var(--bs-dark-bg-subtle);
+}

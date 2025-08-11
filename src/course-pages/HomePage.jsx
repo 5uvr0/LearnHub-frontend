@@ -2,19 +2,21 @@
 
 import React from 'react';
 import { Container } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import CustomButton from '../components/common/CustomButton';
 import CourseCard from '../components/cards/CourseCard';
 import texts from '../i18n/texts';
 
-const HomePage = ({ setCurrentPage, setCourseDetailId }) => {
+const HomePage = () => { // Removed setCurrentPage, setCourseDetailId props
+    const navigate = useNavigate(); // Hook to get navigation function
+
     const handleExploreCoursesClick = () => {
         alert(texts.alerts.exploreCoursesClicked);
-        setCurrentPage('courses'); // Navigate to courses page
+        navigate('/courses'); // Navigate to the /courses path
     };
 
     const handleCourseDetailsClick = (courseId) => {
-        setCourseDetailId(courseId);
-        setCurrentPage('courseDetails');
+        navigate(`/courses/${courseId}`); // Navigate to /courses/:id path
     };
 
     return (
@@ -49,7 +51,7 @@ const HomePage = ({ setCurrentPage, setCourseDetailId }) => {
                 <Container>
                     <h2 className="text-center mb-5 fw-bold text-primary">{texts.sections.popularCourses}</h2>
                     <div className="row g-4">
-                        {texts.sampleCourses.slice(0, 3).map((course) => ( // Show first 3 as popular
+                        {texts.sampleCourses?.slice(0, 3).map((course) => ( // Show first 3 as popular
                             <div className="col-md-6 col-lg-4" key={course.id}>
                                 <CourseCard
                                     course={course}

@@ -35,7 +35,7 @@ const CourseCard = ({ course, onDetailsClick, learnMoreText }) => {
   };
 
   return (
-    <Card className="h-100 shadow-sm border-0 rounded-4 overflow-hidden">
+    <Card className="col-12 shadow-sm border-0 rounded-4 overflow-hidden">
       {/* Replaced Card.Img with a div for SVG */}
       <div
         className="card-img-top d-flex align-items-center justify-content-center"
@@ -49,7 +49,7 @@ const CourseCard = ({ course, onDetailsClick, learnMoreText }) => {
         <Card.Text className="text-secondary flex-grow-1">
           {course?.description}
         </Card.Text>
-        <CustomButton variant="outline-primary" onClick={() => onDetailsClick?.(course?.id)}>
+        <CustomButton variant="outline-primary" onClick={() => onDetailsClick?.(course?.courseId)}>
           {learnMoreText}
         </CustomButton>
       </Card.Body>
