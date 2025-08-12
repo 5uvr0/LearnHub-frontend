@@ -123,10 +123,14 @@ const ContentListItem = ({ content, isTeacherView = false, onEditContent, onDele
                                                 {release?.resourceLink && <small className="d-block text-muted">Resource: <a href={release.resourceLink} target="_blank" rel="noopener noreferrer">Download <FontAwesomeIcon icon={faExternalLinkAlt} size="xs" /></a></small>}
                                             </div>
                                             <div className="d-flex flex-row flex-md-column align-items-md-end mt-2 mt-md-0">
-                                                {content?.currentContentRelease && release?.id === content.currentContentRelease?.id ? (
-                                                    <Badge bg="success" className="me-2 mb-md-2">Published</Badge>
+                                                {content?.currentContentRelease == null || content?.currentContentRelease?.releaseNum !== 0 ? (
+                                                    <>
+                                                        <Badge bg="success" className="me-2 mb-md-2">{texts?.sections.published}</Badge>
+                                                        <CustomButton variant="outline-success" size="sm" icon={faCloudUploadAlt} className="me-2 mb-md-2" onClick={() => onPublishContent?.(release?.id, release, content?.id)}>{texts?.buttons?.publishNewVersion}</CustomButton>
+                                                    </>
+
                                                 ) : (
-                                                    <CustomButton variant="outline-success" size="sm" icon={faCloudUploadAlt} className="me-2 mb-md-2" onClick={() => onPublishContent?.(release?.id, release?.title, content?.id)}>Publish</CustomButton>
+                                                    <CustomButton variant="outline-success" size="sm" icon={faCloudUploadAlt} className="me-2 mb-md-2" onClick={() => onPublishContent?.(release?.id, release, content?.id)}>{texts?.buttons.publish}</CustomButton>
                                                 )}
                                                 <CustomButton variant="outline-primary" size="sm" icon={faEdit} className="me-2 mb-md-2" onClick={() => onEditContent?.(release, true)}>Edit Release</CustomButton>
                                                 <CustomButton variant="outline-danger" size="sm" icon={faTrash} onClick={() => onDeleteContent?.(release?.id, release?.title, true)}>Delete Release</CustomButton>

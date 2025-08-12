@@ -5,6 +5,7 @@ import { Form, Button, Row, Col, Alert, Spinner } from 'react-bootstrap';
 import CustomButton from '../common/CustomButton';
 import useInstructorApi from '../../hooks/useInstructorApi';
 import texts from '../../i18n/texts';
+import MDEditor from '@uiw/react-md-editor'; // Import the MDEditor component
 
 const CourseForm = ({ initialData = {}, onSubmit, isEditMode = false }) => {
     const [formData, setFormData] = useState({
@@ -38,13 +39,26 @@ const CourseForm = ({ initialData = {}, onSubmit, isEditMode = false }) => {
         }));
         setFormErrors((prevErrors) => ({
             ...prevErrors,
-            [name]: '', // Clear error on change
+            [name]: '',
+        }));
+    };
+
+    // New handler for the MDEditor component
+    const handleDescriptionChange = (value) => {
+        setFormData((prevData) => ({
+            ...prevData,
+            description: value,
+        }));
+        setFormErrors((prevErrors) => ({
+            ...prevErrors,
+            description: '',
         }));
     };
 
     const validateForm = () => {
         const errors = {};
         if (!formData.name.trim()) errors.name = 'Course name is required.';
+        // The check for the description remains the same
         if (!formData.description.trim()) errors.description = 'Course description is required.';
         if (!formData.instructorId) errors.instructorId = 'Instructor is required.';
         setFormErrors(errors);
@@ -79,16 +93,14 @@ const CourseForm = ({ initialData = {}, onSubmit, isEditMode = false }) => {
 
             <Form.Group className="mb-3" controlId="courseDescription">
                 <Form.Label>{texts.forms.courseDescription}</Form.Label>
-                <Form.Control
-                    as="textarea"
-                    rows={3}
-                    name="description"
+                {/* Replace the textarea with MDEditor */}
+                <MDEditor
                     value={formData.description}
-                    onChange={handleChange}
+                    onChange={handleDescriptionChange}
                     isInvalid={!!formErrors.description}
-                    placeholder="A brief description of the course..."
                 />
-                <Form.Control.Feedback type="invalid">{formErrors.description}</Form.Control.Feedback>
+                {/* Custom feedback styling if needed, or use a separate component */}
+                <div className="invalid-feedback d-block">{formErrors.description}</div>
             </Form.Group>
 
             <Form.Group className="mb-4" controlId="instructorId">
@@ -118,7 +130,7 @@ const CourseForm = ({ initialData = {}, onSubmit, isEditMode = false }) => {
                 <CustomButton
                     variant="primary"
                     type="submit"
-                    isLoading={loadingInstructors} // Use loading state of API calls if button triggers them
+                    isLoading={loadingInstructors}
                 >
                     {isEditMode ? texts.forms.updateCourse : texts.forms.addCourse}
                 </CustomButton>

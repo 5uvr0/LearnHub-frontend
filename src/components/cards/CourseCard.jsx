@@ -1,12 +1,12 @@
-// src/components/cards/CourseCard.jsx
-
-import React from 'react';
+import React, { useState } from 'react'; // Import useState
 import { Card } from 'react-bootstrap';
 import CustomButton from '../common/CustomButton';
-import { getRandomModerateColor } from '../../utils/colorUtils'; // Import the color utility
+import { getRandomModerateColor } from '../../utils/colorUtils';
+import MarkdownRenderer from '../common/MarkdownRender';
 
-const CourseCard = ({ course, onDetailsClick, learnMoreText }) => {
-  // Defensive checks for 'course' object and its properties
+const CourseCard = ({ course, onDetailsClick, learnMoreText, maxDescriptionLength = 30 }) => { // Add a prop for max length
+  const [showFullDescription, setShowFullDescription] = useState(false); // State to toggle description
+
   if (!course) {
     return (
       <Card className="h-100 shadow-sm border-0 rounded-4 overflow-hidden text-center p-3">
@@ -17,12 +17,9 @@ const CourseCard = ({ course, onDetailsClick, learnMoreText }) => {
     );
   }
 
-  // Generate a random color for this card
   const cardColor = getRandomModerateColor();
 
-  // Function to generate a simple SVG icon based on the color
   const generateCourseSvg = (bgColor) => {
-    // A simple book icon as an example
     return `
       <svg width="100%" height="100%" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
         <rect width="200" height="150" fill="${bgColor}"/>
@@ -34,9 +31,15 @@ const CourseCard = ({ course, onDetailsClick, learnMoreText }) => {
     `;
   };
 
+  const descriptionText = course?.description || '';
+  const isDescriptionLong = descriptionText.length > maxDescriptionLength;
+
+  const displayedDescription = showFullDescription || !isDescriptionLong
+    ? descriptionText
+    : `${descriptionText.substring(0, maxDescriptionLength)}...`;
+
   return (
     <Card className="h-100 shadow-sm border-0 rounded-4 overflow-hidden">
-      {/* Replaced Card.Img with a div for SVG */}
       <div
         className="card-img-top d-flex align-items-center justify-content-center"
         style={{ height: '200px', backgroundColor: cardColor }}
@@ -47,7 +50,16 @@ const CourseCard = ({ course, onDetailsClick, learnMoreText }) => {
         <Card.Title className="fw-bold text-primary">{course?.name}</Card.Title>
         <Card.Subtitle className="mb-2 text-muted">Instructor: {course?.instructorName}</Card.Subtitle>
         <Card.Text className="text-secondary flex-grow-1">
-          {course?.description}
+          <MarkdownRenderer markdownText={displayedDescription} className="lead text-secondary" />
+          {isDescriptionLong && (
+            <span
+              className="text-primary fw-bold text-decoration-none"
+              style={{ cursor: 'pointer' }}
+              onClick={() => setShowFullDescription(!showFullDescription)}
+            >
+              {showFullDescription ? ' See Less' : ' See More'}
+            </span>
+          )}
         </Card.Text>
         <CustomButton variant="outline-primary" onClick={() => onDetailsClick?.(course?.id)}>
           {learnMoreText}
