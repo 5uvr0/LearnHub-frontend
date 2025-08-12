@@ -9,6 +9,7 @@ const getFullUrl = (endpoint) => {
 		console.error("API environment variables are not defined in .env");
 		return null;
 	}
+	
 	return `${BASE_URL}${URI}${endpoint}`;
 };
 

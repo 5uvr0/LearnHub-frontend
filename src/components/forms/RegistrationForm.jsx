@@ -2,21 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Form, Alert } from 'react-bootstrap';
 import CustomButton from '../common/CustomButton';
-// Assuming 'texts' contains i18n strings for registration,
-// e.g., texts.sections.register, texts.forms.email, etc.
 import texts from '../../i18n/texts';
 
 const RegistrationForm = ({ onSubmit, isLoading = false, apiErrors = {} }) => { // Added apiErrors prop
     const [formData, setFormData] = useState({
         email: '',
         password: '',
-        role: '', // 'student' or 'instructor'
+        role: ''
     });
-    // This state will now solely reflect errors passed down from the API
+
     const [formErrors, setformErrors] = useState({});
 
-    // Effect to update combined errors whenever apiErrors prop changes
-    // No longer dependent on formData as client-side validation is removed
     useEffect(() => {
         setformErrors(apiErrors);
     }, [apiErrors]);
@@ -37,9 +33,11 @@ const RegistrationForm = ({ onSubmit, isLoading = false, apiErrors = {} }) => { 
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
         // If there are no API errors, proceed with submission
         if (Object.keys(apiErrors).length === 0) {
             onSubmit(formData);
+
         } else {
             // If there are API errors, ensure they are visible (though they should already be)
             setformErrors(apiErrors);
@@ -57,7 +55,7 @@ const RegistrationForm = ({ onSubmit, isLoading = false, apiErrors = {} }) => { 
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    isInvalid={!!formErrors.email} // Use formErrors
+                    isInvalid={!!formErrors.email}
                     placeholder="e.g., your.email@example.com"
                 />
                 <Form.Control.Feedback type="invalid">{formErrors.email}</Form.Control.Feedback>
@@ -70,7 +68,7 @@ const RegistrationForm = ({ onSubmit, isLoading = false, apiErrors = {} }) => { 
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    isInvalid={!!formErrors.password} // Use formErrors
+                    isInvalid={!!formErrors.password}
                     placeholder="Enter your password"
                 />
                 <Form.Control.Feedback type="invalid">{formErrors.password}</Form.Control.Feedback>
@@ -82,7 +80,7 @@ const RegistrationForm = ({ onSubmit, isLoading = false, apiErrors = {} }) => { 
                     name="role"
                     value={formData.role}
                     onChange={handleChange}
-                    isInvalid={!!formErrors.role} // Use formErrors
+                    isInvalid={!!formErrors.role}
                     disabled={isLoading}
                 >
                     <option value="">{texts.forms?.chooseRole || 'Choose your role...'} </option>
