@@ -54,6 +54,23 @@ const texts = {
     reorderModules: "Reorder Modules", // NEW
     saveOrder: "Save Order", // NEW
     reorderModulesModalTitle: "Reorder Course Modules", // NEW
+    compareVersions: "Compare Versions", // NEW
+    selectVersion: "Select Version", // NEW
+    version: "Version", // NEW
+    versionA: "Version A", // NEW
+    versionB: "Version B", // NEW
+    compare: "Compare", // NEW
+    noVersionsToCompare: "No versions available for comparison.", // NEW
+    versionComparison: "Course Version Comparison", // NEW
+    added: "Added", // NEW
+    removed: "Removed", // NEW
+    modified: "Modified", // NEW
+    noChanges: "No Changes", // NEW
+    enterVersionNumber: "Enter Version Number", // NEW
+    notAddedYet: "Not added yet", // For items removed from A
+    removedFuture: "Removed",
+    published: "Published",
+    publish: "Publish",
   },
   courseCard: {
     learnMore: "Learn More",
@@ -130,6 +147,13 @@ const texts = {
     noInstructorsFound: "No instructors found matching your criteria.",
     failedToLoadInstructors: "Failed to load instructors.",
     modulesReorderedSuccess: "Modules reordered successfully!", // NEW
+    fetchingVersions: "Fetching course versions...", // NEW
+    comparisonError: "Error comparing versions.", // NEW
+    noVersionsToCompare: "No version to compare!",
+  },
+  buttons: {
+    publishNewVersion: "Publish New Version",
+    publish: "Publish",
   },
   footer: {
     copyright: "LearnHub. All rights reserved.",

@@ -17,6 +17,7 @@ import ContentVersionsPage from './course-pages/ContentVersionsPage';
 import QuizConfiguratorPage from './course-pages/QuizConfiguratorPage';
 // import InstructorDetailsPage from './course-pages/InstructorDetailsPage';
 import InstructorPublicViewPage from './course-pages/InstructorPublicViewPage'; // NEW: Import InstructorPublicViewPage
+import CourseVersionComparisonPage from './course-pages/CourseVersionComparisonPage';
 import { ThemeProvider } from './contexts/ThemeContext';
 import './index.css'; // Global CSS
 
@@ -52,6 +53,8 @@ function App() {
               <Route path="/teacher/courses/new" element={<CourseConfiguratorPage />} />
               <Route path="/teacher/courses/:id/edit" element={<CourseConfiguratorPage />} />
               <Route path="/teacher/courses/:id" element={<TeacherCourseDetailsPage />} />
+              <Route path="/teacher/courses/:id/compare-versions" element={<CourseVersionComparisonPage />} /> {/* NEW: Course Version Comparison Route */}
+
 
               {/* Content Management Routes */}
               <Route path="/teacher/contents/:contentId/versions" element={<ContentVersionsPage />} />
