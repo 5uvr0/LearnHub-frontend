@@ -12,7 +12,7 @@ const getFullUrl = (endpoint) => {
 	return `${BASE_URL}${URI}${endpoint}`;
 };
 
-const useApi = (initialLoading = false) => {
+const useAuthApi = (initialLoading = false) => {
 	const [data, setData] = useState(null);
 	const [loading, setLoading] = useState(initialLoading);
 	const [error, setError] = useState(null);
@@ -42,10 +42,8 @@ const useApi = (initialLoading = false) => {
 				},
 				data: options.body || options.data || null,
 				params: options.params || null,
-				// other axios config options if needed
 			});
 
-			// For 204 No Content or empty responses, treat success
 			if (response.status === 204 || !response.data) {
 				setData(true);
 
@@ -94,4 +92,4 @@ const useApi = (initialLoading = false) => {
 	return { data, loading, error, fetchData };
 };
 
-export default useApi;
+export default useAuthApi;

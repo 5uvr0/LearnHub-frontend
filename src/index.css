@@ -229,3 +229,15 @@ body {
 [data-theme='dark'] .reorder-list .list-group-item:hover {
   background-color: var(--bs-dark-bg-subtle);
 }
+
+/* -------------------------------- */
+.custom-button-shadow {
+    border: 1px solid rgba(0, 0, 0, 0.2); 
+    transition: all 0.3s ease-in-out;
+    padding: 10px 20px;
+}
+.custom-button-shadow:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 2px -1px rgba(0, 0, 0, 0.7);
+}
+/* ------------------------------------ */

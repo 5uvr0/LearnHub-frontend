@@ -20,7 +20,7 @@ import QuizConfiguratorPage from './course-pages/QuizConfiguratorPage';
 // import InstructorDetailsPage from './course-pages/InstructorDetailsPage';
 import InstructorPublicViewPage from './course-pages/InstructorPublicViewPage'; // NEW: Import InstructorPublicViewPage
 import { ThemeProvider } from './contexts/ThemeContext';
-import './index.css'; // Global CSS
+import './index.css';
 
 function App() {
   const [showSidebar, setShowSidebar] = useState(false);

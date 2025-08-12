@@ -1,27 +1,21 @@
-// src/pages/LoginPage.jsx
-
 import React, { useState } from 'react';
 import { Container, Alert, Spinner, Row, Col } from 'react-bootstrap';
 import LoginForm from '../components/forms/LoginForm';
-import useApi from '../hooks/useApi'; // Import the useApi hook
-import texts from '../i18n/texts'; // Ensure you have relevant texts defined here
+import useAuthApi from '../hooks/useAuthApi'; 
+import texts from '../i18n/texts';
 
 const LoginPage = () => {
-    // We'll use the useApi hook for handling the Login API call
-    const { data: LoginData, loading: LoginLoading, error: LoginApiError, fetchData: registerUser } = useApi();
+    const { data: LoginData, loading: LoginLoading, error: LoginApiError, fetchData: registerUser } = useAuthApi();
 
-    // State to manage the general message displayed to the user (success/failure)
     const [message, setMessage] = useState('');
-    const [messageVariant, setMessageVariant] = useState(''); // 'success' or 'danger'
-    // State to store field-specific errors returned from the backend API
+    const [messageVariant, setMessageVariant] = useState(''); 
     const [backendFormErrors, setBackendFormErrors] = useState({});
 
     const handleLoginSubmit = async (formData) => {
-        setMessage(''); // Clear previous general messages
+        setMessage('');
         setMessageVariant('');
-        setBackendFormErrors({}); // Clear previous backend field errors
+        setBackendFormErrors({});
 
-        // Call the registerUser function from the useApi hook
         const result = await registerUser('/api/register', {
             method: 'POST',
             data: {
@@ -68,9 +62,6 @@ const LoginPage = () => {
             <Container>
                 <Row className="justify-content-center">
                     <Col md={8} lg={6}>
-                        <h2 className="text-center mb-4 fw-bold text-primary">
-                            {texts.sections?.logintoAccount || 'Create Your Account'}
-                        </h2>
 
                         {LoginLoading && (
                             <div className="text-center mb-3">

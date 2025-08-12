@@ -40,26 +40,3 @@
 .read-the-docs {
   color: #888;
 }
-
-
-.custom-button-shadow {
-    border: 1px solid rgba(0, 0, 0, 0.2); 
-    transition: all 0.3s ease-in-out;
-    padding: 10px 20px;
-}
-
-.custom-button-shadow:hover {
-  transform: translateY(-2px);
-}
-
-.custom-button-shadow.btn-primary:hover {
-  box-shadow: 0 4px 3px -1px rgba(0, 123, 255, 0.7);
-}
-
-.custom-button-shadow.btn-success:hover {
-    box-shadow: 0 4px 3px -1px rgba(40, 167, 69, 0.7); /* Green shadow */
-}
-
-.custom-button-shadow.btn-danger:hover {
-    box-shadow: 0 4px 3px -1px rgba(220, 53, 69, 0.7); /* Red shadow */
-}

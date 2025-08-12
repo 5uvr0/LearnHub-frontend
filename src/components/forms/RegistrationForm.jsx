@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Form, Alert } from 'react-bootstrap';
 import CustomButton from '../common/CustomButton';
 // Assuming 'texts' contains i18n strings for registration,
@@ -12,12 +13,12 @@ const RegistrationForm = ({ onSubmit, isLoading = false, apiErrors = {} }) => { 
         role: '', // 'student' or 'instructor'
     });
     // This state will now solely reflect errors passed down from the API
-    const [combinedFormErrors, setCombinedFormErrors] = useState({});
+    const [formErrors, setformErrors] = useState({});
 
     // Effect to update combined errors whenever apiErrors prop changes
     // No longer dependent on formData as client-side validation is removed
     useEffect(() => {
-        setCombinedFormErrors(apiErrors);
+        setformErrors(apiErrors);
     }, [apiErrors]);
 
 
@@ -28,7 +29,7 @@ const RegistrationForm = ({ onSubmit, isLoading = false, apiErrors = {} }) => { 
             [name]: value,
         }));
         // When a field changes, clear its corresponding API error if it exists
-        setCombinedFormErrors((prevErrors) => ({
+        setformErrors((prevErrors) => ({
             ...prevErrors,
             [name]: '',
         }));
@@ -41,13 +42,13 @@ const RegistrationForm = ({ onSubmit, isLoading = false, apiErrors = {} }) => { 
             onSubmit(formData);
         } else {
             // If there are API errors, ensure they are visible (though they should already be)
-            setCombinedFormErrors(apiErrors);
+            setformErrors(apiErrors);
         }
     };
 
     return (
         <Form onSubmit={handleSubmit} className="p-4 border rounded-4 shadow-sm bg-light">
-            <h4 className="mb-4 text-primary">{texts.sections?.register || 'Register'}</h4>
+            <h4 className="mb-4 text-primary">{texts.auth?.registrationFormTitle || 'Register'}</h4>
 
             <Form.Group className="mb-3" controlId="userEmail">
                 <Form.Label>{texts.forms?.email || 'Email Address'}</Form.Label>
@@ -56,10 +57,10 @@ const RegistrationForm = ({ onSubmit, isLoading = false, apiErrors = {} }) => { 
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    isInvalid={!!combinedFormErrors.email} // Use combinedFormErrors
+                    isInvalid={!!formErrors.email} // Use formErrors
                     placeholder="e.g., your.email@example.com"
                 />
-                <Form.Control.Feedback type="invalid">{combinedFormErrors.email}</Form.Control.Feedback>
+                <Form.Control.Feedback type="invalid">{formErrors.email}</Form.Control.Feedback>
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="userPassword">
@@ -69,10 +70,10 @@ const RegistrationForm = ({ onSubmit, isLoading = false, apiErrors = {} }) => { 
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    isInvalid={!!combinedFormErrors.password} // Use combinedFormErrors
+                    isInvalid={!!formErrors.password} // Use formErrors
                     placeholder="Enter your password"
                 />
-                <Form.Control.Feedback type="invalid">{combinedFormErrors.password}</Form.Control.Feedback>
+                <Form.Control.Feedback type="invalid">{formErrors.password}</Form.Control.Feedback>
             </Form.Group>
 
             <Form.Group className="mb-4" controlId="userRole">
@@ -81,23 +82,31 @@ const RegistrationForm = ({ onSubmit, isLoading = false, apiErrors = {} }) => { 
                     name="role"
                     value={formData.role}
                     onChange={handleChange}
-                    isInvalid={!!combinedFormErrors.role} // Use combinedFormErrors
+                    isInvalid={!!formErrors.role} // Use formErrors
                     disabled={isLoading}
                 >
                     <option value="">{texts.forms?.chooseRole || 'Choose your role...'} </option>
                     <option value="student">{texts.forms?.roleStudent || 'As a Student'}</option>
                     <option value="instructor">{texts.forms?.roleInstructor || 'As an Instructor'}</option>
                 </Form.Select>
-                <Form.Control.Feedback type="invalid">{combinedFormErrors.role}</Form.Control.Feedback>
+                <Form.Control.Feedback type="invalid">{formErrors.role}</Form.Control.Feedback>
             </Form.Group>
 
-            <div className="d-grid">
+            <div className="d-flex justify-content-between align-items-center">
+                <small>
+                    {texts.auth?.alreadyRegistered || 'Already registered?'}{' '}
+                    <Link to="/login">
+                        {texts.auth?.loginLink || 'Login'}
+                    </Link>
+                </small>
+
                 <CustomButton
-                    variant="primary"
+                    variant="success"
                     type="submit"
                     isLoading={isLoading}
+                    size="sm"
                 >
-                    {texts.forms?.registerButton || 'Register'}
+                    {texts.auth?.registrationButton || 'Register'}
                 </CustomButton>
             </div>
         </Form>

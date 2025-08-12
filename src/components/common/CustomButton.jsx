@@ -1,4 +1,3 @@
-import React from "react";
 import { Button, Spinner } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { CurlyBraces } from "lucide-react";
@@ -22,7 +21,7 @@ const CustomButton = ({
         <Button
             variant={variant}
             onClick={onClick}
-            className={`rounded-pill px-4 py-2 shadow-sm d-inline-flex align-items-center justify-content-center ${className}`}
+            className={`rounded-pill custom-button-shadow d-inline-flex align-items-center justify-content-center ${className}`}
             disabled={isDisabled}
             type={type}
             as={as}
