@@ -1,6 +1,7 @@
 import React from "react";
 import { Button, Spinner } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { CurlyBraces } from "lucide-react";
 
 const CustomButton = ({
     variant,
@@ -55,3 +56,5 @@ const CustomButton = ({
         </Button>
     );
 };
+
+export default CustomButton;

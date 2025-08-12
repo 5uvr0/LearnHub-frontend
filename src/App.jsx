@@ -61,7 +61,7 @@ function App() {
 
               {/* User Registration & Login Routes */}
               <Route path="/register" element={<RegistrationPage />} />
-              <Router path="/login" element={<LoginPage />}/>
+              <Route path="/login" element={<LoginPage />}/>
 
 
               {/* Add more routes for About, Contact, etc. */}
