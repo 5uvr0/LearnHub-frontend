@@ -5,6 +5,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import AppNavbar from './components/layout/AppNavbar';
 import AppFooter from './components/layout/AppFooter';
 import AppSidebar from './components/layout/AppSidebar';
+import RegistrationPage from './auth-pages/RegistrationPage';
+import LoginPage from './auth-pages/LoginPage';
 import HomePage from './course-pages/HomePage';
 import CoursesPage from './course-pages/CoursesPage';
 import InstructorsPage from './course-pages/InstructorsPage';
@@ -56,6 +58,10 @@ function App() {
               {/* Content Management Routes */}
               <Route path="/teacher/contents/:contentId/versions" element={<ContentVersionsPage />} />
               <Route path="/teacher/quizzes/:contentId" element={<QuizConfiguratorPage />} />
+
+              {/* User Registration & Login Routes */}
+              <Route path="/register" element={<RegistrationPage />} />
+              <Router path="/login" element={<LoginPage />}/>
 
 
               {/* Add more routes for About, Contact, etc. */}
