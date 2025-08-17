@@ -6,10 +6,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // ADD THESE MISSING IMPORTS: faFileVideo, faQuestionCircle, faClipboardList
 import { faCloudUploadAlt, faEdit, faTrash, faExternalLinkAlt, faInfoCircle, faFileVideo, faQuestionCircle, faClipboardList } from '@fortawesome/free-solid-svg-icons';
-import CustomButton from '../components/common/CustomButton';
-import ContentForm from '../components/forms/ContentForm';
+import CustomButton from '../components/course/common/CustomButton';
+import ContentForm from '../components/course/forms/ContentForm';
 import texts from '../i18n/texts';
-import useContentApi from '../hooks/useContentApi';
+import useContentApi from '../course-hooks/useContentApi';
 
 // Helper to determine icon and type label (duplicated from ContentListItem for self-containment)
 const getContentInfo = (content) => {

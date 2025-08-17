@@ -71,6 +71,10 @@ const texts = {
     removedFuture: "Removed",
     published: "Published",
     publish: "Publish",
+    draft: "Draft",
+    viewContentDetails: "View Details", // NEW
+    lectureDetails: "Lecture Details", // NEW
+    submissionDetails: "Submission Details", // NEW
   },
   courseCard: {
     learnMore: "Learn More",
@@ -139,7 +143,6 @@ const texts = {
     optionAddedSuccess: "Option added successfully!",
     optionDeletedSuccess: "Option deleted successfully!",
     unenrolledCourse: "You are not enrolled in this course. Enroll to view its modules and content.",
-    unenrolledCourse: "Enroll to view the course contents!",
     searchPlaceholder: "Search by name or email...",
     filterBySpecialty: "Filter by Specialty",
     allSpecialties: "All Specialties",

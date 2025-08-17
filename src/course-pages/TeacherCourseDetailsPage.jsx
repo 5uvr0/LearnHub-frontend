@@ -3,19 +3,20 @@
 import React, { useEffect, useState } from 'react'; // Corrected import
 import { Container, Row, Col, Spinner, Alert, Modal, Form, Accordion } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
-import ModuleCard from '../components/cards/ModuleCard';
-import ModuleForm from '../components/forms/ModuleForm';
-import ContentForm from '../components/forms/ContentForm';
-import CustomButton from '../components/common/CustomButton';
+import ModuleCard from '../components/course/cards/ModuleCard';
+import ModuleForm from '../components/course/forms/ModuleForm';
+import ContentForm from '../components/course/forms/ContentForm';
+import CustomButton from '../components/course/common/CustomButton';
 import texts from '../i18n/texts';
-import useCourseApi from '../hooks/useCourseApi';
-import useModuleApi from '../hooks/useModuleApi';
-import useContentApi from '../hooks/useContentApi';
+import useCourseApi from '../course-hooks/useCourseApi';
+import useModuleApi from '../course-hooks/useModuleApi';
+import useContentApi from '../course-hooks/useContentApi';
 import { faPlusCircle, faCloudUploadAlt, faEdit, faArrowsUpDown, faCodeCompare } from '@fortawesome/free-solid-svg-icons';
 import { getRandomModerateColor } from '../utils/colorUtils';
-import MarkdownRenderer from '../components/common/MarkdownRender'; // Corrected import
-import ModuleReorderModal from '../components/modals/ModuleReorderModal';
-import ContentPublishModal from '../components/modals/ContentPublishModal';
+import MarkdownRenderer from '../components/course/common/MarkdownRender'; // Corrected import
+import ModuleReorderModal from '../components/course/modals/ModuleReorderModal';
+import ContentPublishModal from '../components/course/modals/ContentPublishModal';
+import ContentReorderModal from '../components/course/modals/ContentReorderModal';
 import _ from 'lodash'; // Import lodash for deep comparison
 
 
@@ -26,7 +27,7 @@ const TeacherCourseDetailsPage = () => {
 
     // API Hooks
     const { data: course, loading: loadingCourse, error: courseError, getCourseDetails, publishCourse, reorderModules, getAllCourseVersions } = useCourseApi();
-    const { createModule, updateModule, deleteModule, loading: loadingModuleApi, error: moduleApiError } = useModuleApi();
+    const { createModule, reorderModuleContents, updateModule, deleteModule, loading: loadingModuleApi, error: moduleApiError } = useModuleApi();
     const { createContent, editContentMetadata, publishContentRelease, deleteContentRelease, loading: loadingContentApi, error: contentApiError, getContentReleaseById } = useContentApi();
 
     const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -42,10 +43,12 @@ const TeacherCourseDetailsPage = () => {
     const [isCreatingNewContentRelease, setIsCreatingNewContentRelease] = useState(false);
 
     const [showReorderModal, setShowReorderModal] = useState(false);
+    const [showReorderModalContent, setShowReorderModalContent] = useState(false);
 
     const [showPublishContentModal, setShowPublishContentModal] = useState(false);
     const [contentToPublish, setContentToPublish] = useState(null);
     const [parentContentForPublish, setParentContentForPublish] = useState(null); // NEW: To pass parent content to modal
+    const [reorderingModuleContents, setReorderingModuleContents] = useState(null);
 
 
     // Generate a random color for this card
@@ -304,6 +307,43 @@ const TeacherCourseDetailsPage = () => {
         navigate(`/teacher/courses/${courseId}/compare-versions`);
     };
 
+    // NEW: Navigation handler for Content Details View (Lecture/Submission/Quiz)
+    const onViewContentDetails = (contentReleaseId, contentType) => {
+        console.log("clicked view details:");
+
+        switch (contentType) {
+            case 'LECTURE':
+                navigate(`/teacher/lectures/${contentReleaseId}`);
+                break;
+            case 'SUBMISSION':
+                navigate(`/teacher/submissions/${contentReleaseId}`);
+                break;
+            case 'QUIZ':
+                navigate(`/teacher/quizzes/${contentReleaseId}`); // Quiz has its own configurator page
+                break;
+            default:
+                alert('Unknown content type for details view.');
+        }
+    };
+
+    const handleReorderContents = (module) => {
+        console.log(module);
+        setReorderingModuleContents(module?.contents);
+        setShowReorderModalContent(true);
+    };
+
+    const handleSaveReorder = async (reorderPayload) => {
+        try {
+            await reorderModuleContents(reorderPayload);
+            alert('Contents reordered successfully!');
+
+            setShowReorderModalContent(false);
+            setReorderingModuleContents(null);
+            setRefreshTrigger((prev) => prev + 1);
+        } catch (error) {
+            alert('Failed to reorder contents.');
+        }
+    };
 
     if (loadingCourse) {
         return (
@@ -440,6 +480,8 @@ const TeacherCourseDetailsPage = () => {
                                     onEditModule={handleEditModule}
                                     onDeleteModule={handleDeleteModule}
                                     eventKey={String(index)}
+                                    onViewContentDetails={onViewContentDetails}
+                                    onReorderContents={handleReorderContents}
                                 />
                             ))}
                     </Accordion>
@@ -500,6 +542,15 @@ const TeacherCourseDetailsPage = () => {
                 parentContent={course?.modules?.flatMap(m => m?.contents || [])?.find(c => c?.contentReleases?.some(cr => cr?.id === contentToPublish?.id))}
                 onConfirmPublish={handleConfirmPublish}
                 isLoading={loadingContentApi}
+            />
+
+            {/*Content Reorder modal*/}
+            <ContentReorderModal
+                show={showReorderModalContent}
+                onHide={() => setShowReorderModalContent(false)}
+                onSave={handleSaveReorder}
+                contents={reorderingModuleContents}
+                isLoading={loadingContentApi} // Replace with your actual loading state
             />
 
         </section>
