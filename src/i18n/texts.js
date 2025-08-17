@@ -1,5 +1,3 @@
-// src/i18n/texts.js
-
 const texts = {
   appTitle: "LearnHub",
   nav: {
@@ -10,9 +8,6 @@ const texts = {
     aboutUs: "About Us",
     contact: "Contact",
     signUp: "Sign Up",
-  },
-  sidebar: {
-    title: "Navigation",
   },
   hero: {
     headline: "Your Journey to Knowledge Starts Here",
@@ -75,22 +70,7 @@ const texts = {
     viewContentDetails: "View Details", // NEW
     lectureDetails: "Lecture Details", // NEW
     submissionDetails: "Submission Details", // NEW
-  },
-  courseCard: {
-    learnMore: "Learn More",
-    viewDetails: "View Details",
-    edit: "Edit",
-    publish: "Publish",
-    delete: "Delete",
-    confirmDelete: (name) => `Are you sure you want to delete "${name}"? This action cannot be undone.`,
-    confirmPublish: (name) => `Are you sure you want to publish "${name}"? This will make it visible to students.`,
-  },
-  courseDetails: {
-    addModule: "Add Module",
-  },
-  instructorCard: {
-    viewProfile: "View Profile",
-    specialties: "Specialties", // Keeping this for now, but not used with current API schema
+      sessionExpired: "Session Expired",
   },
   forms: {
     courseName: "Course Name",
@@ -153,52 +133,53 @@ const texts = {
     fetchingVersions: "Fetching course versions...", // NEW
     comparisonError: "Error comparing versions.", // NEW
     noVersionsToCompare: "No version to compare!",
+      loginValidityEnded: "Your Login validity has ended. Click on Refresh to continue from your previous session or login again.",
+      noRefreshToken: "Not able to recover the session. Please login again.",
+      refreshSuccess: "Session recovered successfully! You can now try accessing the previous page.",
+      refreshFailed: "Failed to recover the session. Please login again.",
+      refreshingSession: "Refreshing session...",
   },
   buttons: {
     publishNewVersion: "Publish New Version",
     publish: "Publish",
+      refreshLoginSession: "Refresh Login Session",
+      loginAgain: "Login Again",
   },
   footer: {
     copyright: "LearnHub. All rights reserved.",
   },
-  sampleMarkdownDescription: `
-    # Course Overview
 
-    This is a **comprehensive** course designed to teach you the fundamentals of React.js.
+    sidebar: {
+        title: "Navigation",
+    },
 
-    ## What you'll learn:
-
-    * React Basics (Components, Props, State)
-    * React Hooks (useState, useEffect, useContext)
-    * Routing with React Router
-    * API Integration
-
-    ### Key Features:
-
-    * **Interactive lessons**
-    * *Hands-on projects*
-    * Quizzes to test your knowledge
-
-    \`\`\`javascript
-    // Example code block
-    function greet(name) {
-      return \`Hello, \${name}!\`;
-    }
-    \`\`\`
-
-    You can find more resources [here](https://react.dev/).
-
-    | Feature      | Status     | Notes           |
-    | :----------- | :--------- | :-------------- |
-    | Markdown     | ✅ Done    | Tables, bold, italics |
-    | Code Blocks  | ✅ Done    | Syntax highlighting (basic) |
-    | Links        | ✅ Done    | External links  |
-    | Lists        | ✅ Done    | Unordered/Ordered |
-
-    - [ ] Task list item 1
-    - [x] Task list item 2
-    `,
+    courseCard: {
+        learnMore: "Learn More",
+        viewDetails: "View Details",
+        edit: "Edit",
+        publish: "Publish",
+        delete: "Delete",
+        confirmDelete: (name) => `Are you sure you want to delete "${name}"? This action cannot be undone.`,
+        confirmPublish: (name) => `Are you sure you want to publish "${name}"? This will make it visible to students.`,
+    },
+    courseDetails: {
+        addModule: "Add Module",
+    },
+    instructorCard: {
+        viewProfile: "View Profile",
+        specialties: "Specialties",
+    },
+    auth: {
+        title: "Welcome to LearnHub",
+        registrationFormTitle: "Register",
+        loginFormTitle: "Login",
+        registrationButton: "Submit",
+        loginButton: "Submit",
+        alreadyRegistered: "Already registered?",
+        loginLink: "Login",
+        notRegisteredYet: "Don't have an account?",
+        registerLink: "Register"
+    },
 };
 
 export default texts;
-
