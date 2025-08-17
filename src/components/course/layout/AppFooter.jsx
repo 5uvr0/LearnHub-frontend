@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Container } from 'react-bootstrap';
-import texts from '../../i18n/texts';
+import texts from '../../../i18n/texts.js';
 
 const AppFooter = () => {
   const currentYear = new Date().getFullYear();

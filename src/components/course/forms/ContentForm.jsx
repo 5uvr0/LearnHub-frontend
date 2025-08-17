@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { Form, Alert, Row, Col } from 'react-bootstrap';
-import CustomButton from '../common/CustomButton';
-import texts from '../../i18n/texts';
+import CustomButton from '../common/CustomButton.jsx';
+import texts from '../../../i18n/texts.js';
 import MDEditor from '@uiw/react-md-editor'; // Import the MDEditor component
 
 const ContentForm = ({ initialData = {}, onSubmit, isEditMode = false, isLoading = false, moduleId }) => {

@@ -5,10 +5,10 @@ import { Container, Row, Col, Spinner, Alert, Card, Carousel } from 'react-boots
 import { useParams, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faUserGraduate } from '@fortawesome/free-solid-svg-icons';
-import CourseCard from '../components/cards/CourseCardCarousel';
+import CourseCard from '../components/course/cards/CourseCardCarousel';
 import texts from '../i18n/texts';
-import useInstructorApi from '../hooks/useInstructorApi';
-import useCourseApi from '../hooks/useCourseApi';
+import useInstructorApi from '../course-hooks/useInstructorApi';
+import useCourseApi from '../course-hooks/useCourseApi';
 import { getRandomModerateColor } from '../utils/colorUtils';
 
 const InstructorPublicViewPage = () => {

@@ -19,8 +19,8 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities'; // Utility for CSS transforms
 
-import CustomButton from '../common/CustomButton';
-import texts from '../../i18n/texts';
+import CustomButton from '../common/CustomButton.jsx';
+import texts from '../../../i18n/texts.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 

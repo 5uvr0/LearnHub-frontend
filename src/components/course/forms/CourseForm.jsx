@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Row, Col, Alert, Spinner } from 'react-bootstrap';
-import CustomButton from '../common/CustomButton';
-import useInstructorApi from '../../hooks/useInstructorApi';
-import texts from '../../i18n/texts';
+import CustomButton from '../common/CustomButton.jsx';
+import useInstructorApi from '../../../course-hooks/useInstructorApi.js';
+import texts from '../../../i18n/texts.js';
 import MDEditor from '@uiw/react-md-editor'; // Import the MDEditor component
 
 const CourseForm = ({ initialData = {}, onSubmit, isEditMode = false }) => {

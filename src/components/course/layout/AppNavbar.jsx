@@ -5,9 +5,9 @@ import { Navbar, Nav, Container, Button, Offcanvas } from 'react-bootstrap'; // 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSun, faMoon, faBars, faChalkboardTeacher } from '@fortawesome/free-solid-svg-icons';
 import { Link, useLocation } from 'react-router-dom';
-import CustomButton from '../common/CustomButton';
-import { useTheme } from '../../hooks/useTheme';
-import texts from '../../i18n/texts';
+import CustomButton from '../common/CustomButton.jsx';
+import { useTheme } from '../../../course-hooks/useTheme.js';
+import texts from '../../../i18n/texts.js';
 
 // Import Lucide icons for the Offcanvas menu
 import { Home, BookOpen, Users, Settings, LogOut, LayoutDashboard, UserCircle2, GraduationCap, FileText, Info, Mail } from 'lucide-react';
@@ -97,11 +97,12 @@ const AppNavbar = () => { // handleShowSidebar prop is no longer needed here
                 {texts.nav?.teacherDashboard}
               </Nav.Link>
 
-              {/* Placeholder links for About and Contact */}
               <Nav.Link as={Link} to="/about" className="mx-2">{texts.nav?.aboutUs}</Nav.Link>
               <Nav.Link as={Link} to="/contact" className="mx-2">{texts.nav?.contact}</Nav.Link>
 
-              <CustomButton variant="primary" className="ms-3">{texts.nav?.signUp}</CustomButton>
+              <Nav.Link as={Link} to="/login" className="mx-2">{texts.nav?.logIn}</Nav.Link>
+              <Nav.Link as={Link} to="/register" className="mx-2 border rounded px-3">{texts.nav?.signUp}</Nav.Link>
+              
               <Button
                 variant="link"
                 onClick={handleThemeToggle}
