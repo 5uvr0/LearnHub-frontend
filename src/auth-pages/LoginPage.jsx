@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Alert, Spinner, Row, Col } from 'react-bootstrap';
-import LoginForm from '../components/forms/LoginForm';
-import useAuthApi from '../hooks/useAuthApi';
+import LoginForm from '../components/course/forms/LoginForm.jsx';
+import useAuthApi from '../auth-hooks/useAuthApi';
 import texts from '../i18n/texts';
 import Cookies from 'js-cookie';
 

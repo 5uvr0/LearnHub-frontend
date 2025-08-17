@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Form, Alert } from 'react-bootstrap';
 import CustomButton from '../common/CustomButton';
-import texts from '../../i18n/texts';
+import texts from '../../../i18n/texts.js';
 
 const LoginForm = ({ onSubmit, isLoading = false, apiErrors = {} }) => {
     const [formData, setFormData] = useState({

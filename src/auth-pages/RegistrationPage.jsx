@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import { Container, Alert, Spinner, Row, Col } from 'react-bootstrap';
-import RegistrationForm from '../components/forms/RegistrationForm';
-import useAuthApi from '../hooks/useAuthApi';
+import RegistrationForm from '../components/course/forms/RegistrationForm';
+import useAuthApi from '../auth-hooks/useAuthApi';
 import texts from '../i18n/texts'; 
 
 const RegistrationPage = () => {
