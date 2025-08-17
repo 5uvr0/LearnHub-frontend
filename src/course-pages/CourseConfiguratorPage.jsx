@@ -3,8 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Alert, Spinner } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
-import CourseForm from '../components/forms/CourseForm';
-import useCourseApi from '../hooks/useCourseApi';
+import CourseForm from '../components/course/forms/CourseForm';
+import useCourseApi from '../course-hooks/useCourseApi';
 import texts from '../i18n/texts';
 
 const CourseConfiguratorPage = () => {

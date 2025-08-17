@@ -2,20 +2,19 @@
 
 import React, { useState, useEffect } from 'react';
 import { Form, Alert, Row, Col } from 'react-bootstrap';
-import CustomButton from '../common/CustomButton';
-import texts from '../../i18n/texts';
+import CustomButton from '../common/CustomButton.jsx';
+import texts from '../../../i18n/texts.js';
+import MDEditor from '@uiw/react-md-editor'; // Import the MDEditor component
 
 const ContentForm = ({ initialData = {}, onSubmit, isEditMode = false, isLoading = false, moduleId }) => {
     const [contentType, setContentType] = useState(initialData.type || '');
     const [formData, setFormData] = useState({
         title: initialData.title || '',
         orderIndex: initialData.orderIndex !== undefined ? initialData.orderIndex : '',
-        // Lecture specific
         description: initialData.description || '',
         videoUrl: initialData.videoUrl || '',
         resourceLink: initialData.resourceLink || '',
-        // Quiz specific (simplified for now)
-        questions: initialData.questions || [], // Array of QuizQuestionDTOs
+        questions: initialData.questions || [],
     });
     const [formErrors, setFormErrors] = useState({});
 
@@ -56,10 +55,21 @@ const ContentForm = ({ initialData = {}, onSubmit, isEditMode = false, isLoading
         }));
     };
 
+    // New handler for the MDEditor component
+    const handleDescriptionChange = (value) => {
+        setFormData((prevData) => ({
+            ...prevData,
+            description: value,
+        }));
+        setFormErrors((prevErrors) => ({
+            ...prevErrors,
+            description: '',
+        }));
+    };
+
     const handleContentTypeChange = (e) => {
         const newType = e.target.value;
         setContentType(newType);
-        // Reset specific fields when type changes
         setFormData(prevData => ({
             ...prevData,
             description: '', videoUrl: '', resourceLink: '', questions: [],
@@ -74,12 +84,9 @@ const ContentForm = ({ initialData = {}, onSubmit, isEditMode = false, isLoading
         }
         if (!contentType) errors.type = texts.alerts.contentFormSelectType;
 
-        if (contentType === 'LECTURE') {
-            // Add validation specific to Lecture
-        } else if (contentType === 'QUIZ') {
-            // Add validation specific to Quiz (e.g., at least one question)
-        } else if (contentType === 'SUBMISSION') {
-            // Add validation specific to Submission
+        // Add validation for description for applicable content types
+        if ((contentType === 'LECTURE' || contentType === 'SUBMISSION') && !formData.description.trim()) {
+            errors.description = 'Description is required.';
         }
 
         setFormErrors(errors);
@@ -92,7 +99,7 @@ const ContentForm = ({ initialData = {}, onSubmit, isEditMode = false, isLoading
             const payload = {
                 title: formData.title,
                 orderIndex: formData.orderIndex,
-                moduleId: moduleId, // Ensure moduleId is always passed
+                moduleId: moduleId,
                 type: contentType,
             };
 
@@ -101,7 +108,7 @@ const ContentForm = ({ initialData = {}, onSubmit, isEditMode = false, isLoading
                 payload.videoUrl = formData.videoUrl;
                 payload.resourceLink = formData.resourceLink;
             } else if (contentType === 'QUIZ') {
-                payload.questions = formData.questions; // Simplified: in a real app, you'd manage quiz questions dynamically
+                payload.questions = formData.questions;
             } else if (contentType === 'SUBMISSION') {
                 payload.description = formData.description;
                 payload.resourceLink = formData.resourceLink;
@@ -147,7 +154,7 @@ const ContentForm = ({ initialData = {}, onSubmit, isEditMode = false, isLoading
                     value={contentType}
                     onChange={handleContentTypeChange}
                     isInvalid={!!formErrors.type}
-                    disabled={isEditMode} // Usually type isn't editable after creation
+                    disabled={isEditMode}
                 >
                     <option value="">Select content type...</option>
                     <option value="LECTURE">Lecture</option>
@@ -161,14 +168,13 @@ const ContentForm = ({ initialData = {}, onSubmit, isEditMode = false, isLoading
                 <>
                     <Form.Group className="mb-3" controlId="lectureDescription">
                         <Form.Label>{texts.forms.lectureDescription}</Form.Label>
-                        <Form.Control
-                            as="textarea"
-                            rows={2}
-                            name="description"
+                        {/* Replace the textarea with MDEditor */}
+                        <MDEditor
                             value={formData.description}
-                            onChange={handleChange}
-                            placeholder="Detailed description of the lecture..."
+                            onChange={handleDescriptionChange}
                         />
+                        {/* Custom feedback styling */}
+                        <div className="invalid-feedback d-block">{formErrors.description}</div>
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="lectureVideoUrl">
                         <Form.Label>{texts.forms.lectureVideoUrl}</Form.Label>
@@ -203,14 +209,13 @@ const ContentForm = ({ initialData = {}, onSubmit, isEditMode = false, isLoading
                 <>
                     <Form.Group className="mb-3" controlId="submissionDescription">
                         <Form.Label>{texts.forms.submissionDescription}</Form.Label>
-                        <Form.Control
-                            as="textarea"
-                            rows={2}
-                            name="description"
+                        {/* Replace the textarea with MDEditor */}
+                        <MDEditor
                             value={formData.description}
-                            onChange={handleChange}
-                            placeholder="Description of the submission task..."
+                            onChange={handleDescriptionChange}
                         />
+                        {/* Custom feedback styling */}
+                        <div className="invalid-feedback d-block">{formErrors.description}</div>
                     </Form.Group>
                     <Form.Group className="mb-4" controlId="submissionResourceLink">
                         <Form.Label>{texts.forms.submissionResourceLink}</Form.Label>

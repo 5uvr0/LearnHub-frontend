@@ -1,20 +1,23 @@
 // src/pages/TeacherCourseDetailsPage.jsx
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'; // Corrected import
 import { Container, Row, Col, Spinner, Alert, Modal, Form, Accordion } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
-import ModuleCard from '../components/cards/ModuleCard';
-import ModuleForm from '../components/forms/ModuleForm';
-import ContentForm from '../components/forms/ContentForm';
-import CustomButton from '../components/common/CustomButton';
+import ModuleCard from '../components/course/cards/ModuleCard';
+import ModuleForm from '../components/course/forms/ModuleForm';
+import ContentForm from '../components/course/forms/ContentForm';
+import CustomButton from '../components/course/common/CustomButton';
 import texts from '../i18n/texts';
-import useCourseApi from '../hooks/useCourseApi';
-import useModuleApi from '../hooks/useModuleApi';
-import useContentApi from '../hooks/useContentApi';
-import { faPlusCircle, faCloudUploadAlt, faEdit, faArrowsUpDown } from '@fortawesome/free-solid-svg-icons'; // Import faArrowsUpDown
+import useCourseApi from '../course-hooks/useCourseApi';
+import useModuleApi from '../course-hooks/useModuleApi';
+import useContentApi from '../course-hooks/useContentApi';
+import { faPlusCircle, faCloudUploadAlt, faEdit, faArrowsUpDown, faCodeCompare } from '@fortawesome/free-solid-svg-icons';
 import { getRandomModerateColor } from '../utils/colorUtils';
-import MarkdownRenderer from '../components/common/MarkdownRender';
-import ModuleReorderModal from '../components/modals/ModuleReorderModal'; // NEW: Import Reorder Modal
+import MarkdownRenderer from '../components/course/common/MarkdownRender'; // Corrected import
+import ModuleReorderModal from '../components/course/modals/ModuleReorderModal';
+import ContentPublishModal from '../components/course/modals/ContentPublishModal';
+import ContentReorderModal from '../components/course/modals/ContentReorderModal';
+import _ from 'lodash'; // Import lodash for deep comparison
 
 
 const TeacherCourseDetailsPage = () => {
@@ -23,8 +26,8 @@ const TeacherCourseDetailsPage = () => {
     const navigate = useNavigate();
 
     // API Hooks
-    const { data: course, loading: loadingCourse, error: courseError, getCourseDetails, publishCourse, reorderModules } = useCourseApi(); // Add reorderModules
-    const { createModule, updateModule, deleteModule, loading: loadingModuleApi, error: moduleApiError } = useModuleApi();
+    const { data: course, loading: loadingCourse, error: courseError, getCourseDetails, publishCourse, reorderModules, getAllCourseVersions } = useCourseApi();
+    const { createModule, reorderModuleContents, updateModule, deleteModule, loading: loadingModuleApi, error: moduleApiError } = useModuleApi();
     const { createContent, editContentMetadata, publishContentRelease, deleteContentRelease, loading: loadingContentApi, error: contentApiError, getContentReleaseById } = useContentApi();
 
     const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -39,7 +42,14 @@ const TeacherCourseDetailsPage = () => {
     const [isCreatingNewContent, setIsCreatingNewContent] = useState(false);
     const [isCreatingNewContentRelease, setIsCreatingNewContentRelease] = useState(false);
 
-    const [showReorderModal, setShowReorderModal] = useState(false); // NEW: State for reorder modal
+    const [showReorderModal, setShowReorderModal] = useState(false);
+    const [showReorderModalContent, setShowReorderModalContent] = useState(false);
+
+    const [showPublishContentModal, setShowPublishContentModal] = useState(false);
+    const [contentToPublish, setContentToPublish] = useState(null);
+    const [parentContentForPublish, setParentContentForPublish] = useState(null); // NEW: To pass parent content to modal
+    const [reorderingModuleContents, setReorderingModuleContents] = useState(null);
+
 
     // Generate a random color for this card
     const cardColor = getRandomModerateColor();
@@ -119,11 +129,10 @@ const TeacherCourseDetailsPage = () => {
 
     const handleSaveReorderedModules = async (reorderData) => {
         try {
-            // The API expects an array of ReorderDTO: [{ id: moduleId, orderIndex: newIndex }]
             await reorderModules?.(reorderData);
             alert(texts.alerts?.modulesReorderedSuccess);
             setShowReorderModal(false);
-            setRefreshTrigger((prev) => prev + 1); // Refresh page to show new order
+            setRefreshTrigger((prev) => prev + 1);
         } catch (err) {
             alert(texts.alerts?.apiError?.(courseError?.message || err?.message));
         }
@@ -206,32 +215,70 @@ const TeacherCourseDetailsPage = () => {
         }
     };
 
-    const handlePublishContent = async (contentReleaseId, contentTitle, parentContentId) => {
-        if (window.confirm(texts.courseCard?.confirmPublish?.(`"${contentTitle}"`))) {
-            try {
-                const fullContentDetails = await getContentReleaseById?.(contentReleaseId);
-                if (!fullContentDetails) throw new Error("Could not retrieve content details for publishing.");
-
-                const payload = {
-                    id: contentReleaseId,
-                    title: fullContentDetails?.title,
-                    orderIndex: fullContentDetails?.orderIndex,
-                    moduleId: fullContentDetails?.moduleId,
-                    type: fullContentDetails?.type,
-                    ...(fullContentDetails?.description && { description: fullContentDetails.description }),
-                    ...(fullContentDetails?.videoUrl && { videoUrl: fullContentDetails.videoUrl }),
-                    ...(fullContentDetails?.resourceLink && { resourceLink: fullContentDetails.resourceLink }),
-                    ...(fullContentDetails?.questions && { questions: fullContentDetails.questions }),
-                };
-
-                await publishContentRelease?.(contentReleaseId, payload);
-                alert(texts.alerts?.contentPublishedSuccess);
-                setRefreshTrigger((prev) => prev + 1);
-            } catch (err) {
-                alert(texts.alerts?.apiError?.(contentApiError?.message || err?.message));
+    // MODIFIED: handlePublishContent to open modal
+    const handlePublishContent = async (contentReleaseId, release, parentContentId) => {
+        try {
+            const fullReleaseDetails = release;
+            if (!fullReleaseDetails) {
+                alert("Could not retrieve content details for publishing.");
+                return;
             }
+            // Find the parent content object from the course data
+            // This is complex as 'course' has modules, and modules have contents (ContentDTO)
+            // We need the ContentDTO that this release belongs to, to compare its currentContentRelease
+            let foundParentContent = null;
+            for (const module of course?.modules || []) {
+                foundParentContent = module?.contents?.find(c => c?.id === parentContentId);
+                if (foundParentContent) break;
+            }
+
+            setContentToPublish(fullReleaseDetails); // Set the content data for the modal
+            setParentContentForPublish(foundParentContent); // Pass the parent content to the modal
+            setShowPublishContentModal(true);
+
+        } catch (err) {
+            alert(texts.alerts?.apiError?.(contentApiError?.message || err?.message));
         }
     };
+
+    // NEW: handleConfirmPublish from modal
+    const handleConfirmPublish = async (formDataFromModal, isRePublishingModifiedCurrent) => {
+        try {
+            // Construct payload for publishContentRelease API
+            // The API expects a ContentCatalogueDTO (which includes title, orderIndex, moduleId, type)
+            // and then specific fields based on type (description, videoUrl, resourceLink, questions).
+            // We should only send the fields that are relevant and potentially modified.
+
+            const originalContentRelease = contentToPublish; // The original release that was opened in modal
+            const payload = {
+                id: originalContentRelease?.id,
+                title: formDataFromModal?.title,
+                orderIndex: originalContentRelease?.orderIndex, // Order index is part of ContentReleaseDTO
+                moduleId: originalContentRelease?.moduleId, // Module ID is part of ContentReleaseDTO
+                type: originalContentRelease?.type, // Type is part of ContentReleaseDTO
+            };
+
+            // Conditionally add fields based on type and whether they were modified
+            if (originalContentRelease?.type === 'LECTURE' || originalContentRelease?.type === 'SUBMISSION') {
+                payload.description = formDataFromModal?.description;
+                if (originalContentRelease?.type === 'LECTURE') {
+                    payload.videoUrl = formDataFromModal?.videoUrl;
+                }
+                payload.resourceLink = formDataFromModal?.resourceLink;
+            }
+            // Quiz questions are not editable in this modal, so they are not included in formDataFromModal
+
+            await publishContentRelease?.(payload?.id, payload); // Use payload.id for contentReleaseId
+            alert(texts.alerts?.contentPublishedSuccess);
+            setShowPublishContentModal(false);
+            setContentToPublish(null);
+            setParentContentForPublish(null);
+            setRefreshTrigger((prev) => prev + 1);
+        } catch (err) {
+            alert(texts.alerts?.apiError?.(contentApiError?.message || err?.message));
+        }
+    };
+
 
     const handlePublishCourse = async () => {
         if (window.confirm(texts.courseCard?.confirmPublish?.(`"${course?.name}"`))) {
@@ -255,6 +302,48 @@ const TeacherCourseDetailsPage = () => {
         navigate(`/teacher/quizzes/${contentId}`);
     };
 
+    // NEW: Navigation handler for Course Version Comparison
+    const handleCompareVersions = () => {
+        navigate(`/teacher/courses/${courseId}/compare-versions`);
+    };
+
+    // NEW: Navigation handler for Content Details View (Lecture/Submission/Quiz)
+    const onViewContentDetails = (contentReleaseId, contentType) => {
+        console.log("clicked view details:");
+
+        switch (contentType) {
+            case 'LECTURE':
+                navigate(`/teacher/lectures/${contentReleaseId}`);
+                break;
+            case 'SUBMISSION':
+                navigate(`/teacher/submissions/${contentReleaseId}`);
+                break;
+            case 'QUIZ':
+                navigate(`/teacher/quizzes/${contentReleaseId}`); // Quiz has its own configurator page
+                break;
+            default:
+                alert('Unknown content type for details view.');
+        }
+    };
+
+    const handleReorderContents = (module) => {
+        console.log(module);
+        setReorderingModuleContents(module?.contents);
+        setShowReorderModalContent(true);
+    };
+
+    const handleSaveReorder = async (reorderPayload) => {
+        try {
+            await reorderModuleContents(reorderPayload);
+            alert('Contents reordered successfully!');
+
+            setShowReorderModalContent(false);
+            setReorderingModuleContents(null);
+            setRefreshTrigger((prev) => prev + 1);
+        } catch (error) {
+            alert('Failed to reorder contents.');
+        }
+    };
 
     if (loadingCourse) {
         return (
@@ -325,6 +414,14 @@ const TeacherCourseDetailsPage = () => {
                     >
                         Edit Course Metadata
                     </CustomButton>
+                    <CustomButton
+                        variant="secondary"
+                        icon={faCodeCompare}
+                        className="ms-3"
+                        onClick={handleCompareVersions}
+                    >
+                        {texts.sections?.compareVersions}
+                    </CustomButton>
                 </div>
 
                 <div className="row mb-5 align-items-center">
@@ -383,6 +480,8 @@ const TeacherCourseDetailsPage = () => {
                                     onEditModule={handleEditModule}
                                     onDeleteModule={handleDeleteModule}
                                     eventKey={String(index)}
+                                    onViewContentDetails={onViewContentDetails}
+                                    onReorderContents={handleReorderContents}
                                 />
                             ))}
                     </Accordion>
@@ -426,13 +525,32 @@ const TeacherCourseDetailsPage = () => {
                 </Modal.Body>
             </Modal>
 
-            {/* NEW: Module Reorder Modal */}
+            {/* Module Reorder Modal */}
             <ModuleReorderModal
                 show={showReorderModal}
                 onHide={() => setShowReorderModal(false)}
-                modules={course?.modules} // Pass the current modules to the modal
+                modules={course?.modules}
                 onSaveOrder={handleSaveReorderedModules}
-                isLoading={loadingModuleApi} // Use module API loading state for save button
+                isLoading={loadingModuleApi}
+            />
+
+            {/* Content Publish Modal */}
+            <ContentPublishModal
+                show={showPublishContentModal}
+                onHide={() => setShowPublishContentModal(false)}
+                contentToPublish={contentToPublish}
+                parentContent={course?.modules?.flatMap(m => m?.contents || [])?.find(c => c?.contentReleases?.some(cr => cr?.id === contentToPublish?.id))}
+                onConfirmPublish={handleConfirmPublish}
+                isLoading={loadingContentApi}
+            />
+
+            {/*Content Reorder modal*/}
+            <ContentReorderModal
+                show={showReorderModalContent}
+                onHide={() => setShowReorderModalContent(false)}
+                onSave={handleSaveReorder}
+                contents={reorderingModuleContents}
+                isLoading={loadingContentApi} // Replace with your actual loading state
             />
 
         </section>

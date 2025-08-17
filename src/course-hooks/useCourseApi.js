@@ -29,10 +29,11 @@ const useCourseApi = () => {
     body: JSON.stringify(reorderData),
   }), [fetchData]);
   const getAllCourseVersions = useCallback((courseId) => fetchData(`/courses/${courseId}/versions`, { method: 'GET' }), [fetchData]);
+  // NEW: getCourseVersionById
   const getCourseVersionById = useCallback((courseId, versionNumber) => fetchData(`/courses/${courseId}/versions/${versionNumber}`, { method: 'GET' }), [fetchData]);
   const getDraftCourseById = useCallback((courseId) => fetchData(`/courses/draft/${courseId}`, { method: 'GET' }), [fetchData]);
   const getCourseByInstructorId = useCallback((instructorId) => fetchData(`/courses/byInstructor/${instructorId}`, { method: 'GET' }), [fetchData]);
-
+ 
 
   return {
     data, loading, error,

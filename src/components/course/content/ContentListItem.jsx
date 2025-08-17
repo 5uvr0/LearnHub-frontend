@@ -3,10 +3,10 @@
 import React, { useState } from 'react';
 import { ListGroup, Badge, Collapse, Button, Alert } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileVideo, faQuestionCircle, faClipboardList, faInfoCircle, faAngleDown, faAngleUp, faEdit, faTrash, faCloudUploadAlt, faExternalLinkAlt, faCodeBranch, faTasks, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
-import CustomButton from '../common/CustomButton';
-import texts from '../../i18n/texts';
-import MarkdownRenderer from '../common/MarkdownRender';
+import { faFileVideo, faQuestionCircle, faClipboardList, faInfoCircle, faAngleDown, faAngleUp, faEdit, faTrash, faCloudUploadAlt, faExternalLinkAlt, faCodeBranch, faTasks, faPlusCircle, faEye } from '@fortawesome/free-solid-svg-icons'; // Import faEye
+import CustomButton from '../common/CustomButton.jsx';
+import texts from '../../../i18n/texts.js';
+import MarkdownRenderer from '../common/MarkdownRender.jsx'; // Corrected import
 
 // Helper to determine icon and type label based on content type (from DTO or CatalogDTO)
 const getContentInfo = (content) => {
@@ -14,7 +14,9 @@ const getContentInfo = (content) => {
     let typeLabel = "Content";
     let variant = "secondary";
 
-    const contentType = content?.currentContentRelease?.type;
+    // Prioritize ContentDTO's currentContentRelease type if available (teacher view)
+    // Otherwise, use the type directly from the content object (student view or specific release)
+    const contentType = content?.currentContentRelease?.type || content?.type;
 
     switch (contentType) {
         case "LECTURE":
@@ -44,7 +46,7 @@ const getContentInfo = (content) => {
 };
 
 
-const ContentListItem = ({ content, isTeacherView = false, onEditContent, onDeleteContent, onPublishContent, onViewContentVersions, onManageQuiz }) => {
+const ContentListItem = ({ content, isTeacherView = false, onEditContent, onDeleteContent, onPublishContent, onViewContentVersions, onManageQuiz, onViewContentDetails }) => { // NEW: onViewContentDetails
     const [open, setOpen] = useState(false);
     const { icon, typeLabel, variant } = getContentInfo(content || {});
 
@@ -123,11 +125,20 @@ const ContentListItem = ({ content, isTeacherView = false, onEditContent, onDele
                                                 {release?.resourceLink && <small className="d-block text-muted">Resource: <a href={release.resourceLink} target="_blank" rel="noopener noreferrer">Download <FontAwesomeIcon icon={faExternalLinkAlt} size="xs" /></a></small>}
                                             </div>
                                             <div className="d-flex flex-row flex-md-column align-items-md-end mt-2 mt-md-0">
-                                                {content?.currentContentRelease && release?.id === content.currentContentRelease?.id ? (
-                                                    <Badge bg="success" className="me-2 mb-md-2">Published</Badge>
+                                                {/* Check if this release is the current published one */}
+                                                {content?.currentContentRelease?.id === release?.id ? (
+                                                    <Badge bg="success" className="me-2 mb-md-2">{texts?.sections.published}</Badge>
                                                 ) : (
-                                                    <CustomButton variant="outline-success" size="sm" icon={faCloudUploadAlt} className="me-2 mb-md-2" onClick={() => onPublishContent?.(release?.id, release?.title, content?.id)}>Publish</CustomButton>
+                                                    <Badge bg="danger" className="me-2 mb-md-2">{texts?.sections.draft}</Badge>
                                                 )}
+                                                {/* View Details Button */}
+                                                <CustomButton variant="outline-info" size="sm" icon={faEye} className="me-2 mb-md-2" onClick={() => onViewContentDetails?.(release?.id, release?.type)}>
+                                                    {texts.sections?.viewContentDetails}
+                                                </CustomButton>
+                                                {/* Publish Button */}
+                                                <CustomButton variant="outline-success" size="sm" icon={faCloudUploadAlt} className="me-2 mb-md-2" onClick={() => onPublishContent?.(release?.id, release, content?.id)}>
+                                                    {content?.currentContentRelease?.id === release?.id ? texts?.sections.publishNewVersion : texts?.sections.publish}
+                                                </CustomButton>
                                                 <CustomButton variant="outline-primary" size="sm" icon={faEdit} className="me-2 mb-md-2" onClick={() => onEditContent?.(release, true)}>Edit Release</CustomButton>
                                                 <CustomButton variant="outline-danger" size="sm" icon={faTrash} onClick={() => onDeleteContent?.(release?.id, release?.title, true)}>Delete Release</CustomButton>
                                             </div>

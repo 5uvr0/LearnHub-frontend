@@ -3,9 +3,9 @@
 import React, { useEffect } from 'react';
 import { Container, Row, Col, Spinner, Alert } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
-import ModuleCard from '../components/cards/ModuleCard';
+import ModuleCard from '../components/course/cards/ModuleCard';
 import texts from '../i18n/texts';
-import useCourseApi from '../hooks/useCourseApi';
+import useCourseApi from '../course-hooks/useCourseApi';
 import { getRandomModerateColor } from '../utils/colorUtils'; // Import the color utility
 import { width } from '@fortawesome/free-solid-svg-icons/fa0';
 

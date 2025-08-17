@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { Card } from 'react-bootstrap';
-import CustomButton from '../common/CustomButton';
-import { getRandomModerateColor } from '../../utils/colorUtils'; // Import the color utility
+import CustomButton from '../common/CustomButton.jsx';
+import { getRandomModerateColor } from '../../../utils/colorUtils.js'; // Import the color utility
 
 const CourseCard = ({ course, onDetailsClick, learnMoreText }) => {
   // Defensive checks for 'course' object and its properties

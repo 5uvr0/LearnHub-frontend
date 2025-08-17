@@ -3,10 +3,10 @@
 import React from 'react';
 import { Card, ListGroup, Accordion } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlusCircle, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
-import ContentListItem from '../content/ContentListItem';
-import CustomButton from '../common/CustomButton';
-import texts from '../../i18n/texts';
+import { faPlusCircle, faEdit, faTrash, faArrowsAltV } from '@fortawesome/free-solid-svg-icons'; // Import reorder icon
+import ContentListItem from '../content/ContentListItem.jsx';
+import CustomButton from '../common/CustomButton.jsx';
+import texts from '../../../i18n/texts.js';
 
 const ModuleCard = ({
   module,
@@ -20,6 +20,8 @@ const ModuleCard = ({
   onEditModule,
   onDeleteModule,
   eventKey,
+  onViewContentDetails,
+  onReorderContents // NEW: Add a prop for the reorder function
 }) => {
   if (!module) {
     return (
@@ -42,23 +44,36 @@ const ModuleCard = ({
             </span>
           </span>
           {isTeacherView && (
-            <div className="d-flex align-items-center"> {/* Wrap buttons in a div */}
+            <div className="d-flex align-items-center">
               <CustomButton
-                as="span" // Render as a span to avoid nested button error
+                as="span"
                 variant="outline-primary"
                 size="sm"
                 icon={faEdit}
                 className="me-2"
-                onClick={(e) => { e.stopPropagation(); onEditModule?.(module); }} // Stop propagation
+                onClick={(e) => { e.stopPropagation(); onEditModule?.(module); }}
               >
                 Edit Module
               </CustomButton>
+              {/* NEW: Reorder Contents button */}
+              {module?.contents?.length > 1 && (
+                <CustomButton
+                  as="span"
+                  variant="outline-info"
+                  size="sm"
+                  icon={faArrowsAltV}
+                  className="me-2"
+                  onClick={(e) => { e.stopPropagation(); onReorderContents?.(module); }}
+                >
+                  Reorder Contents
+                </CustomButton>
+              )}
               <CustomButton
-                as="span" // Render as a span
+                as="span"
                 variant="outline-danger"
                 size="sm"
                 icon={faTrash}
-                onClick={(e) => { e.stopPropagation(); onDeleteModule?.(module?.id, module?.title); }} // Stop propagation
+                onClick={(e) => { e.stopPropagation(); onDeleteModule?.(module?.id, module?.title); }}
               >
                 Delete Module
               </CustomButton>
@@ -72,18 +87,19 @@ const ModuleCard = ({
             {module?.contents && module.contents?.length > 0 ? (
               <ListGroup variant="flush">
                 {module.contents
-                  ?.sort((a, b) => (a?.orderIndex || 0) - (b?.orderIndex || 0))
+                  ?.sort((a, b) => (a?.currentContentRelease?.orderIndex || 0) - (b?.currentContentRelease?.orderIndex || 0))
                   ?.map((content) => (
                     <ContentListItem
                       key={content?.id}
                       content={content}
                       isTeacherView={isTeacherView}
-                      onAddContent={onAddContent} // Pass through
+                      onAddContent={onAddContent}
                       onEditContent={onEditContent}
                       onDeleteContent={onDeleteContent}
                       onPublishContent={onPublishContent}
                       onViewContentVersions={onViewContentVersions}
                       onManageQuiz={onManageQuiz}
+                      onViewContentDetails={onViewContentDetails}
                     />
                   ))}
               </ListGroup>

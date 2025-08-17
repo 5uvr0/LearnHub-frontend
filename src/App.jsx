@@ -2,9 +2,10 @@
 
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import AppNavbar from './components/layout/AppNavbar';
-import AppFooter from './components/layout/AppFooter';
-import AppSidebar from './components/layout/AppSidebar';
+
+import AppNavbar from './components/course/layout/AppNavbar';
+import AppFooter from './components/course/layout/AppFooter';
+import AppSidebar from './components/course/layout/AppSidebar';
 import RegistrationPage from './auth-pages/RegistrationPage';
 import LoginPage from './auth-pages/LoginPage';
 import HomePage from './course-pages/HomePage';
@@ -17,8 +18,11 @@ import TeacherCourseDetailsPage from './course-pages/TeacherCourseDetailsPage';
 import CoursePublicView from './course-pages/CoursePublicView';
 import ContentVersionsPage from './course-pages/ContentVersionsPage';
 import QuizConfiguratorPage from './course-pages/QuizConfiguratorPage';
-// import InstructorDetailsPage from './course-pages/InstructorDetailsPage';
-import InstructorPublicViewPage from './course-pages/InstructorPublicViewPage'; // NEW: Import InstructorPublicViewPage
+import InstructorDetailsPage from './course-pages/InstructorPublicViewPage';
+import InstructorPublicViewPage from './course-pages/InstructorPublicViewPage';
+import CourseVersionComparisonPage from './course-pages/CourseVersionComparisonPage';
+import LectureDetailsPage from './course-pages/LectureDetailsPage'; // NEW
+import SubmissionDetailsPage from './course-pages/SubmissionDetailsPage'; // NEW
 import LoginErrorPage from './ErrorPages/LoginErrorPage';
 import { ThemeProvider } from './contexts/ThemeContext';
 import './index.css';
@@ -47,8 +51,21 @@ function App() {
                             <Route path="/courses/:id" element={<StudentCourseDetailsPage />} />
                             <Route path="/public-course-view/:id" element={<CoursePublicView />} />
                             <Route path="/instructors" element={<InstructorsPage />} />
-                            {/* <Route path="/instructors/:id" element={<InstructorDetailsPage />} /> */}
-                            <Route path="/public-instructors/:id" element={<InstructorPublicViewPage />} /> {/* NEW: Public Instructor View */}
+                            <Route path="/instructors/:id" element={<InstructorDetailsPage />} />
+                            <Route path="/public-instructors/:id" element={<InstructorPublicViewPage />} />
+
+                            {/* Teacher Dashboard & Course Management Routes */}
+                            <Route path="/teacher/dashboard" element={<TeacherDashboardPage />} />
+                            <Route path="/teacher/courses/new" element={<CourseConfiguratorPage />} />
+                            <Route path="/teacher/courses/:id/edit" element={<CourseConfiguratorPage />} />
+                            <Route path="/teacher/courses/:id" element={<TeacherCourseDetailsPage />} />
+                            <Route path="/teacher/courses/:id/compare-versions" element={<CourseVersionComparisonPage />} />
+
+                            {/* Content Management Routes */}
+                            <Route path="/teacher/contents/:contentId/versions" element={<ContentVersionsPage />} />
+                            <Route path="/teacher/quizzes/:contentId" element={<QuizConfiguratorPage />} />
+                            <Route path="/teacher/lectures/:releaseId" element={<LectureDetailsPage />} /> {/* NEW */}
+                            <Route path="/teacher/submissions/:releaseId" element={<SubmissionDetailsPage />} /> {/* NEW */}
 
                             {/* Teacher Dashboard & Course Management Routes */}
                             <Route path="/teacher/dashboard" element={<TeacherDashboardPage />} />
