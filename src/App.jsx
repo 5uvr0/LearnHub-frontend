@@ -44,27 +44,28 @@ function App() {
 
                     <main className="flex-grow-1">
                         <Routes>
-                            <Route path="/" element={<HomePage />} />
-                            <Route path="/courses" element={<CoursesPage />} />
-                            <Route path="/courses/:id" element={<StudentCourseDetailsPage />} />
-                            <Route path="/public-course-view/:id" element={<CoursePublicView />} />
-                            <Route path="/instructors" element={<InstructorsPage />} />
-                            <Route path="/instructors/:id" element={<InstructorDetailsPage />} />
-                            <Route path="/public-instructors/:id" element={<InstructorPublicViewPage />} />
+                            <Route path="/" element={<HomePage/>}/>
+                            <Route path="/courses" element={<CoursesPage/>}/>
+                            <Route path="/courses/:id" element={<StudentCourseDetailsPage/>}/>
+                            <Route path="/public-course-view/:id" element={<CoursePublicView/>}/>
+                            <Route path="/instructors" element={<InstructorsPage/>}/>
+                            <Route path="/instructors/:id" element={<InstructorDetailsPage/>}/>
+                            <Route path="/public-instructors/:id" element={<InstructorPublicViewPage/>}/>
 
                             {/* Teacher Dashboard & Course Management Routes */}
-                            <Route path="/teacher/dashboard" element={<TeacherDashboardPage />} />
-                            <Route path="/teacher/courses/new" element={<CourseConfiguratorPage />} />
-                            <Route path="/teacher/courses/:id/edit" element={<CourseConfiguratorPage />} />
-                            <Route path="/teacher/courses/:id" element={<TeacherCourseDetailsPage />} />
-                            <Route path="/teacher/courses/:id/compare-versions" element={<CourseVersionComparisonPage />} />
+                            <Route path="/teacher/dashboard" element={<TeacherDashboardPage/>}/>
+                            <Route path="/teacher/courses/new" element={<CourseConfiguratorPage/>}/>
+                            <Route path="/teacher/courses/:id/edit" element={<CourseConfiguratorPage/>}/>
+                            <Route path="/teacher/courses/:id" element={<TeacherCourseDetailsPage/>}/>
+                            <Route path="/teacher/courses/:id/compare-versions"
+                                   element={<CourseVersionComparisonPage/>}/>
 
                             {/* Content Management Routes */}
-                            <Route path="/teacher/contents/:contentId/versions" element={<ContentVersionsPage />} />
-                            <Route path="/teacher/quizzes/:contentId" element={<QuizConfiguratorPage />} />
-                            <Route path="/teacher/lectures/:releaseId" element={<LectureDetailsPage />} /> {/* NEW */}
-                            <Route path="/teacher/submissions/:releaseId" element={<SubmissionDetailsPage />} /> {/* NEW */}
->>>>>>> dcf9fab996b5aae7a5c9ba99d8528a12f7151853
+                            <Route path="/teacher/contents/:contentId/versions" element={<ContentVersionsPage/>}/>
+                            <Route path="/teacher/quizzes/:contentId" element={<QuizConfiguratorPage/>}/>
+                            <Route path="/teacher/lectures/:releaseId" element={<LectureDetailsPage/>}/> {/* NEW */}
+                            <Route path="/teacher/submissions/:releaseId"
+                                   element={<SubmissionDetailsPage/>}/> {/* NEW */}
 
                             {/* Teacher Dashboard & Course Management Routes */}
                             <Route path="/teacher/dashboard" element={<TeacherDashboardPage/>}/>

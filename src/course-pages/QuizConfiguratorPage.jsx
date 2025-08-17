@@ -1,7 +1,7 @@
 // src/pages/QuizConfiguratorPage.jsx
 
 import React, { useEffect, useState } from 'react';
-import { Container, Spinner, Alert, ListGroup, Form, InputGroup, Modal } from 'react-bootstrap';
+import {Container, Spinner, Alert, ListGroup, Form, InputGroup, Modal, Badge} from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTrash, faCheckCircle, faTimesCircle, faCloudUploadAlt, faEdit } from '@fortawesome/free-solid-svg-icons';
@@ -105,7 +105,14 @@ const QuizConfiguratorPage = () => {
         <section className="quiz-configurator-page py-5">
             <Container>
                 <h2 className="mb-4 fw-bold text-primary text-center">
-                    {texts.sections?.quizConfigurator}: {quizContentRelease?.title}
+                    {texts.sections?.quizConfigurator}: {quizToDisplay?.title}
+                    {quizToDisplay?.releaseNum !== 0 ? (
+                        <Badge bg="success"
+                               className="me-2 mb-md-2 ms-2">{texts?.sections.published}</Badge>
+                    ) : (
+                        <Badge bg="danger"
+                               className="me-2 mb-md-2">{texts?.sections.draft}</Badge>
+                    )}
                 </h2>
                 <p className="text-center text-muted">Content ID: {quizReleaseId}</p>
 
@@ -115,7 +122,7 @@ const QuizConfiguratorPage = () => {
                     </CustomButton>
                 </div>
 
-                {JSON.stringify(quizToDisplay)}
+                {/*{JSON.stringify(quizToDisplay)}*/}
 
                 <Alert variant="info" className="text-center">
                     Click "Publish Quiz" to add, edit, or delete questions and options.
