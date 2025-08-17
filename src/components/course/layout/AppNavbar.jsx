@@ -5,9 +5,9 @@ import { Navbar, Nav, Container, Button, Offcanvas } from 'react-bootstrap'; // 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSun, faMoon, faBars, faChalkboardTeacher } from '@fortawesome/free-solid-svg-icons';
 import { Link, useLocation } from 'react-router-dom';
-import CustomButton from '../common/CustomButton';
-import { useTheme } from '../../hooks/useTheme';
-import texts from '../../i18n/texts';
+import CustomButton from '../common/CustomButton.jsx';
+import { useTheme } from '../../../course-hooks/useTheme.js';
+import texts from '../../../i18n/texts.js';
 
 // Import Lucide icons for the Offcanvas menu
 import { Home, BookOpen, Users, Settings, LogOut, LayoutDashboard, UserCircle2, GraduationCap, FileText, Info, Mail } from 'lucide-react';

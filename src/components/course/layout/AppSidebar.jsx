@@ -3,8 +3,8 @@
 import React from 'react';
 import { Offcanvas, Nav } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import texts from '../../i18n/texts';
-import { useTheme } from '../../hooks/useTheme';
+import texts from '../../../i18n/texts.js';
+import { useTheme } from '../../../course-hooks/useTheme.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChalkboardTeacher } from '@fortawesome/free-solid-svg-icons';
 

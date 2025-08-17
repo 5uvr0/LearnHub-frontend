@@ -3,11 +3,11 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Alert, Spinner, Row, Col, Card, Nav, Modal } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import CustomButton from '../components/common/CustomButton';
+import CustomButton from '../components/course/common/CustomButton';
 import texts from '../i18n/texts';
-import useCourseApi from '../hooks/useCourseApi';
+import useCourseApi from '../course-hooks/useCourseApi';
 import { faPlusCircle, faEdit, faEye, faCloudUploadAlt, faTrash } from '@fortawesome/free-solid-svg-icons';
-import CourseForm from '../components/forms/CourseForm'
+import CourseForm from '../components/course/forms/CourseForm'
 const TEACHER_ID = 1; // Hardcoded instructor ID for demonstration
 
 const TeacherDashboardPage = () => {

@@ -3,9 +3,9 @@
 import React, { useEffect } from 'react';
 import { Container, Alert, Spinner, Row, Col } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import CourseCard from '../components/cards/CourseCard';
+import CourseCard from '../components/course/cards/CourseCard';
 import texts from '../i18n/texts';
-import useCourseApi from '../hooks/useCourseApi';
+import useCourseApi from '../course-hooks/useCourseApi';
 
 const CoursesPage = () => {
   const navigate = useNavigate();

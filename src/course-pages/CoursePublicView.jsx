@@ -4,7 +4,7 @@ import React, { useEffect } from 'react';
 import { Container, Row, Col, Spinner, Alert } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import texts from '../i18n/texts';
-import useCourseApi from '../hooks/useCourseApi'; // For fetching public course details
+import useCourseApi from '../course-hooks/useCourseApi'; // For fetching public course details
 
 const CoursePublicView = () => {
     const { id: courseIdParam } = useParams();

@@ -3,8 +3,8 @@
 import React from 'react';
 import { Container } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
-import CustomButton from '../components/common/CustomButton';
-import CourseCard from '../components/cards/CourseCard';
+import CustomButton from '../components/course/common/CustomButton';
+import CourseCard from '../components/course/cards/CourseCard';
 import texts from '../i18n/texts';
 
 const HomePage = () => { // Removed setCurrentPage, setCourseDetailId props
