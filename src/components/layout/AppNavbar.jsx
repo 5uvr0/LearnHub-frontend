@@ -97,11 +97,12 @@ const AppNavbar = () => { // handleShowSidebar prop is no longer needed here
                 {texts.nav?.teacherDashboard}
               </Nav.Link>
 
-              {/* Placeholder links for About and Contact */}
               <Nav.Link as={Link} to="/about" className="mx-2">{texts.nav?.aboutUs}</Nav.Link>
               <Nav.Link as={Link} to="/contact" className="mx-2">{texts.nav?.contact}</Nav.Link>
 
-              <CustomButton variant="primary" className="ms-3">{texts.nav?.signUp}</CustomButton>
+              <Nav.Link as={Link} to="/login" className="mx-2">{texts.nav?.logIn}</Nav.Link>
+              <Nav.Link as={Link} to="/register" className="mx-2 border rounded px-3">{texts.nav?.signUp}</Nav.Link>
+              
               <Button
                 variant="link"
                 onClick={handleThemeToggle}
