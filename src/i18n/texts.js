@@ -7,11 +7,7 @@ const texts = {
         teacherDashboard: "Teacher Dashboard",
         aboutUs: "About Us",
         contact: "Contact",
-        signUp: "SignUp",
-        logIn: "LogIn"
-    },
-    sidebar: {
-        title: "Navigation",
+        signUp: "Sign Up",
     },
     hero: {
         headline: "Your Journey to Knowledge Starts Here",
@@ -47,29 +43,34 @@ const texts = {
         questionText: "Question Text",
         optionText: "Option Text",
         isCorrect: "Is Correct?",
-        options: "Options",
-        instructorPublicProfile: "Instructor Profile",
+        options: "Options", // NEW: For quiz options
+        instructorPublicProfile: "Instructor Profile", // NEW
         noCoursesTaughtPublic: "No published course available to show",
-        reorderModules: "Reorder Modules",
-        saveOrder: "Save Order",
-        reorderModulesModalTitle: "Reorder Course Modules",
-        sessionExpired: "Session Expired",
-    },
-    courseCard: {
-        learnMore: "Learn More",
-        viewDetails: "View Details",
-        edit: "Edit",
+        reorderModules: "Reorder Modules", // NEW
+        saveOrder: "Save Order", // NEW
+        reorderModulesModalTitle: "Reorder Course Modules", // NEW
+        compareVersions: "Compare Versions", // NEW
+        selectVersion: "Select Version", // NEW
+        version: "Version", // NEW
+        versionA: "Version A", // NEW
+        versionB: "Version B", // NEW
+        compare: "Compare", // NEW
+        noVersionsToCompare: "No versions available for comparison.", // NEW
+        versionComparison: "Course Version Comparison", // NEW
+        added: "Added", // NEW
+        removed: "Removed", // NEW
+        modified: "Modified", // NEW
+        noChanges: "No Changes", // NEW
+        enterVersionNumber: "Enter Version Number", // NEW
+        notAddedYet: "Not added yet", // For items removed from A
+        removedFuture: "Removed",
+        published: "Published",
         publish: "Publish",
-        delete: "Delete",
-        confirmDelete: (name) => `Are you sure you want to delete "${name}"? This action cannot be undone.`,
-        confirmPublish: (name) => `Are you sure you want to publish "${name}"? This will make it visible to students.`,
-    },
-    courseDetails: {
-        addModule: "Add Module",
-    },
-    instructorCard: {
-        viewProfile: "View Profile",
-        specialties: "Specialties",
+        draft: "Draft",
+        viewContentDetails: "View Details", // NEW
+        lectureDetails: "Lecture Details", // NEW
+        submissionDetails: "Submission Details", // NEW
+        sessionExpired: "Session Expired",
     },
     forms: {
         courseName: "Course Name",
@@ -125,18 +126,48 @@ const texts = {
         searchPlaceholder: "Search by name or email...",
         filterBySpecialty: "Filter by Specialty",
         allSpecialties: "All Specialties",
-        loadingInstructors: "Loading instructorstexts.nav...",
+        loadingInstructors: "Loading instructors...",
         noInstructorsFound: "No instructors found matching your criteria.",
         failedToLoadInstructors: "Failed to load instructors.",
-        modulesReorderedSuccess: "Modules reordered successfully!",
+        modulesReorderedSuccess: "Modules reordered successfully!", // NEW
+        fetchingVersions: "Fetching course versions...", // NEW
+        comparisonError: "Error comparing versions.", // NEW
+        noVersionsToCompare: "No version to compare!",
         loginValidityEnded: "Your Login validity has ended. Click on Refresh to continue from your previous session or login again.",
         noRefreshToken: "Not able to recover the session. Please login again.",
         refreshSuccess: "Session recovered successfully! You can now try accessing the previous page.",
         refreshFailed: "Failed to recover the session. Please login again.",
         refreshingSession: "Refreshing session...",
     },
+    buttons: {
+        publishNewVersion: "Publish New Version",
+        publish: "Publish",
+        refreshLoginSession: "Refresh Login Session",
+        loginAgain: "Login Again",
+    },
     footer: {
         copyright: "LearnHub. All rights reserved.",
+    },
+
+    sidebar: {
+        title: "Navigation",
+    },
+
+    courseCard: {
+        learnMore: "Learn More",
+        viewDetails: "View Details",
+        edit: "Edit",
+        publish: "Publish",
+        delete: "Delete",
+        confirmDelete: (name) => `Are you sure you want to delete "${name}"? This action cannot be undone.`,
+        confirmPublish: (name) => `Are you sure you want to publish "${name}"? This will make it visible to students.`,
+    },
+    courseDetails: {
+        addModule: "Add Module",
+    },
+    instructorCard: {
+        viewProfile: "View Profile",
+        specialties: "Specialties",
     },
     auth: {
         title: "Welcome to LearnHub",
@@ -155,10 +186,6 @@ const texts = {
         registrationFailed: "Registration failed. Please try again.",
         registering: "Registering..."
     },
-    buttons: {
-        refreshLoginSession: "Refresh Login Session",
-        loginAgain: "Login Again",
-    }
 };
 
 export default texts;

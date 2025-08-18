@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { Container, Alert, Spinner, Row, Col } from 'react-bootstrap';
-import RegistrationForm from '../components/forms/RegistrationForm';
-import useAuthApi from '../hooks/useAuthApi';
+import RegistrationForm from '../components/auth/forms/RegistrationForm';
+import useAuthApi from '../auth-hooks/useAuthApi';
 import texts from '../i18n/texts';
+import { useNavigate } from 'react-router-dom';
 
 const RegistrationPage = () => {
     const { data, loading, error, fetchData: registerUser } = useAuthApi();
     const [message, setMessage] = useState('');
     const [messageVariant, setMessageVariant] = useState('');
     const [formErrors, setFormErrors] = useState({});
+    const navigate = useNavigate();
 
     const handleRegistrationSubmit = async (formData) => {
         setMessage('');
@@ -23,6 +25,9 @@ const RegistrationPage = () => {
         if (result) {
             setMessage(result.message || texts.auth?.registrationSuccess || 'Registration successful!');
             setMessageVariant('success');
+
+            alert("Registration Succesful! Check your email. You need to activate your account first before you try to login.");
+            navigate("/login");
             
         } else if (error) {
             setMessageVariant('danger');

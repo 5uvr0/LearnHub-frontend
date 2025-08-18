@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Container, Alert, Spinner, Row, Col } from 'react-bootstrap';
-import LoginForm from '../components/forms/LoginForm';
-import useAuthApi from '../hooks/useAuthApi';
+import { useNavigate } from 'react-router-dom';
+import LoginForm from '../components/auth/forms/LoginForm.jsx';
+import useAuthApi from '../auth-hooks/useAuthApi';
 import texts from '../i18n/texts';
 
 const LoginPage = () => {
@@ -9,6 +10,7 @@ const LoginPage = () => {
     const [message, setMessage] = useState('');
     const [messageVariant, setMessageVariant] = useState('');
     const [formErrors, setFormErrors] = useState({});
+    const navigate = useNavigate();
 
     const handleLoginSubmit = async (formData) => {
         setMessage('');
@@ -23,6 +25,8 @@ const LoginPage = () => {
         if (result) {
             setMessage(result.message || texts.auth?.loginSuccess || 'Login successful!');
             setMessageVariant('success');
+
+            navigate("/home");
             
         } else if (error) {
             setMessageVariant('danger');
