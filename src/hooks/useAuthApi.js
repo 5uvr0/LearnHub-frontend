@@ -1,8 +1,8 @@
 import { useState, useCallback } from "react";
 import axios from "axios";
 
-const BASE_URL = import.meta.env.AUTH_BASE_URL;
-const URI = import.meta.env.AUTH_PATH;
+const BASE_URL = import.meta.env.VITE_AUTH_API_BASE_URL;
+const URI = import.meta.env.VITE_AUTH_PATH;
 
 const getFullUrl = (endpoint) => {
 	if (!BASE_URL || !URI) {
@@ -57,29 +57,13 @@ const useAuthApi = (initialLoading = false) => {
 
 		} catch (err) {
 			let message = "An unknown error occurred";
+			err = err.response.data;
 
 			if (axios.isAxiosError(err)) {
-				if (err.response?.data) {
-
-					if (typeof err.response.data === "string") {
-						message = err.response.data;
-
-					} else if (err.response.data.message) {
-						message = err.response.data.message;
-
-					} else {
-						message = JSON.stringify(err.response.data);
-					}
-
-				} else if (err.message) {
-					message = err.message;
-				}
-
-			} else if (err instanceof Error) {
-				message = err.message;
+				message = err.errors.error;
 			}
 
-			console.error("API Fetch Error:", message);
+			console.error(err.message);
 			setError(message);
 
 			return null;
