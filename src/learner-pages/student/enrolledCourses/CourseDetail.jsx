@@ -23,7 +23,7 @@ const StudentCourseDetailPage = () => {
       try {
         console.log(courseId)
 
-        const data = await getStudentCourseProgressDetail(courseId, studentId);
+        const data = await getStudentCourseProgressDetail(studentId, courseId);
         setCourse(data);
 
         console.log(data)
@@ -99,7 +99,7 @@ const StudentCourseDetailPage = () => {
               ))}
             </Row>
         ) : (
-            <Alert variant="info">{texts.alerts?.unenrolledCourse || "No modules found."}</Alert>
+            <Alert variant="info">{"No modules found in the course."}</Alert>
         )}
       </Container>
   );
