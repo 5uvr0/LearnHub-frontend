@@ -32,6 +32,12 @@ import StudentProfilePage from "./learner-pages/student/Profile.jsx";
 import EditStudentPage from "./learner-pages/student/Edit.jsx";
 import ContentDetailPage from "./learner-pages/student/enrolledCourses/content/ContentDetail.jsx";
 
+import LecturePage from "./learner-pages/student/enrolledCourses/content/Lecture.jsx";
+import QuizPage from "./learner-pages/student/enrolledCourses/content/Quiz.jsx";
+import SubmissionPage from "./learner-pages/student/enrolledCourses/content/Submission.jsx";
+import StudentContentPage from "./learner-pages/student/enrolledCourses/content/ContentDetail.jsx";
+
+
 function App() {
     const [showSidebar, setShowSidebar] = useState(false);
 
@@ -96,14 +102,18 @@ function App() {
 
                              {/* Student dashboard and profile */}
                             <Route path="/student/dashboard" element={<StudentDashboard/>} />
-
-                            <Route path="/student/dashboard" element={<StudentDashboard />} />
                             <Route path="/student/profile" element={<StudentProfilePage />} />
                             <Route path="/student/profile/edit" element={<EditStudentPage />} />
 
                             {/* Student Course Endpoints */}
                             <Route path="/student/course/:courseId" element={<StudentCourseDetailPage/>} />
-                            <Route path="/student/courses/:courseId/content/:contentId" element={<ContentDetailPage />}/>
+                            <Route path="/student/courses/:courseId/content/:contentId" element={<StudentContentPage />}/>
+
+                            {/* Student Content Endpoints */}
+                            {/*<Route path="/student/content/:contentId/lecture" element={<LecturePage />} />*/}
+                            {/*<Route path="/student/content/:contentId/quiz" element={<QuizPage />} />*/}
+                            {/*<Route path="/student/content/:contentId/submission" element={<SubmissionPage />} />*/}
+
 
                             {/* Student Submission Related Endpoints */}
 

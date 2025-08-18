@@ -8,7 +8,7 @@ import {
     faInfoCircle,
     faExternalLinkAlt,
 } from "@fortawesome/free-solid-svg-icons";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const getContentInfo = (content) => {
     let icon = faInfoCircle;
@@ -42,26 +42,14 @@ const getContentInfo = (content) => {
 
 const ContentListItem = ({ content }) => {
     const navigate = useNavigate();
+    const { courseId } = useParams(); // get courseId from current route
+
     if (!content) return null;
 
     const { icon, typeLabel, variant } = getContentInfo(content);
 
     const handleClick = () => {
-        let route = "/student/content/" + content.id;
-        switch (content.type) {
-            case "LECTURE":
-                route += "/lecture";
-                break;
-            case "QUIZ":
-                route += "/quiz";
-                break;
-            case "SUBMISSION":
-                route += "/submission";
-                break;
-            default:
-                route += "/unknown";
-        }
-        navigate(route);
+        navigate(`/student/courses/${courseId}/content/${content.id}`);
     };
 
     return (
@@ -91,7 +79,7 @@ const ContentListItem = ({ content }) => {
                                 href={content.videoUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                onClick={(e) => e.stopPropagation()} // prevent navigate
+                                onClick={(e) => e.stopPropagation()}
                             >
                                 Watch <FontAwesomeIcon icon={faExternalLinkAlt} size="xs" />
                             </a>

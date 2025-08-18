@@ -1,20 +1,44 @@
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import useStudentCourseApi from "../../../../learner-hooks/useStudentCourseApi.js";
-import Lecture from "./Lecture";
-import Quiz from "./Quiz";
-import Submission from "./Submission";
+import { Container, Spinner, Alert } from "react-bootstrap";
+import Lecture from "./Lecture.jsx";
+import Quiz from "./Quiz.jsx";
+import Submission from "./Submission.jsx";
+import useStudentCourseApi from "../../../../course-hooks/useContentApi.js";
 
-const ContentDetailPage = () => {
-    const { courseId, contentId } = useParams();
-    const { getContentDetail } = useStudentCourseApi();
+const StudentContentPage = () => {
+    const { contentId } = useParams();
+    const { getStudentContentDetails } = useStudentCourseApi();
+    const [content, setContent] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    const { data: content, isLoading, error } = getContentDetail(courseId, contentId);
+    useEffect(() => {
+        const fetchContent = async () => {
+            try {
+                setLoading(true);
+                const data = await getStudentContentDetails(contentId);
 
-    if (isLoading) return <p>Loading content...</p>;
-    if (error) return <p>Error loading content</p>;
-    if (!content) return <p>No content found.</p>;
+                setContent(data);
 
-    // Map content.type → component
+                console.log(data)
+
+            } catch (err) {
+                console.error(err);
+                setError("Failed to load content.");
+
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchContent();
+    }, [contentId, getStudentContentDetails]);
+
+    if (loading) return <Spinner animation="border" className="d-block mx-auto mt-5" />;
+    if (error) return <Alert variant="danger">{error}</Alert>;
+    if (!content) return <Alert variant="warning">Content not found</Alert>;
+
     const renderContent = () => {
         switch (content.type) {
             case "LECTURE":
@@ -24,16 +48,15 @@ const ContentDetailPage = () => {
             case "SUBMISSION":
                 return <Submission content={content} />;
             default:
-                return <p>Unsupported content type: {content.type}</p>;
+                return <p>Unknown content type.</p>;
         }
     };
 
     return (
-        <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4">{content.title}</h2>
+        <Container className="py-5">
             {renderContent()}
-        </div>
+        </Container>
     );
 };
 
-export default ContentDetailPage;
+export default StudentContentPage;
