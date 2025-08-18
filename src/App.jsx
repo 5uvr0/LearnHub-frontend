@@ -22,8 +22,15 @@ import LectureDetailsPage from './course-pages/LectureDetailsPage'; // NEW
 import SubmissionDetailsPage from './course-pages/SubmissionDetailsPage'; // NEW
 import LoginPage from './auth-pages/LoginPage.jsx';
 import RegistrationPage from "./auth-pages/RegistrationPage.jsx";
+
+import StudentDashboard from './learner-pages/student/Dashboard.jsx';
+import StudentCourseDetailPage from "./learner-pages/student/enrolledCourses/CourseDetail.jsx";
+
 import {ThemeProvider} from './contexts/ThemeContext';
 import './index.css';
+import StudentProfilePage from "./learner-pages/student/Profile.jsx";
+import EditStudentPage from "./learner-pages/student/Edit.jsx";
+import ContentDetailPage from "./learner-pages/student/enrolledCourses/content/ContentDetail.jsx";
 
 function App() {
     const [showSidebar, setShowSidebar] = useState(false);
@@ -86,6 +93,20 @@ function App() {
                             <Route path="/register" element={<RegistrationPage/>}/>
                             <Route path="/login" element={<LoginPage/>}/>
                             {/*<Route path="/login/error" element={<LoginErrorPage/>}/>*/}
+
+                             {/* Student dashboard and profile */}
+                            <Route path="/student/dashboard" element={<StudentDashboard/>} />
+
+                            <Route path="/student/dashboard" element={<StudentDashboard />} />
+                            <Route path="/student/profile" element={<StudentProfilePage />} />
+                            <Route path="/student/profile/edit" element={<EditStudentPage />} />
+
+                            {/* Student Course Endpoints */}
+                            <Route path="/student/course/:courseId" element={<StudentCourseDetailPage/>} />
+                            <Route path="/student/courses/:courseId/content/:contentId" element={<ContentDetailPage />}/>
+
+                            {/* Student Submission Related Endpoints */}
+
 
                             {/* Add more routes for About, Contact, etc. */}
                             <Route path="/about" element={
