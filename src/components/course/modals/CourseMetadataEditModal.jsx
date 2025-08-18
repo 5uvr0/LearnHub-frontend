@@ -33,6 +33,7 @@ const CourseMetadataEditModal = ({show, onHide, course, onSave, isLoading}) => {
                         <Form.Control
                             type="text"
                             value={title}
+                            maxLength={30}
                             onChange={(e) => setTitle(e.target.value)}
                             disabled={isLoading}
                         />

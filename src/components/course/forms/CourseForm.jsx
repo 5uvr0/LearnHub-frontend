@@ -5,7 +5,7 @@ import { Form, Button, Row, Col, Alert, Spinner } from 'react-bootstrap';
 import CustomButton from '../common/CustomButton.jsx';
 import useInstructorApi from '../../../course-hooks/useInstructorApi.js';
 import texts from '../../../i18n/texts.js';
-import MDEditor from '@uiw/react-md-editor'; // Import the MDEditor component
+import MDEditor from '@uiw/react-md-editor';
 
 const CourseForm = ({ initialData = {}, onSubmit, isEditMode = false }) => {
     const [formData, setFormData] = useState({
