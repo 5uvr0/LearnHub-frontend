@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Form, Alert } from 'react-bootstrap';
-import CustomButton from '../common/CustomButton.jsx';
+import CustomButton from '../../common/CustomButton.jsx';
 import texts from '../../../i18n/texts.js';
 
 const ModuleForm = ({ initialData = {}, onSubmit, isEditMode = false, isLoading = false }) => {

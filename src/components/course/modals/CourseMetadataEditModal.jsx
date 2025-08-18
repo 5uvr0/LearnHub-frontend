@@ -2,7 +2,7 @@
 
 import React, {useEffect, useState} from 'react';
 import {Button, Form, Modal} from 'react-bootstrap';
-import CustomButton from '../common/CustomButton';
+import CustomButton from '../../common/CustomButton';
 
 const CourseMetadataEditModal = ({show, onHide, course, onSave, isLoading}) => {
     const [title, setTitle] = useState('');

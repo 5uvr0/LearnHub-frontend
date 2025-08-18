@@ -3,10 +3,16 @@
 import React from 'react';
 import { Container } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
+<<<<<<<< HEAD:src/components/common-pages/HomePage.jsx
 import CustomButton from '../common/CustomButton';
 import texts from '../../i18n/texts';
+========
+import CustomButton from '../components/common/CustomButton.jsx';
+import CourseCard from '../components/course/cards/CourseCard.jsx';
+import texts from '../i18n/texts.js';
+>>>>>>>> 3d11de1 (Refactoring common component, pages):src/common-pages/HomePage.jsx
 
-const HomePage = () => {
+const HomePage = () => { // Removed setCurrentPage, setCourseDetailId props
     const navigate = useNavigate(); // Hook to get navigation function
 
     const handleExploreCoursesClick = () => {
