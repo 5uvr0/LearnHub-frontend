@@ -1,8 +1,8 @@
 import { useState, useCallback } from "react";
 import axios from "axios";
 
-const BASE_URL = import.meta.env.AUTH_BASE_URL;
-const URI = import.meta.env.AUTH_PATH;
+const BASE_URL = import.meta.env.VITE_AUTH_API_BASE_URL;
+const URI = import.meta.env.VITE_AUTH_PATH;
 
 const getFullUrl = (endpoint) => {
     if (!BASE_URL || !URI) {

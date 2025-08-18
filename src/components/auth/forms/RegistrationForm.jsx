@@ -1,47 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Form, Alert } from 'react-bootstrap';
-import CustomButton from '../common/CustomButton';
+import { Form } from 'react-bootstrap';
+import CustomButton from '../../common/CustomButton.jsx';
 import texts from '../../../i18n/texts.js';
 
-const RegistrationForm = ({ onSubmit, isLoading = false, apiErrors = {} }) => { // Added apiErrors prop
+const RegistrationForm = ({ onSubmit, isLoading = false, apiErrors = {} }) => {
     const [formData, setFormData] = useState({
         email: '',
         password: '',
         role: ''
     });
 
-    const [formErrors, setformErrors] = useState({});
+    const [formErrors, setFormErrors] = useState({});
 
     useEffect(() => {
-        setformErrors(apiErrors);
+        setFormErrors(apiErrors);
     }, [apiErrors]);
-
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
-        // When a field changes, clear its corresponding API error if it exists
-        setformErrors((prevErrors) => ({
-            ...prevErrors,
-            [name]: '',
-        }));
+        setFormData(prev => ({ ...prev, [name]: value }));
+        setFormErrors(prev => ({ ...prev, [name]: '' }));
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
-        // If there are no API errors, proceed with submission
-        if (Object.keys(apiErrors).length === 0) {
-            onSubmit(formData);
-
-        } else {
-            // If there are API errors, ensure they are visible (though they should already be)
-            setformErrors(apiErrors);
-        }
+        onSubmit(formData);
     };
 
     return (
@@ -83,9 +67,9 @@ const RegistrationForm = ({ onSubmit, isLoading = false, apiErrors = {} }) => { 
                     isInvalid={!!formErrors.role}
                     disabled={isLoading}
                 >
-                    <option value="">{texts.forms?.chooseRole || 'Choose your role...'} </option>
-                    <option value="student">{texts.forms?.roleStudent || 'As a Student'}</option>
-                    <option value="instructor">{texts.forms?.roleInstructor || 'As an Instructor'}</option>
+                    <option value="">{texts.forms?.chooseRole || 'Choose your role...'}</option>
+                    <option value="STUDENT">{texts.forms?.roleStudent || 'As a Student'}</option>
+                    <option value="INSTRUCTOR">{texts.forms?.roleInstructor || 'As an Instructor'}</option>
                 </Form.Select>
                 <Form.Control.Feedback type="invalid">{formErrors.role}</Form.Control.Feedback>
             </Form.Group>
@@ -93,17 +77,9 @@ const RegistrationForm = ({ onSubmit, isLoading = false, apiErrors = {} }) => { 
             <div className="d-flex justify-content-between align-items-center">
                 <small>
                     {texts.auth?.alreadyRegistered || 'Already registered?'}{' '}
-                    <Link to="/login">
-                        {texts.auth?.loginLink || 'Login'}
-                    </Link>
+                    <Link to="/login">{texts.auth?.loginLink || 'Login'}</Link>
                 </small>
-
-                <CustomButton
-                    variant="success"
-                    type="submit"
-                    isLoading={isLoading}
-                    size="sm"
-                >
+                <CustomButton variant="success" type="submit" isLoading={isLoading} size="sm">
                     {texts.auth?.registrationButton || 'Register'}
                 </CustomButton>
             </div>
