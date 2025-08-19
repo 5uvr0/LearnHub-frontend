@@ -3,9 +3,8 @@
 import React from 'react';
 import { Container } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
-import CustomButton from '../components/course/common/CustomButton';
-import CourseCard from '../components/course/cards/CourseCard';
-import texts from '../i18n/texts';
+import CustomButton from "../components/common/CustomButton.jsx";
+import texts from "../i18n/texts.js";
 
 const HomePage = () => { // Removed setCurrentPage, setCourseDetailId props
     const navigate = useNavigate(); // Hook to get navigation function
@@ -42,24 +41,6 @@ const HomePage = () => { // Removed setCurrentPage, setCourseDetailId props
                                 className="img-fluid rounded-4 shadow-lg"
                             />
                         </div>
-                    </div>
-                </Container>
-            </section>
-
-            {/* Popular Courses Section */}
-            <section id="popular-courses" className="courses-section py-5 bg-light">
-                <Container>
-                    <h2 className="text-center mb-5 fw-bold text-primary">{texts.sections.popularCourses}</h2>
-                    <div className="row g-4">
-                        {texts.sampleCourses?.slice(0, 3).map((course) => ( // Show first 3 as popular
-                            <div className="col-md-6 col-lg-4" key={course.id}>
-                                <CourseCard
-                                    course={course}
-                                    onDetailsClick={handleCourseDetailsClick}
-                                    learnMoreText={texts.courseCard.learnMore}
-                                />
-                            </div>
-                        ))}
                     </div>
                 </Container>
             </section>

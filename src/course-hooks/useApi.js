@@ -6,82 +6,156 @@ import { useState, useCallback } from 'react';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const COURSE_CONFIGURATOR_PATH = import.meta.env.VITE_COURSE_CONFIGURATOR_PATH;
 
-// Helper to construct full API URL with context path
+// NEW: Enrollment API environment variables
+const ENROLLMENT_BASE_URL = import.meta.env.VITE_ENROLLMENT_BASE_URL;
+const LEARNING_PROCESSOR_PATH = import.meta.env.VITE_LEARNING_PROCESSOR_PATH;
+
+
+// Helper to construct full API URL with context path for Course Configurator
 const getFullUrl = (endpoint) => {
-  if (!API_BASE_URL || !COURSE_CONFIGURATOR_PATH) {
-    console.error('API environment variables are not defined in .env');
-    return null;
-  }
-  return `${API_BASE_URL}${COURSE_CONFIGURATOR_PATH}${endpoint}`;
+    if (!API_BASE_URL || !COURSE_CONFIGURATOR_PATH) {
+        console.error('Course Configurator API environment variables are not defined in .env');
+        return null;
+    }
+    return `${API_BASE_URL}${COURSE_CONFIGURATOR_PATH}${endpoint}`;
 };
 
+// NEW: Helper to construct full API URL with context path for Learning Processor (Enrollment)
+const getFullEnrollmentUrl = (endpoint) => {
+    if (!ENROLLMENT_BASE_URL || !LEARNING_PROCESSOR_PATH) {
+        console.error('Enrollment API environment variables are not defined in .env');
+        return null;
+    }
+    return `${ENROLLMENT_BASE_URL}${LEARNING_PROCESSOR_PATH}${endpoint}`;
+};
+
+
 const useApi = (initialLoading = false) => {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(initialLoading);
-  const [error, setError] = useState(null);
+    const [data, setData] = useState(null);
+    const [loading, setLoading] = useState(initialLoading);
+    const [error, setError] = useState(null);
 
-  const fetchData = useCallback(async (
-    url,
-    options = {}
-  ) => {
-    setLoading(true);
-    setError(null);
-    setData(null); // Clear previous data
+    // Generic fetchData function for Course Configurator APIs
+    const fetchData = useCallback(async (
+        url,
+        options = {}
+    ) => {
+        setLoading(true);
+        setError(null);
+        setData(null); // Clear previous data
 
-    const fullUrl = getFullUrl(url);
-    if (!fullUrl) {
-      setError('API URL is not configured correctly.');
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const response = await fetch(fullUrl, {
-        headers: {
-          'Content-Type': 'application/json',
-          // Add authorization headers here if needed later (e.g., Bearer Token):
-          // 'Authorization': `Bearer YOUR_TOKEN`,
-          ...options.headers,
-        },
-        ...options,
-      });
-
-      if (!response.ok) {
-        let errorMessage = `HTTP error! status: ${response.status}`;
-        try {
-          const errorData = await response.json();
-          if (errorData.message) {
-            errorMessage = errorData.message;
-          } else if (typeof errorData === 'string') { // Backend might return plain error string
-            errorMessage = errorData;
-          } else {
-            errorMessage = JSON.stringify(errorData);
-          }
-        } catch (jsonError) {
-          // If response is not JSON, use default status message
+        const fullUrl = getFullUrl(url);
+        if (!fullUrl) {
+            setError('Course Configurator API URL is not configured correctly.');
+            setLoading(false);
+            return;
         }
-        throw new Error(errorMessage);
-      }
 
-      // Check for empty response (e.g., successful DELETE often returns 200 with no body)
-      if (response.status === 204 || response.headers.get('Content-Length') === '0') {
-        setData(true); // Indicate success for no-content responses
-        return true;
-      }
+        try {
+            const response = await fetch(fullUrl, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...options.headers,
+                },
+                ...options,
+            });
 
-      const result = await response.json();
-      setData(result);
-      return result; // Return data for direct use in the component
-    } catch (err) {
-      console.error("API Fetch Error:", err);
-      setError(err.message || 'An unknown error occurred');
-      return null; // Return null on error
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+            if (!response.ok) {
+                console.log("Response is not OK!!!!")
+                const errorData = await response.json().catch(() => ({
+                    message: `HTTP error! status: ${response.status}`,
+                    status: response.status,
+                    error: response.statusText
+                }));
 
-  return { data, loading, error, fetchData };
+                const customError = {
+                    message: errorData.message || 'An unknown error occurred',
+                    status: errorData.status || response.status,
+                    details: errorData.details || null,
+                };
+
+                throw customError;
+            }
+
+            if (response.status === 204 || response.headers.get('Content-Length') === '0') {
+                setData(true);
+                return true;
+            }
+
+            const result = await response.json();
+            setData(result);
+            return result;
+        } catch (err) {
+            console.error("API Fetch Error:", err);
+            setError(err); // Set the error state with the custom error object
+            throw err; // Re-throw the error for the component to catch
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+
+    // NEW: fetchDataEnrollment function for Learning Processor (Enrollment) APIs
+    const fetchDataEnrollment = useCallback(async (
+        url,
+        options = {}
+    ) => {
+        setLoading(true);
+        setError(null);
+        setData(null); // Clear previous data
+
+        const fullUrl = getFullEnrollmentUrl(url); // Use the new URL helper
+        if (!fullUrl) {
+            setError('Enrollment API URL is not configured correctly.');
+            setLoading(false);
+            return;
+        }
+
+        try {
+            const response = await fetch(fullUrl, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...options.headers,
+                },
+                ...options,
+            });
+
+            if (!response.ok) {
+                console.log("Enrollment API Response is not OK!!!!")
+                const errorData = await response.json().catch(() => ({
+                    message: `HTTP error! status: ${response.status}`,
+                    status: response.status,
+                    error: response.statusText
+                }));
+
+                const customError = {
+                    message: errorData.message || 'An unknown error occurred',
+                    status: errorData.status || response.status,
+                    details: errorData.details || null,
+                };
+
+                throw customError;
+            }
+
+            if (response.status === 204 || response.headers.get('Content-Length') === '0') {
+                setData(true);
+                return true;
+            }
+
+            const result = await response.json();
+            setData(result);
+            return result;
+        } catch (err) {
+            console.error("Enrollment API Fetch Error:", err);
+            setError(err);
+            throw err;
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    // Return both fetchData and fetchDataEnrollment
+    return { data, loading, error, fetchData, fetchDataEnrollment };
 };
 
 export default useApi;

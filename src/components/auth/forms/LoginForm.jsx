@@ -1,48 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Form, Alert } from 'react-bootstrap';
-import CustomButton from '../common/CustomButton';
+import { Form } from 'react-bootstrap';
+import CustomButton from '../../common/CustomButton';
 import texts from '../../../i18n/texts.js';
 
 const LoginForm = ({ onSubmit, isLoading = false, apiErrors = {} }) => {
     const [formData, setFormData] = useState({
         email: '',
-        password: '',
-        role: '',
+        password: ''
     });
-    
-    const [formErrors, setformErrors] = useState({});
+
+    const [formErrors, setFormErrors] = useState({});
 
     useEffect(() => {
-        setformErrors(apiErrors);
+        setFormErrors(apiErrors);
     }, [apiErrors]);
-
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
-
-        // When a field changes, clear its corresponding API error if it exists
-        setformErrors((prevErrors) => ({
-            ...prevErrors,
-            [name]: '',
-        }));
+        setFormData(prev => ({ ...prev, [name]: value }));
+        setFormErrors(prev => ({ ...prev, [name]: '' }));
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
-        // If there are no API errors, proceed with submission
-        if (Object.keys(apiErrors).length === 0) {
-            onSubmit(formData);
-
-        } else {
-            // If there are API errors, ensure they are visible (though they should already be)
-            setformErrors(apiErrors);
-        }
+        onSubmit(formData);
     };
 
     return (
@@ -62,7 +44,7 @@ const LoginForm = ({ onSubmit, isLoading = false, apiErrors = {} }) => {
                 <Form.Control.Feedback type="invalid">{formErrors.email}</Form.Control.Feedback>
             </Form.Group>
 
-            <Form.Group className="mb-3" controlId="userPassword">
+            <Form.Group className="mb-4" controlId="userPassword">
                 <Form.Label>{texts.forms?.password || 'Password'}</Form.Label>
                 <Form.Control
                     type="password"
@@ -77,20 +59,20 @@ const LoginForm = ({ onSubmit, isLoading = false, apiErrors = {} }) => {
 
             <div className="d-flex justify-content-between align-items-center">
                 <small>
-                    {texts.auth?.notRegisteredYet || "Don't have an account?"}{' '}
-                    <Link to="/register">
-                        {texts.auth?.registerLink || 'Register'}
-                    </Link>
+                    {texts.auth?.notRegistered || "Don't have an account?"}{' '}
+                    <Link to="/register">{texts.auth?.registerLink || 'Register'}</Link>
                 </small>
-
-                <CustomButton
-                    variant="success"
-                    type="submit"
-                    isLoading={isLoading}
-                    size="sm"
-                >
+                <CustomButton variant="primary" type="submit" isLoading={isLoading} size="sm">
                     {texts.auth?.loginButton || 'Login'}
                 </CustomButton>
+            </div>
+
+            <div className="text-center mt-3">
+                <small>
+                    <Link to="/forgot-password" className="text-muted">
+                        {texts.auth?.forgotPassword || 'Forgot your password?'}
+                    </Link>
+                </small>
             </div>
         </Form>
     );

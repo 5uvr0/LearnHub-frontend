@@ -178,7 +178,13 @@ const texts = {
         alreadyRegistered: "Already registered?",
         loginLink: "Login",
         notRegisteredYet: "Don't have an account?",
-        registerLink: "Register"
+        registerLink: "Register",
+        loginSuccess: "Login successful!",
+        loginFailed: "Login failed. An unexpected error occurred.", 
+        loggingIn: "Logging in...",
+        registrationSuccess: "Registration successful! Please check your email to verify your account and then log in.", 
+        registrationFailed: "Registration failed. Please try again.",
+        registering: "Registering..."
     },
 };
 

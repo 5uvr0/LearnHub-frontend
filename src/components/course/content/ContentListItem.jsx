@@ -19,9 +19,9 @@ import {
     faTasks,
     faTrash
 } from '@fortawesome/free-solid-svg-icons'; // Import faEye
-import CustomButton from '../common/CustomButton.jsx';
+import CustomButton from '../../common/CustomButton.jsx';
 import texts from '../../../i18n/texts.js';
-import MarkdownRenderer from '../common/MarkdownRender.jsx'; // Corrected import
+import MarkdownRenderer from '../../common/MarkdownRender.jsx'; // Corrected import
 
 // Helper to determine icon and type label based on content type (from DTO or CatalogDTO)
 const getContentInfo = (content) => {

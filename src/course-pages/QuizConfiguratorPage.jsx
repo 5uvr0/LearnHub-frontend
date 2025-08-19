@@ -5,7 +5,7 @@ import {Container, Spinner, Alert, ListGroup, Form, InputGroup, Modal, Badge} fr
 import { useParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTrash, faCheckCircle, faTimesCircle, faCloudUploadAlt, faEdit } from '@fortawesome/free-solid-svg-icons';
-import CustomButton from '../components/course/common/CustomButton';
+import CustomButton from '../components/common/CustomButton';
 import texts from '../i18n/texts';
 import useContentApi from '../course-hooks/useContentApi';
 import ContentPublishModal from '../components/course/modals/ContentPublishModal';

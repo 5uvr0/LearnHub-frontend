@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Card, Badge } from 'react-bootstrap';
-import CustomButton from '../common/CustomButton';
+import CustomButton from '../../common/CustomButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBookOpen, faQuestionCircle, faClipboardList, faEdit, faEye } from '@fortawesome/free-solid-svg-icons'; // Import relevant icons
 

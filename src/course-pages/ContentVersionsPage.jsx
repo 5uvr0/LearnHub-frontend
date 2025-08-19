@@ -6,7 +6,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // ADD THESE MISSING IMPORTS: faFileVideo, faQuestionCircle, faClipboardList
 import { faCloudUploadAlt, faEdit, faTrash, faExternalLinkAlt, faInfoCircle, faFileVideo, faQuestionCircle, faClipboardList } from '@fortawesome/free-solid-svg-icons';
-import CustomButton from '../components/course/common/CustomButton';
+import CustomButton from '../components/common/CustomButton';
 import ContentForm from '../components/course/forms/ContentForm';
 import texts from '../i18n/texts';
 import useContentApi from '../course-hooks/useContentApi';

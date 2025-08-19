@@ -2,6 +2,8 @@
 import React from 'react';
 import { Card, ListGroup } from 'react-bootstrap';
 import ContentListItem from '../content/ContentListItem.jsx';
+import CustomButton from '../../common/CustomButton.jsx';
+import texts from '../../../i18n/texts.js';
 
 const ModuleCard = ({ module, onViewContent }) => {
   if (!module) {

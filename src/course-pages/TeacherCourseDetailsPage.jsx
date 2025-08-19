@@ -6,18 +6,20 @@ import {useNavigate, useParams} from 'react-router-dom';
 import ModuleCard from '../components/course/cards/ModuleCard';
 import ModuleForm from '../components/course/forms/ModuleForm';
 import ContentForm from '../components/course/forms/ContentForm';
-import CustomButton from '../components/course/common/CustomButton';
+import CustomButton from '../components/common/CustomButton';
 import texts from '../i18n/texts';
 import useCourseApi from '../course-hooks/useCourseApi';
 import useModuleApi from '../course-hooks/useModuleApi';
 import useContentApi from '../course-hooks/useContentApi';
-import {faArrowsUpDown, faCloudUploadAlt, faCodeCompare, faEdit, faPlusCircle} from '@fortawesome/free-solid-svg-icons';
+import {faArrowsUpDown, faCloudUploadAlt, faCodeCompare, faEdit, faPlusCircle, faUsers} from '@fortawesome/free-solid-svg-icons';
 import {getRandomModerateColor} from '../utils/colorUtils';
-import MarkdownRenderer from '../components/course/common/MarkdownRender';
+import MarkdownRenderer from '../components/common/MarkdownRender';
 import ModuleReorderModal from '../components/course/modals/ModuleReorderModal';
 import ContentPublishModal from '../components/course/modals/ContentPublishModal';
 import ContentReorderModal from '../components/course/modals/ContentReorderModal';
-import CourseMetadataEditModal from '../components/course/modals/CourseMetadataEditModal'; // NEW: Import the new modal
+import CourseMetadataEditModal from '../components/course/modals/CourseMetadataEditModal';
+import useEnrollmentApi from "../course-hooks/useEnrollmentApi.js"; // NEW: Import the new modal
+import StudentListModal from "../components/course/modals/StudentListModal.jsx";
 
 const TeacherCourseDetailsPage = () => {
     const {id: courseIdParam} = useParams();
@@ -53,6 +55,13 @@ const TeacherCourseDetailsPage = () => {
         getContentReleaseById
     } = useContentApi();
 
+    const {
+        data: enrollments,
+        loading: loadingEnrollments,
+        error: enrollmentsError,
+        getStudentsEnrolledInCourse
+    } = useEnrollmentApi();
+
     const [refreshTrigger, setRefreshTrigger] = useState(0);
 
     // Modals for add/edit operations
@@ -72,6 +81,8 @@ const TeacherCourseDetailsPage = () => {
     const [contentToPublish, setContentToPublish] = useState(null);
     const [parentContentForPublish, setParentContentForPublish] = useState(null);
     const [reorderingModuleContents, setReorderingModuleContents] = useState(null);
+
+    const [showStudentListModal, setShowStudentListModal] = useState(false); // NEW: State for student list modal
 
     // NEW: State for the course metadata edit modal
     const [showCourseMetadataModal, setShowCourseMetadataModal] = useState(false);
@@ -96,6 +107,7 @@ const TeacherCourseDetailsPage = () => {
             return;
         }
         fetchCourseDetails();
+        getStudentsEnrolledInCourse?.(courseId);
     }, [courseId, refreshTrigger, getCourseDetails]);
 
     const fetchCourseDetails = async () => {
@@ -413,6 +425,18 @@ const TeacherCourseDetailsPage = () => {
         <section className="course-details-page py-5">
             <Container>
                 <h2 className="mb-4 fw-bold text-primary text-center">{texts.sections?.courseConfigurator}: {course?.name}</h2>
+                <div className="d-inline-block ms-3">
+                    <CustomButton
+                        variant="primary"
+                        size="sm"
+                        icon={faUsers}
+                        onClick={() => setShowStudentListModal(true)}
+                        isLoading={loadingEnrollments}
+                        disabled={!enrollments || enrollments.length === 0}
+                    >
+                        {loadingEnrollments ? 'Loading...' : (enrollments ? `${enrollments.length} ${enrollments.length === 1 ? 'Student' : 'Students'}` : 'No Students')}
+                    </CustomButton>
+                </div>
                 <div className="d-flex justify-content-end mb-4">
                     {!course?.currentRelease ? (
                         <CustomButton
@@ -586,6 +610,15 @@ const TeacherCourseDetailsPage = () => {
                 course={course}
                 onSave={handleSaveCourseMetadata}
                 isLoading={loadingCourse} // Use the loading state for the course API
+            />
+
+            {/* NEW: Student List Modal */}
+            <StudentListModal
+                show={showStudentListModal}
+                onHide={() => setShowStudentListModal(false)}
+                students={enrollments}
+                isLoading={loadingEnrollments}
+                error={enrollmentsError}
             />
 
         </section>

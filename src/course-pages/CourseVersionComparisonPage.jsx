@@ -3,8 +3,8 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Container, Row, Col, Spinner, Alert, Form, Card, ListGroup, Badge } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
-import CustomButton from '../components/course/common/CustomButton';
-import MarkdownRenderer from '../components/course/common/MarkdownRender';
+import CustomButton from '../components/common/CustomButton';
+import MarkdownRenderer from '../components/common/MarkdownRender';
 import texts from '../i18n/texts';
 import useCourseApi from '../course-hooks/useCourseApi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

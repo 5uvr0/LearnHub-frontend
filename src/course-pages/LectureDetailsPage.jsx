@@ -5,7 +5,7 @@ import {Container, Spinner, Alert, Card, ListGroup, Badge} from 'react-bootstrap
 import { useParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBookOpen, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
-import MarkdownRenderer from '../components/course/common/MarkdownRender'; // Corrected import
+import MarkdownRenderer from '../components/common/MarkdownRender'; // Corrected import
 import texts from '../i18n/texts';
 import useContentApi from '../course-hooks/useContentApi';
 

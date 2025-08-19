@@ -5,7 +5,7 @@ import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 import AppNavbar from './components/course/layout/AppNavbar';
 import AppFooter from './components/course/layout/AppFooter';
 import AppSidebar from './components/course/layout/AppSidebar';
-import HomePage from './course-pages/HomePage';
+import HomePage from './common-pages/HomePage';
 import CoursesPage from './course-pages/CoursesPage';
 import InstructorsPage from './course-pages/InstructorsPage';
 import StudentCourseDetailsPage from './course-pages/StudentCourseDetailsPage';
@@ -21,6 +21,7 @@ import CourseVersionComparisonPage from './course-pages/CourseVersionComparisonP
 import LectureDetailsPage from './course-pages/LectureDetailsPage'; // NEW
 import SubmissionDetailsPage from './course-pages/SubmissionDetailsPage'; // NEW
 import LoginPage from './auth-pages/LoginPage.jsx';
+import InstructorProfilePage from './course-pages/InstructorProfilePage'
 import RegistrationPage from "./auth-pages/RegistrationPage.jsx";
 
 import StudentDashboard from './learner-pages/student/Dashboard.jsx';
@@ -46,7 +47,7 @@ function App() {
 
     return (
         <ThemeProvider>
-            <Router>
+            <Router basename="/learnhub">
                 <div className="App d-flex flex-column min-vh-100">
                     <AppNavbar handleShowSidebar={handleShowSidebar}/>
 
@@ -64,6 +65,9 @@ function App() {
                             <Route path="/instructors" element={<InstructorsPage/>}/>
                             <Route path="/instructors/:id" element={<InstructorDetailsPage/>}/>
                             <Route path="/public-instructors/:id" element={<InstructorPublicViewPage/>}/>
+
+                            {/* Profile, edit, delete etc routes */}
+                            <Route path="/instructor/profile" element={<InstructorProfilePage/>}/>
 
                             {/* Teacher Dashboard & Course Management Routes */}
                             <Route path="/teacher/dashboard" element={<TeacherDashboardPage/>}/>
