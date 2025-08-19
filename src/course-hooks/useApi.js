@@ -1,6 +1,7 @@
 // src/hooks/useApi.js
 
 import { useState, useCallback } from 'react';
+import Cookies from "js-cookie";
 
 // Get API base URL and context path from environment variables
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -52,9 +53,12 @@ const useApi = (initialLoading = false) => {
         }
 
         try {
+            const token = Cookies.get("accessToken");
+            console.log('access token: '+token);
             const response = await fetch(fullUrl, {
                 headers: {
                     'Content-Type': 'application/json',
+                    ...(token && { Authorization: `Bearer ${token}` }),
                     ...options.headers,
                 },
                 ...options,
