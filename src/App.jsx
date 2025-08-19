@@ -34,7 +34,7 @@ function App() {
 
     return (
         <ThemeProvider>
-            <Router>
+            <Router basename="/learnhub">
                 <div className="App d-flex flex-column min-vh-100">
                     <AppNavbar handleShowSidebar={handleShowSidebar}/>
 
