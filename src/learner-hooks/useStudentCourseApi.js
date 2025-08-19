@@ -33,11 +33,22 @@ const useStudentCourseApi = () => {
   );
 
   // Get student course progress (GET)
+  // const getStudentCourseProgress = useCallback(
+  //   (studentId, courseId) =>
+  //     fetchData(`/student-course/progress/${studentId}/${courseId}`, { method: 'GET' }),
+  //   [fetchData]
+  // );
+
+  // Get student course progress (GET)
   const getStudentCourseProgress = useCallback(
-    (studentId, courseId) =>
-      fetchData(`/student-course/progress/${studentId}/${courseId}`, { method: 'GET' }),
-    [fetchData]
+      (studentId, courseDetail) =>
+          fetchData(`/student-course/progress/${studentId}`, {
+            method: "POST",
+            body: JSON.stringify(courseDetail),
+          }),
+      [fetchData]
   );
+
 
   // Get detailed student course progress (GET)
   // const getStudentCourseProgressDetail = useCallback(
@@ -58,9 +69,18 @@ const useStudentCourseApi = () => {
 
 
   // Get all students' progress for a course (GET)
+  // const getAllStudentProgressForCourse = useCallback(
+  //   (courseId) => fetchData(`/student-course/progress/course/${courseId}`, { method: 'GET' }),
+  //   [fetchData]
+  // );
+
   const getAllStudentProgressForCourse = useCallback(
-    (courseId) => fetchData(`/student-course/progress/course/${courseId}`, { method: 'GET' }),
-    [fetchData]
+      (courseDetail) =>
+          fetchData(`/student-course/progress/course`, {
+            method: "POST",
+            body: JSON.stringify(courseDetail),
+          }),
+      [fetchData]
   );
 
   // Get content completion status by student (GET)

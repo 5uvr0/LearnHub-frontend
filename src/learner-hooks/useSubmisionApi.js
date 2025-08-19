@@ -26,7 +26,6 @@ const useSubmissionApi = () => {
         {
           method: 'POST',
           body: formData,
-          // DO NOT set Content-Type here; browser sets it automatically for multipart
         }
       );
     },
@@ -64,6 +63,9 @@ const useSubmissionApi = () => {
     (contentId) => fetchData(`/submissions/content/${contentId}`, { method: 'GET' }),
     [fetchData]
   );
+
+
+
 
   return {
     data,

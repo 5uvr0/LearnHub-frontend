@@ -1,9 +1,51 @@
-import React from "react";
+import React, {useState} from "react";
 import { Container, Button, Card, Row, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import useSubmissionApi from "../../../../learner-hooks/useSubmisionApi.js";
+
+const studentId = 1;
 
 const Quiz = ({ content }) => {
     const navigate = useNavigate();
+    const [answers, setAnswers] = useState({});
+    const { submitQuiz, loading, error } = useSubmissionApi();
+
+    const handleSelect = (questionId, optionId) => {
+        setAnswers((prev) => ({
+            ...prev,
+            [questionId]: [optionId] // wrap in array to match backend DTO
+        }));
+    };
+
+    const handleSubmit = async () => {
+        const submissionPayload = {
+            studentId: studentId,
+            contentId: content.id,
+            answers: answers,
+            quiz: content
+        };
+
+        try {
+
+            console.log(submissionPayload)
+
+            const result = await submitQuiz(submissionPayload);
+
+            console.log(result)
+
+            alert(
+                `Score: ${result.scorePercentage}% - ${
+                    result.passed ? "Passed 🎉" : "Failed ❌, You need to score at least 60% to pass!"
+                }`
+            );
+
+            navigate(-1);
+
+        } catch (err) {
+            console.error(err);
+            alert("Error submitting quiz");
+        }
+    };
 
     return (
         <Container className="py-4">
@@ -24,6 +66,7 @@ const Quiz = ({ content }) => {
                                         type="radio"
                                         name={`question-${q.id}`}
                                         id={`option-${opt.id}`}
+                                        onChange={() => handleSelect(q.id, opt.id)}
                                     />
                                     <label htmlFor={`option-${opt.id}`} className="ms-2">
                                         {opt.optionText}
@@ -47,7 +90,7 @@ const Quiz = ({ content }) => {
                 <Col className="text-end">
                     <Button
                         variant="primary"
-                        onClick={() => alert("Submit button clicked (not yet functional)")}
+                        onClick={() => handleSubmit()}
                     >
                         Submit
                     </Button>
