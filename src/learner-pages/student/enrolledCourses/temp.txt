@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Spinner, Alert, ProgressBar } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import useStudentCourseApi from "../../../learner-hooks/useStudentCourseApi.js";
-import useCourseApi from "../../../course-hooks/useCourseApi.js";
 import ModuleCard from "../../../components/learner/cards/ModuleCard.jsx";
 import texts from "../../../i18n/texts.js";
 
@@ -10,7 +9,6 @@ const studentId = 1;
 
 const StudentCourseDetailPage = () => {
   const { courseId } = useParams();
-  const { getStudentCourse } = useCourseApi();
   const { getStudentCourseProgressDetail } = useStudentCourseApi();
 
   const [course, setCourse] = useState(null);
@@ -25,18 +23,10 @@ const StudentCourseDetailPage = () => {
       try {
         console.log(courseId)
 
-        // 1. Fetch base course
-        const baseCourse = await getStudentCourse(courseId);
+        const data = await getStudentCourseProgressDetail(studentId, courseId);
+        setCourse(data);
 
-        console.log("Base Course")
-        console.log(baseCourse);
-
-        // 2. Send course + studentId to progress API
-        const detailedCourse = await getStudentCourseProgressDetail(studentId, baseCourse);
-
-        setCourse(detailedCourse);
-
-        console.log(detailedCourse);
+        console.log(data)
 
       } catch (err) {
         console.error("Failed to load course detail", err);
