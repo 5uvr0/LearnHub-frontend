@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import LoginForm from '../components/auth/forms/LoginForm.jsx';
 import useAuthApi from '../auth-hooks/useAuthApi';
 import texts from '../i18n/texts';
+import Cookie from 'js-cookie';
 
 const LoginPage = () => {
     const { data, loading, error, fetchData: loginUser } = useAuthApi();
@@ -26,7 +27,10 @@ const LoginPage = () => {
             setMessage(result.message || texts.auth?.loginSuccess || 'Login successful!');
             setMessageVariant('success');
 
-            navigate("/home");
+            Cookie.set("accessToken", result.accessToken);
+            Cookie.set("refreshToken", result.refreshToken);
+
+            navigate("/");
             
         } else if (error) {
             setMessageVariant('danger');

@@ -6,6 +6,7 @@ import HomePage from './components/common-pages/HomePage.jsx';
 import AppNavbar from './components/course/layout/AppNavbar.jsx';
 import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 import LoginPage from './auth-pages/LoginPage.jsx';
+import AdminDashboardPage from './auth-pages/AdminDashboard.jsx';
 import RegistrationPage from "./auth-pages/RegistrationPage.jsx";
 import {ThemeProvider} from './contexts/ThemeContext';
 import './index.css';
@@ -29,6 +30,7 @@ function App() {
                             {/* User Registration & Login Routes */}
                             <Route path="/register" element={<RegistrationPage/>}/>
                             <Route path="/login" element={<LoginPage/>}/>
+                            <Route path="/admin-dashboard" element={<AdminDashboardPage />}/>
                             {/*<Route path="/login/error" element={<LoginErrorPage/>}/>*/}
 
                             {/* Add more routes for About, Contact, etc. */}
