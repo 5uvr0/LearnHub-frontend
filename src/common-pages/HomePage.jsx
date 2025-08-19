@@ -3,10 +3,10 @@
 import React from 'react';
 import { Container } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
-import CustomButton from '../common/CustomButton';
-import texts from '../../i18n/texts';
+import CustomButton from "../components/common/CustomButton.jsx";
+import texts from "../i18n/texts.js";
 
-const HomePage = () => {
+const HomePage = () => { // Removed setCurrentPage, setCourseDetailId props
     const navigate = useNavigate(); // Hook to get navigation function
 
     const handleExploreCoursesClick = () => {

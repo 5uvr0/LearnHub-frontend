@@ -9,7 +9,7 @@ const useCourseApi = () => {
   // Public/Catalog Course Endpoints
   const getAllCoursesCatalog = useCallback(() => fetchData('/public/courses', { method: 'GET' }), [fetchData]);
   const getCourseByIdPublic = useCallback((id) => fetchData(`/public/courses/${id}`, { method: 'GET' }), [fetchData]);
-  const getCoursesByInstructorIdPublic = useCallback((instructorId) => fetchData(`/courses/byInstructor/${instructorId}/public`, { method: 'GET' }), [fetchData]);
+  const getCoursesByInstructorIdPublic = useCallback((instructorId) => fetchData(`/public/courses/byInstructor/${instructorId}`, { method: 'GET' }), [fetchData]);
 
   // Teacher/Configurator Course Endpoints
   const getAllDraftCourses = useCallback(() => fetchData('/courses/draft', { method: 'GET' }), [fetchData]);
