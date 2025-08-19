@@ -21,6 +21,7 @@ import CourseVersionComparisonPage from './course-pages/CourseVersionComparisonP
 import LectureDetailsPage from './course-pages/LectureDetailsPage'; // NEW
 import SubmissionDetailsPage from './course-pages/SubmissionDetailsPage'; // NEW
 import LoginPage from './auth-pages/LoginPage.jsx';
+import InstructorProfilePage from './course-pages/InstructorProfilePage'
 import RegistrationPage from "./auth-pages/RegistrationPage.jsx";
 import {ThemeProvider} from './contexts/ThemeContext';
 import './index.css';
@@ -51,6 +52,9 @@ function App() {
                             <Route path="/instructors" element={<InstructorsPage/>}/>
                             <Route path="/instructors/:id" element={<InstructorDetailsPage/>}/>
                             <Route path="/public-instructors/:id" element={<InstructorPublicViewPage/>}/>
+
+                            {/* Profile, edit, delete etc routes */}
+                            <Route path="/instructor/profile" element={<InstructorProfilePage/>}/>
 
                             {/* Teacher Dashboard & Course Management Routes */}
                             <Route path="/teacher/dashboard" element={<TeacherDashboardPage/>}/>
