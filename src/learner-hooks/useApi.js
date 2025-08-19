@@ -1,5 +1,7 @@
 // src/learner-hooks/useApi.js
 import { useState, useCallback } from 'react';
+import Cookies from "js-cookie";
+import axios from "axios";
 
 // Get API base URL and context path from environment variables
 const API_BASE_URL = import.meta.env.VITE_LEARNING_BASE_URL;
@@ -39,14 +41,18 @@ const useApi = (initialLoading = false) => {
     }
 
     try {
-      const response = await fetch(fullUrl, {
+      const token = Cookies.get("accessToken");
+
+      const response = await axios({
+        url: fullUrl,
+        method: options.method || "GET",
         headers: {
-          'Content-Type': 'application/json',
-          // Add authorization headers here if needed later (e.g., Bearer Token):
-          // 'Authorization': `Bearer YOUR_TOKEN`,
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
           ...options.headers,
         },
-        ...options,
+        data: options.body || options.data || null,
+        params: options.params || null,
       });
 
       if (!response.ok) {
