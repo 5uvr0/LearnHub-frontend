@@ -21,6 +21,7 @@ import CourseVersionComparisonPage from './course-pages/CourseVersionComparisonP
 import LectureDetailsPage from './course-pages/LectureDetailsPage'; // NEW
 import SubmissionDetailsPage from './course-pages/SubmissionDetailsPage'; // NEW
 import LoginPage from './auth-pages/LoginPage.jsx';
+import AdminDashboardPage from './auth-pages/AdminDashboard.jsx';
 import InstructorProfilePage from './course-pages/InstructorProfilePage'
 import RegistrationPage from "./auth-pages/RegistrationPage.jsx";
 
@@ -102,6 +103,7 @@ function App() {
                             {/* User Registration & Login Routes */}
                             <Route path="/register" element={<RegistrationPage/>}/>
                             <Route path="/login" element={<LoginPage/>}/>
+                            <Route path="/admin-dashboard" element={<AdminDashboardPage />}/>
                             {/*<Route path="/login/error" element={<LoginErrorPage/>}/>*/}
 
                              {/* Student dashboard and profile */}
