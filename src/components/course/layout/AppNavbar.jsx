@@ -34,8 +34,9 @@ const AppNavbar = () => { // handleShowSidebar prop is no longer needed here
     { name: texts.nav?.courses || 'Courses', icon: <GraduationCap size={20} />, path: '/courses' },
     { name: texts.nav?.instructors || 'Instructors', icon: <Users size={20} />, path: '/instructors' },
     { name: texts.nav?.teacherDashboard || 'Teacher Dashboard', icon: <FontAwesomeIcon icon={faChalkboardTeacher} />, path: '/teacher/dashboard' },
-    { name: 'Profile', icon: <UserCircle2 size={20} />, path: '/instructor/profile' },
+    { name: 'Profile', icon: <UserCircle2 size={20} />, path: '/profile' },
     { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/teacher/dashboard' },
+    { name: 'Quizzes', icon: <FileText size={20} />, path: '/quizzes' },
     { name: 'Submissions', icon: <FileText size={20} />, path: '/submissions' },
 
   ];
