@@ -5,7 +5,7 @@ import { Card, ListGroup, Accordion } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlusCircle, faEdit, faTrash, faArrowsAltV } from '@fortawesome/free-solid-svg-icons'; // Import reorder icon
 import ContentListItem from '../content/ContentListItem.jsx';
-import CustomButton from '../common/CustomButton.jsx';
+import CustomButton from '../../common/CustomButton.jsx';
 import texts from '../../../i18n/texts.js';
 
 const ModuleCard = ({

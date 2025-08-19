@@ -5,7 +5,7 @@ import { Navbar, Nav, Container, Button, Offcanvas } from 'react-bootstrap'; // 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSun, faMoon, faBars, faChalkboardTeacher } from '@fortawesome/free-solid-svg-icons';
 import { Link, useLocation } from 'react-router-dom';
-import CustomButton from '../common/CustomButton.jsx';
+import CustomButton from '../../common/CustomButton.jsx';
 import { useTheme } from '../../../course-hooks/useTheme.js';
 import texts from '../../../i18n/texts.js';
 
@@ -34,9 +34,8 @@ const AppNavbar = () => { // handleShowSidebar prop is no longer needed here
     { name: texts.nav?.courses || 'Courses', icon: <GraduationCap size={20} />, path: '/courses' },
     { name: texts.nav?.instructors || 'Instructors', icon: <Users size={20} />, path: '/instructors' },
     { name: texts.nav?.teacherDashboard || 'Teacher Dashboard', icon: <FontAwesomeIcon icon={faChalkboardTeacher} />, path: '/teacher/dashboard' },
-    { name: 'Profile', icon: <UserCircle2 size={20} />, path: '/profile' },
+    { name: 'Profile', icon: <UserCircle2 size={20} />, path: '/instructor/profile' },
     { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/teacher/dashboard' },
-    { name: 'Quizzes', icon: <FileText size={20} />, path: '/quizzes' },
     { name: 'Submissions', icon: <FileText size={20} />, path: '/submissions' },
 
   ];

@@ -1,58 +1,57 @@
-// src/pages/RegistrationPage.jsx
-
 import React, { useState } from 'react';
 import { Container, Alert, Spinner, Row, Col } from 'react-bootstrap';
-import RegistrationForm from '../components/forms/RegistrationForm';
-import useAuthApi from '../hooks/useAuthApi';
-import texts from '../i18n/texts'; 
+import RegistrationForm from '../components/auth/forms/RegistrationForm';
+import useAuthApi from '../auth-hooks/useAuthApi';
+import texts from '../i18n/texts';
+import { useNavigate } from 'react-router-dom';
 
 const RegistrationPage = () => {
-    const { data: registrationData, loading: registrationLoading, error: registrationApiError, fetchData: registerUser } = useAuthApi();
-
+    const { data, loading, error, fetchData: registerUser } = useAuthApi();
     const [message, setMessage] = useState('');
-    const [messageVariant, setMessageVariant] = useState(''); // 'success' or 'danger'
-    const [backendFormErrors, setBackendFormErrors] = useState({});
+    const [messageVariant, setMessageVariant] = useState('');
+    const [formErrors, setFormErrors] = useState({});
+    const navigate = useNavigate();
 
     const handleRegistrationSubmit = async (formData) => {
         setMessage('');
         setMessageVariant('');
-        setBackendFormErrors({});
+        setFormErrors({});
 
         const result = await registerUser('/api/register', {
             method: 'POST',
-            data: {
-                email: formData.email,
-                password: formData.password,
-                role: formData.role,
-            },
+            data: formData
         });
 
         if (result) {
-            setMessage(result.message || texts.alerts?.registrationSuccess || 'Registration successful! Please check your email to verify your account and then log in.');
+            setMessage(result.message || texts.auth?.registrationSuccess || 'Registration successful!');
             setMessageVariant('success');
 
-        } else if (registrationApiError) {
+            alert("Registration Succesful! Check your email. You need to activate your account first before you try to login.");
+            navigate("/login");
+            
+        } else if (error) {
             setMessageVariant('danger');
-
+            
             try {
-                const parsedError = JSON.parse(registrationApiError);
-                if (parsedError.message) {
-                    setMessage(parsedError.message);
+                const parsedError = JSON.parse(error);
+                
+                if (parsedError.errors?.error) {
+                    setMessage(`${parsedError.message || 'Error'}: ${parsedError.errors.error}`);
 
                 } else {
-                    setMessage(texts.alerts?.registrationFailed || 'Registration failed. Please try again.');
+                    setMessage(parsedError.message || texts.auth?.registrationFailed || 'Registration failed.');
                 }
-
-                if (parsedError.errors) {
-                    setBackendFormErrors(parsedError.errors);
+                
+                if (parsedError.errors && !parsedError.errors.error) {
+                    setFormErrors(parsedError.errors);
                 }
-
+                
             } catch (e) {
-                setMessage(registrationApiError || texts.alerts?.registrationFailed || 'Registration failed. An unexpected error occurred.');
+                setMessage(error || texts.auth?.registrationFailed || 'Registration failed.');
             }
 
         } else {
-            setMessage(texts.alerts?.registrationFailed || 'Registration failed. Please check your network and try again.');
+            setMessage(texts.auth?.registrationFailed || 'Registration failed. Please try again.');
             setMessageVariant('danger');
         }
     };
@@ -62,13 +61,12 @@ const RegistrationPage = () => {
             <Container>
                 <Row className="justify-content-center">
                     <Col md={8} lg={6}>
-
-                        {registrationLoading && (
+                        {loading && (
                             <div className="text-center mb-3">
                                 <Spinner animation="border" role="status" className="mb-2">
                                     <span className="visually-hidden">Registering...</span>
                                 </Spinner>
-                                <p className="text-muted">{texts.alerts?.registering || 'Registering...'}</p>
+                                <p className="text-muted">{texts.auth?.registering || 'Registering...'}</p>
                             </div>
                         )}
 
@@ -80,8 +78,8 @@ const RegistrationPage = () => {
 
                         <RegistrationForm
                             onSubmit={handleRegistrationSubmit}
-                            isLoading={registrationLoading}
-                            apiErrors={backendFormErrors}
+                            isLoading={loading}
+                            apiErrors={formErrors}
                         />
                     </Col>
                 </Row>

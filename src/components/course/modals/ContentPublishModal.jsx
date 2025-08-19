@@ -1,16 +1,16 @@
 // src/components/modals/ContentPublishModal.jsx
+
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Alert, ListGroup, Badge, Card, InputGroup } from 'react-bootstrap';
-import CustomButton from '../common/CustomButton.jsx';
-import MarkdownRenderer from '../common/MarkdownRender.jsx';
+import CustomButton from '../../common/CustomButton.jsx';
+import MarkdownRenderer from '../../common/MarkdownRender.jsx';
 import texts from '../../../i18n/texts.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExternalLinkAlt, faBookOpen, faQuestionCircle, faClipboardList, faInfoCircle, faPlus, faEdit, faTrash, faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import _ from 'lodash';
 import MDEditor from '@uiw/react-md-editor';
 
-// ... (existing helper functions)
-
+// Helper to get content type info
 const getContentTypeInfo = (content) => {
     let icon = faInfoCircle;
     let typeLabel = "Content";
@@ -40,6 +40,49 @@ const getContentTypeInfo = (content) => {
             variant = "secondary";
     }
     return { icon, typeLabel, variant };
+};
+
+
+// NEW/RE-ADDED HELPER FUNCTION: Compare current form data against published content
+const areContentDetailsModified = (currentFormData, publishedContent, contentType) => {
+    // If no published content, it's a new version, so it's always considered modified
+    if (!publishedContent) {
+        return true;
+    }
+
+    // Always compare title
+    if (currentFormData.title !== publishedContent.title) {
+        return true;
+    }
+
+    switch (contentType) {
+        case "LECTURE":
+            return (
+                currentFormData.description !== publishedContent.description ||
+                currentFormData.videoUrl !== publishedContent.videoUrl ||
+                currentFormData.resourceLink !== publishedContent.resourceLink
+            );
+        case "SUBMISSION":
+            return (
+                currentFormData.description !== publishedContent.description ||
+                currentFormData.resourceLink !== publishedContent.resourceLink
+            );
+        case "QUIZ":
+            // For Quiz, compare the questions array deeply.
+            // This is crucial as questions/options are now edited inside the modal.
+            return !_.isEqual(
+                currentFormData.questions?.map(q => ({
+                    questionText: q?.questionText,
+                    options: q?.options?.map(o => ({ optionText: o?.optionText, correct: o?.correct }))
+                })),
+                publishedContent.questions?.map(q => ({
+                    questionText: q?.questionText,
+                    options: q?.options?.map(o => ({ optionText: o?.optionText, correct: o?.correct }))
+                }))
+            );
+        default:
+            return false;
+    }
 };
 
 
@@ -204,11 +247,9 @@ const ContentPublishModal = ({ show, onHide, contentToPublish, parentContent, on
             // Filter out temporary IDs before sending to backend
             const finalQuestions = formData.questions.map(q => ({
                 ...q,
-                // Check if id is a string before calling startsWith
                 id: typeof q.id === 'string' && q.id.startsWith('temp-') ? null : q.id,
                 options: q.options.map(o => ({
                     ...o,
-                    // Check if id is a string before calling startsWith
                     id: typeof o.id === 'string' && o.id.startsWith('temp-') ? null : o.id,
                 }))
             }));

@@ -1,34 +1,66 @@
 // src/pages/TeacherCourseDetailsPage.jsx
 
-import React, { useEffect, useState } from 'react'; // Corrected import
-import { Container, Row, Col, Spinner, Alert, Modal, Form, Accordion } from 'react-bootstrap';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {Accordion, Alert, Col, Container, Modal, Spinner} from 'react-bootstrap';
+import {useNavigate, useParams} from 'react-router-dom';
 import ModuleCard from '../components/course/cards/ModuleCard';
 import ModuleForm from '../components/course/forms/ModuleForm';
 import ContentForm from '../components/course/forms/ContentForm';
-import CustomButton from '../components/course/common/CustomButton';
+import CustomButton from '../components/common/CustomButton';
 import texts from '../i18n/texts';
 import useCourseApi from '../course-hooks/useCourseApi';
 import useModuleApi from '../course-hooks/useModuleApi';
 import useContentApi from '../course-hooks/useContentApi';
-import { faPlusCircle, faCloudUploadAlt, faEdit, faArrowsUpDown, faCodeCompare } from '@fortawesome/free-solid-svg-icons';
-import { getRandomModerateColor } from '../utils/colorUtils';
-import MarkdownRenderer from '../components/course/common/MarkdownRender'; // Corrected import
+import {faArrowsUpDown, faCloudUploadAlt, faCodeCompare, faEdit, faPlusCircle, faUsers} from '@fortawesome/free-solid-svg-icons';
+import {getRandomModerateColor} from '../utils/colorUtils';
+import MarkdownRenderer from '../components/common/MarkdownRender';
 import ModuleReorderModal from '../components/course/modals/ModuleReorderModal';
 import ContentPublishModal from '../components/course/modals/ContentPublishModal';
 import ContentReorderModal from '../components/course/modals/ContentReorderModal';
-import _ from 'lodash'; // Import lodash for deep comparison
-
+import CourseMetadataEditModal from '../components/course/modals/CourseMetadataEditModal';
+import useEnrollmentApi from "../course-hooks/useEnrollmentApi.js"; // NEW: Import the new modal
+import StudentListModal from "../components/course/modals/StudentListModal.jsx";
 
 const TeacherCourseDetailsPage = () => {
-    const { id: courseIdParam } = useParams();
+    const {id: courseIdParam} = useParams();
     const courseId = parseInt(courseIdParam);
     const navigate = useNavigate();
 
     // API Hooks
-    const { data: course, loading: loadingCourse, error: courseError, getCourseDetails, publishCourse, reorderModules, getAllCourseVersions } = useCourseApi();
-    const { createModule, reorderModuleContents, updateModule, deleteModule, loading: loadingModuleApi, error: moduleApiError } = useModuleApi();
-    const { createContent, editContentMetadata, publishContentRelease, deleteContentRelease, loading: loadingContentApi, error: contentApiError, getContentReleaseById } = useContentApi();
+    const {
+        data: course,
+        loading: loadingCourse,
+        error: courseError,
+        getCourseDetails,
+        publishCourse,
+        reorderModules,
+        getAllCourseVersions,
+        updateCourse
+    } = useCourseApi();
+    const {
+        createModule,
+        reorderModuleContents,
+        updateModule,
+        deleteModule,
+        loading: loadingModuleApi,
+        error: moduleApiError
+    } = useModuleApi();
+    const {
+        createContent,
+        editContentMetadata,
+        publishContentRelease,
+        deleteContentRelease,
+        loading: loadingContentApi,
+        error: contentApiError,
+        getContentReleaseById
+    } = useContentApi();
+
+    const {
+        data: enrollments,
+        loading: loadingEnrollments,
+        error: enrollmentsError,
+        getStudentsEnrolledInCourse
+    } = useEnrollmentApi();
 
     const [refreshTrigger, setRefreshTrigger] = useState(0);
 
@@ -47,14 +79,16 @@ const TeacherCourseDetailsPage = () => {
 
     const [showPublishContentModal, setShowPublishContentModal] = useState(false);
     const [contentToPublish, setContentToPublish] = useState(null);
-    const [parentContentForPublish, setParentContentForPublish] = useState(null); // NEW: To pass parent content to modal
+    const [parentContentForPublish, setParentContentForPublish] = useState(null);
     const [reorderingModuleContents, setReorderingModuleContents] = useState(null);
 
+    const [showStudentListModal, setShowStudentListModal] = useState(false); // NEW: State for student list modal
 
-    // Generate a random color for this card
+    // NEW: State for the course metadata edit modal
+    const [showCourseMetadataModal, setShowCourseMetadataModal] = useState(false);
+
     const cardColor = getRandomModerateColor();
 
-    // Function to generate a simple SVG icon based on the color
     const generateCourseSvg = (bgColor) => {
         return `
           <svg width="100%" height="100%" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
@@ -73,6 +107,7 @@ const TeacherCourseDetailsPage = () => {
             return;
         }
         fetchCourseDetails();
+        getStudentsEnrolledInCourse?.(courseId);
     }, [courseId, refreshTrigger, getCourseDetails]);
 
     const fetchCourseDetails = async () => {
@@ -97,10 +132,10 @@ const TeacherCourseDetailsPage = () => {
     const handleModuleFormSubmit = async (formData) => {
         try {
             if (editingModule) {
-                await updateModule?.(editingModule?.id, { ...formData, courseId: courseId });
+                await updateModule?.(editingModule?.id, {...formData, courseId: courseId});
                 alert(texts.alerts?.moduleUpdatedSuccess);
             } else {
-                await createModule?.({ ...formData, courseId: courseId });
+                await createModule?.({...formData, courseId: courseId});
                 alert(texts.alerts?.moduleCreatedSuccess);
             }
             setShowModuleModal(false);
@@ -140,7 +175,6 @@ const TeacherCourseDetailsPage = () => {
 
     // --- Content Management Handlers ---
     const handleAddContent = (moduleId) => {
-        console.log(moduleId + " + pressed, adding content");
         setEditingContentData(null);
         setActiveModuleIdForContent(moduleId);
         setIsCreatingNewContent(true);
@@ -171,16 +205,14 @@ const TeacherCourseDetailsPage = () => {
         setShowContentModal(true);
     };
 
-
     const handleContentFormSubmit = async (formData) => {
-        console.log(JSON.stringify(formData));
         try {
             if (isCreatingNewContent) {
-                const payload = { ...formData, moduleId: activeModuleIdForContent };
+                const payload = {...formData, moduleId: activeModuleIdForContent};
                 await createContent?.(payload);
                 alert(texts.alerts?.contentCreatedSuccess);
             } else if (isCreatingNewContentRelease && activeModuleIdForContent) {
-                const payload = { ...formData, moduleId: activeModuleIdForContent };
+                const payload = {...formData, moduleId: activeModuleIdForContent};
                 await publishContentRelease?.(activeModuleIdForContent, payload);
                 alert(texts.alerts?.contentPublishedSuccess);
             } else if (editingContentData) {
@@ -215,7 +247,6 @@ const TeacherCourseDetailsPage = () => {
         }
     };
 
-    // MODIFIED: handlePublishContent to open modal
     const handlePublishContent = async (contentReleaseId, release, parentContentId) => {
         try {
             const fullReleaseDetails = release;
@@ -223,17 +254,14 @@ const TeacherCourseDetailsPage = () => {
                 alert("Could not retrieve content details for publishing.");
                 return;
             }
-            // Find the parent content object from the course data
-            // This is complex as 'course' has modules, and modules have contents (ContentDTO)
-            // We need the ContentDTO that this release belongs to, to compare its currentContentRelease
             let foundParentContent = null;
             for (const module of course?.modules || []) {
                 foundParentContent = module?.contents?.find(c => c?.id === parentContentId);
                 if (foundParentContent) break;
             }
 
-            setContentToPublish(fullReleaseDetails); // Set the content data for the modal
-            setParentContentForPublish(foundParentContent); // Pass the parent content to the modal
+            setContentToPublish(fullReleaseDetails);
+            setParentContentForPublish(foundParentContent);
             setShowPublishContentModal(true);
 
         } catch (err) {
@@ -241,24 +269,17 @@ const TeacherCourseDetailsPage = () => {
         }
     };
 
-    // NEW: handleConfirmPublish from modal
     const handleConfirmPublish = async (formDataFromModal, isRePublishingModifiedCurrent) => {
         try {
-            // Construct payload for publishContentRelease API
-            // The API expects a ContentCatalogueDTO (which includes title, orderIndex, moduleId, type)
-            // and then specific fields based on type (description, videoUrl, resourceLink, questions).
-            // We should only send the fields that are relevant and potentially modified.
-
-            const originalContentRelease = contentToPublish; // The original release that was opened in modal
+            const originalContentRelease = contentToPublish;
             const payload = {
                 id: originalContentRelease?.id,
                 title: formDataFromModal?.title,
-                orderIndex: originalContentRelease?.orderIndex, // Order index is part of ContentReleaseDTO
-                moduleId: originalContentRelease?.moduleId, // Module ID is part of ContentReleaseDTO
-                type: originalContentRelease?.type, // Type is part of ContentReleaseDTO
+                orderIndex: originalContentRelease?.orderIndex,
+                moduleId: originalContentRelease?.moduleId,
+                type: originalContentRelease?.type,
             };
 
-            // Conditionally add fields based on type and whether they were modified
             if (originalContentRelease?.type === 'LECTURE' || originalContentRelease?.type === 'SUBMISSION') {
                 payload.description = formDataFromModal?.description;
                 if (originalContentRelease?.type === 'LECTURE') {
@@ -266,9 +287,8 @@ const TeacherCourseDetailsPage = () => {
                 }
                 payload.resourceLink = formDataFromModal?.resourceLink;
             }
-            // Quiz questions are not editable in this modal, so they are not included in formDataFromModal
 
-            await publishContentRelease?.(payload?.id, payload); // Use payload.id for contentReleaseId
+            await publishContentRelease?.(payload?.id, payload);
             alert(texts.alerts?.contentPublishedSuccess);
             setShowPublishContentModal(false);
             setContentToPublish(null);
@@ -286,10 +306,26 @@ const TeacherCourseDetailsPage = () => {
                 await publishCourse?.(course?.id);
                 alert(texts.alerts?.coursePublishedSuccess);
                 setRefreshTrigger((prev) => prev + 1);
-            }
-            catch (err) {
+            } catch (err) {
                 alert(texts.alerts?.apiError?.(courseError?.message || err?.message));
             }
+        }
+    };
+
+    // NEW: Course Metadata Edit Handler
+    const handleEditCourseMetadata = () => {
+        setShowCourseMetadataModal(true);
+    };
+
+    // NEW: Course Metadata Save Handler
+    const handleSaveCourseMetadata = async (newTitle) => {
+        try {
+            await updateCourse?.(course?.id, {name: newTitle});
+            alert("Course metadata updated successfully!");
+            setShowCourseMetadataModal(false);
+            setRefreshTrigger((prev) => prev + 1);
+        } catch (err) {
+            alert(texts.alerts?.apiError?.(courseError?.message || err?.message));
         }
     };
 
@@ -309,8 +345,6 @@ const TeacherCourseDetailsPage = () => {
 
     // NEW: Navigation handler for Content Details View (Lecture/Submission/Quiz)
     const onViewContentDetails = (contentReleaseId, contentType) => {
-        console.log("clicked view details:");
-
         switch (contentType) {
             case 'LECTURE':
                 navigate(`/teacher/lectures/${contentReleaseId}`);
@@ -319,7 +353,7 @@ const TeacherCourseDetailsPage = () => {
                 navigate(`/teacher/submissions/${contentReleaseId}`);
                 break;
             case 'QUIZ':
-                navigate(`/teacher/quizzes/${contentReleaseId}`); // Quiz has its own configurator page
+                navigate(`/teacher/quizzes/${contentReleaseId}`);
                 break;
             default:
                 alert('Unknown content type for details view.');
@@ -327,7 +361,6 @@ const TeacherCourseDetailsPage = () => {
     };
 
     const handleReorderContents = (module) => {
-        console.log(module);
         setReorderingModuleContents(module?.contents);
         setShowReorderModalContent(true);
     };
@@ -336,11 +369,10 @@ const TeacherCourseDetailsPage = () => {
         try {
             await reorderModuleContents(reorderPayload);
             alert('Contents reordered successfully!');
-
             setShowReorderModalContent(false);
             setReorderingModuleContents(null);
             setRefreshTrigger((prev) => prev + 1);
-        } catch (error) {
+        } catch (err) {
             alert('Failed to reorder contents.');
         }
     };
@@ -393,6 +425,18 @@ const TeacherCourseDetailsPage = () => {
         <section className="course-details-page py-5">
             <Container>
                 <h2 className="mb-4 fw-bold text-primary text-center">{texts.sections?.courseConfigurator}: {course?.name}</h2>
+                <div className="d-inline-block ms-3">
+                    <CustomButton
+                        variant="primary"
+                        size="sm"
+                        icon={faUsers}
+                        onClick={() => setShowStudentListModal(true)}
+                        isLoading={loadingEnrollments}
+                        disabled={!enrollments || enrollments.length === 0}
+                    >
+                        {loadingEnrollments ? 'Loading...' : (enrollments ? `${enrollments.length} ${enrollments.length === 1 ? 'Student' : 'Students'}` : 'No Students')}
+                    </CustomButton>
+                </div>
                 <div className="d-flex justify-content-end mb-4">
                     {!course?.currentRelease ? (
                         <CustomButton
@@ -404,13 +448,15 @@ const TeacherCourseDetailsPage = () => {
                             {texts.courseCard?.publish} Course
                         </CustomButton>
                     ) : (
-                        <Alert variant="info" className="mb-0 p-2">Course is currently published (Version: {course?.currentRelease}).</Alert>
+                        <Alert variant="info" className="mb-0 p-2">Course is currently published
+                            (Version: {course?.currentRelease}).</Alert>
                     )}
+                    {/* MODIFIED: Changed onClick to open the new modal */}
                     <CustomButton
                         variant="warning"
                         icon={faEdit}
                         className="ms-3"
-                        onClick={() => navigate(`/teacher/courses/${course?.id}/edit`)}
+                        onClick={handleEditCourseMetadata}
                     >
                         Edit Course Metadata
                     </CustomButton>
@@ -425,26 +471,28 @@ const TeacherCourseDetailsPage = () => {
                 </div>
 
                 <div className="row mb-5 align-items-center">
-                    {/* Wrap the image/SVG placeholder in a Col */}
-                    <Col md={4} className="text-center"> {/* Use Col for grid alignment */}
+                    <Col md={4} className="text-center">
                         {course?.imageUrl ? (
                             <img
                                 src={course.imageUrl}
                                 alt={course?.name || 'Course Image'}
                                 className="img-fluid rounded-4 shadow-sm"
-                                style={{ width: '300px', height: '300px', objectFit: 'cover' }} // Ensure image fills its space
-                                onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/300x300/cccccc/333333?text=Course"; }}
+                                style={{width: '300px', height: '300px', objectFit: 'cover'}}
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = "https://placehold.co/300x300/cccccc/333333?text=Course";
+                                }}
                             />
                         ) : (
                             <div
                                 className="d-flex align-items-center justify-content-center rounded-4 shadow-sm"
-                                style={{ width: '300px', height: '300px', backgroundColor: cardColor, margin: '0 auto' }} // Center the div
-                                dangerouslySetInnerHTML={{ __html: generateCourseSvg(cardColor) }}
+                                style={{width: '300px', height: '300px', backgroundColor: cardColor, margin: '0 auto'}}
+                                dangerouslySetInnerHTML={{__html: generateCourseSvg(cardColor)}}
                             ></div>
                         )}
                     </Col>
-                    <Col md={8} className=''> {/* This is already a Col */}
-                        <MarkdownRenderer markdownText={course?.description} className="lead text-secondary" /> {/* Use course.description first */}
+                    <Col md={8} className=''>
+                        <MarkdownRenderer markdownText={course?.description} className="lead text-secondary"/>
                         <p className="mb-0"><strong>Instructor:</strong> {course?.instructorName}</p>
                         <p><strong>Course ID:</strong> {course?.id}</p>
                         <p><strong>Current Published Version:</strong> {course?.currentRelease || 'N/A'}</p>
@@ -453,11 +501,13 @@ const TeacherCourseDetailsPage = () => {
 
                 <h3 className="mb-4 fw-bold text-secondary d-flex justify-content-between align-items-center">
                     {texts.sections?.modules}
-                    <div> {/* Wrap buttons for spacing */}
-                        <CustomButton variant="primary" icon={faPlusCircle} onClick={handleAddModule} isLoading={loadingModuleApi} className="me-2">
+                    <div>
+                        <CustomButton variant="primary" icon={faPlusCircle} onClick={handleAddModule}
+                                      isLoading={loadingModuleApi} className="me-2">
                             Add Module
                         </CustomButton>
-                        <CustomButton variant="info" icon={faArrowsUpDown} onClick={handleReorderModules} isLoading={loadingModuleApi}>
+                        <CustomButton variant="info" icon={faArrowsUpDown} onClick={handleReorderModules}
+                                      isLoading={loadingModuleApi}>
                             {texts.sections?.reorderModules}
                         </CustomButton>
                     </div>
@@ -544,13 +594,31 @@ const TeacherCourseDetailsPage = () => {
                 isLoading={loadingContentApi}
             />
 
-            {/*Content Reorder modal*/}
+            {/* Content Reorder modal*/}
             <ContentReorderModal
                 show={showReorderModalContent}
                 onHide={() => setShowReorderModalContent(false)}
                 onSave={handleSaveReorder}
                 contents={reorderingModuleContents}
-                isLoading={loadingContentApi} // Replace with your actual loading state
+                isLoading={loadingContentApi}
+            />
+
+            {/* NEW: Course Metadata Edit Modal */}
+            <CourseMetadataEditModal
+                show={showCourseMetadataModal}
+                onHide={() => setShowCourseMetadataModal(false)}
+                course={course}
+                onSave={handleSaveCourseMetadata}
+                isLoading={loadingCourse} // Use the loading state for the course API
+            />
+
+            {/* NEW: Student List Modal */}
+            <StudentListModal
+                show={showStudentListModal}
+                onHide={() => setShowStudentListModal(false)}
+                students={enrollments}
+                isLoading={loadingEnrollments}
+                error={enrollmentsError}
             />
 
         </section>

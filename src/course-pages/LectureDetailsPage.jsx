@@ -1,11 +1,11 @@
 // src/pages/LectureDetailsPage.jsx
 
 import React, { useEffect } from 'react';
-import { Container, Spinner, Alert, Card, ListGroup } from 'react-bootstrap';
+import {Container, Spinner, Alert, Card, ListGroup, Badge} from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBookOpen, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
-import MarkdownRenderer from '../components/course/common/MarkdownRender'; // Corrected import
+import MarkdownRenderer from '../components/common/MarkdownRender'; // Corrected import
 import texts from '../i18n/texts';
 import useContentApi from '../course-hooks/useContentApi';
 
@@ -55,6 +55,13 @@ const LectureDetailsPage = () => {
             <Container>
                 <h2 className="mb-4 fw-bold text-primary text-center">
                     {texts.sections?.lectureDetails}: {lecture?.title}
+                    {lecture?.releaseNum !== 0 ? (
+                        <Badge bg="success"
+                               className="me-2 mb-md-2 ms-2">{texts?.sections.published}</Badge>
+                    ) : (
+                        <Badge bg="danger"
+                               className="me-2 mb-md-2">{texts?.sections.draft}</Badge>
+                    )}
                 </h2>
 
                 <Card className="shadow-sm border-0 rounded-4 p-4">

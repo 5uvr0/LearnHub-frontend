@@ -43,18 +43,20 @@ const useContentApi = () => {
             'Content-Type': 'application/json',
         },
     }), [fetchData]);
-    
-    // NEW: API for editing a quiz question
+
     const editQuizQuestion = useCallback((questionId, questionData) => fetchData(`/contents/quiz/questions/question/${questionId}`, {
         method: 'PATCH',
         body: JSON.stringify(questionData),
     }), [fetchData]);
 
-    // NEW: API for editing a quiz option
     const editQuizOption = useCallback((optionId, optionData) => fetchData(`/contents/quiz/questions/option/${optionId}`, {
         method: 'PATCH',
         body: JSON.stringify(optionData),
     }), [fetchData]);
+
+    // NEW: API to fetch all content drafts
+    const getAllContentDrafts = useCallback(() => fetchData('/contents/draft', { method: 'GET' }), [fetchData]);
+
 
     return {
         data, loading, error, addQuizOption,
@@ -62,7 +64,8 @@ const useContentApi = () => {
         getContentReleaseById, getContentByModuleId, getAllContentReleases,
         getSpecificContentRelease, getAllContentReleasesForContent,
         createNewQuizQuestion, deleteQuizQuestion, getAllQuizQuestions,
-        editQuizQuestion, editQuizOption, // NEW: Return the new functions
+        editQuizQuestion, editQuizOption,
+        getAllContentDrafts, // NEW: Return the new function
     };
 };
 
