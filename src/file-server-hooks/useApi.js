@@ -17,7 +17,7 @@ const useApi = (initialLoading = false) => {
   const [loading, setLoading] = useState(initialLoading);
   const [error, setError] = useState(null);
 
-  const fetchData = useCallback(async (url, options = {}) => {
+  const fetchData = useCallback(async (url, options = {}, isFileDownload = false) => {
     setLoading(true);
     setError(null);
     setData(null);
@@ -26,7 +26,7 @@ const useApi = (initialLoading = false) => {
     if (!fullUrl) {
       setError('API URL is not configured correctly.');
       setLoading(false);
-      return;
+      return null;
     }
 
     try {
@@ -38,46 +38,41 @@ const useApi = (initialLoading = false) => {
         headers['Content-Type'] = headers['Content-Type'] || 'application/json';
       }
 
-      const response = await fetch(fullUrl, {
-        ...options,
-        headers,
-      });
+      const response = await fetch(fullUrl, { ...options, headers });
 
       if (!response.ok) {
         let errorMessage = `HTTP error! status: ${response.status}`;
         try {
           const errorData = await response.json();
-          if (errorData.message) {
-            errorMessage = errorData.message;
-          } else if (typeof errorData === 'string') {
-            errorMessage = errorData;
-          } else {
-            errorMessage = JSON.stringify(errorData);
-          }
-        } catch (_) {
-          // non-JSON error, keep status text
-        }
+          if (errorData.message) errorMessage = errorData.message;
+          else if (typeof errorData === 'string') errorMessage = errorData;
+          else errorMessage = JSON.stringify(errorData);
+        } catch (_) {}
         throw new Error(errorMessage);
       }
 
+      // No content
       if (response.status === 204 || response.headers.get('Content-Length') === '0') {
         setData(true);
         return true;
       }
 
+      // Decide how to parse response
+      if (isFileDownload) {
+        // Return raw Blob for files
+        const blob = await response.blob();
+        setData(blob);
+        return blob;
+      }
+
       const contentType = response.headers.get('Content-Type') || '';
       let result;
-      if (contentType.includes('application/json')) {
-        result = await response.json();
-      } else if (contentType.includes('application/octet-stream') || contentType.includes('blob')) {
-        result = await response.blob();
-      } else {
-        result = await response.text();
-      }
+      if (contentType.includes('application/json')) result = await response.json();
+      else if (contentType.includes('text/')) result = await response.text();
+      else result = await response.blob(); // fallback for unknown content
 
       setData(result);
       return result;
-
     } catch (err) {
       console.error("API Fetch Error:", err);
       setError(err.message || 'An unknown error occurred');

@@ -28,17 +28,20 @@ const useFileApi = () => {
       [fetchData]
   );
 
-  // Download file (GET with formId & signature)
-  const downloadFile = useCallback(
-      (formId, signature) =>
-          fetchData(`/files/download?formId=${formId}&signature=${encodeURIComponent(signature)}`, {
-            method: 'GET',
-            responseType: 'blob', // so frontend handles file blob
-          }),
-      [fetchData]
-  );
+    // Download file (GET with formId & signature)
+    const downloadFile = async (formId, signature) => {
+        // Use fetchData with isFileDownload = true
+        const blob = await fetchData(
+            `/files/download?formId=${formId}&signature=${encodeURIComponent(signature)}`,
+            { method: 'GET' },
+            true // <-- this tells useApi to return Blob
+        );
 
-  // List all files (GET)
+        if (!blob) throw new Error('Download failed or returned empty file');
+        return blob;
+    };
+
+    // List all files (GET)
   const listFiles = useCallback(
       () => fetchData('/files', { method: 'GET' }),
       [fetchData]

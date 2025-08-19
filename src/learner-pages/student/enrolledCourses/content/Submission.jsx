@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import useSubmissionApi from "../../../../learner-hooks/useSubmisionApi.js";
 import useFileApi from "../../../../file-server-hooks/useServerApi.js";
+import {generateSignature} from "../../../../utils/fileSignature.js";
 
 const studentId= 1
 
@@ -76,6 +77,39 @@ const Submission = ({ content }) => {
         }
     };
 
+    const handleDownload = async (fileDto) => {
+        try {
+
+            console.log(fileDto)
+
+            // Step 1: generate HMAC signature for this file
+            const signature = generateSignature(fileDto);
+
+            console.log(fileDto.formId)
+            console.log(signature)
+
+            // Step 2: fetch the file blob
+            const blob = await downloadFile(fileDto.formId, signature);
+
+// optional: ensure type matches
+            const fileBlob = new Blob([blob], { type:  fileDto.contentType });
+
+            const url = window.URL.createObjectURL(fileBlob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = fileDto.originalFileName;
+            a.click();
+            window.URL.revokeObjectURL(url);
+
+
+
+        } catch (err) {
+            console.error("Download failed", err);
+            alert("Error downloading file");
+        }
+    };
+
+
 
     return (
         <Container className="py-4">
@@ -140,10 +174,11 @@ const Submission = ({ content }) => {
                     </p>
                     <Button
                         variant="link"
-                        onClick={() => alert("TODO: Implement download")}
+                        onClick={() => handleDownload(latestSubmission)}
                     >
                         Download
                     </Button>
+
                 </Card>
             ) : (
                 <p className="text-muted">No submission yet.</p>
