@@ -3,26 +3,79 @@ import { Container, Button, Spinner, Card } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import useSubmissionApi from "../../../../learner-hooks/useSubmisionApi.js";
+import useFileApi from "../../../../file-server-hooks/useServerApi.js";
 
-const Submission = ({ content, studentId, getSubmissionsByStudentAndContent }) => {
+const studentId= 1
+
+const Submission = ({ content }) => {
     const navigate = useNavigate();
+
+    const { getSubmissionsByStudentAndContent, submitAssignment } = useSubmissionApi();
+    const { uploadFile, downloadFile} = useFileApi();
+
+
+    const [selectedFile, setSelectedFile] = useState(null);
 
     const [submissions, setSubmissions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showHistory, setShowHistory] = useState(false);
 
     useEffect(() => {
+        console.log("useEffect triggered with:", { studentId, content });
+
         if (studentId && content?.id) {
+            console.log("Hitting to get Submissions!");
             setLoading(true);
+
             getSubmissionsByStudentAndContent(studentId, content.id)
                 .then((data) => {
+                    console.log("Fetched submissions:", data);
                     setSubmissions(data || []);
+
                 })
                 .finally(() => setLoading(false));
         }
     }, [studentId, content?.id, getSubmissionsByStudentAndContent]);
 
     const latestSubmission = submissions.length > 0 ? submissions[0] : null;
+
+    const handleSubmit = async () => {
+        if (!selectedFile) {
+            alert("Please select a file to submit");
+            return;
+        }
+
+        try {
+            // Step 1: Upload the file
+            const uploadedFile = await uploadFile(selectedFile, {
+                uploaderEmail: studentId,
+            });
+
+            console.log("File uploaded")
+            console.log(uploadedFile)
+
+            // Step 2: Submit assignment with uploaded file DTO
+            const submission = await submitAssignment(studentId, content.id, uploadedFile);
+
+            console.log("Submission added")
+            console.log(submission)
+
+            alert(`Submission successful! Submission ID: ${submission}`);
+
+            // Optionally, refresh submissions list
+            const data = await getSubmissionsByStudentAndContent(studentId, content.id);
+
+            setSubmissions(data || []);
+
+            setSelectedFile(null); // reset file input
+
+        } catch (err) {
+            console.error(err);
+            alert("Error submitting assignment");
+        }
+    };
+
 
     return (
         <Container className="py-4">
@@ -50,8 +103,24 @@ const Submission = ({ content, studentId, getSubmissionsByStudentAndContent }) =
                 <label htmlFor="submissionFile" className="form-label">
                     Upload your submission
                 </label>
-                <input type="file" id="submissionFile" className="form-control" />
+                <input
+                    type="file"
+                    id="submissionFile"
+                    className="form-control"
+                    onChange={(e) => setSelectedFile(e.target.files[0])}
+                />
+
+                <Button
+                    variant="primary"
+                    className="mt-2"
+                    onClick={handleSubmit}
+                    disabled={!selectedFile}
+                >
+                    Submit Assignment
+                </Button>
             </div>
+
+
 
             {/* Submissions Section */}
             <h4 className="fw-bold mt-4">Your Submission</h4>

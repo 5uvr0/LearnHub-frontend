@@ -1,18 +1,14 @@
 // src/learner-hooks/useApi.js
 import { useState, useCallback } from 'react';
 
-// Get API base URL and context path from environment variables
 const API_BASE_URL = import.meta.env.VITE_FILE_SERVER_BASE_URL;
 const FILE_SERVER_PATH = import.meta.env.VITE_FILE_SERVER_PATH;
 
-// Helper to construct full API URL with context path
 const getFullUrl = (endpoint) => {
   if (!API_BASE_URL || !FILE_SERVER_PATH) {
     console.error('API environment variables are not defined in .env');
-    
     return null;
   }
-
   return `${API_BASE_URL}${FILE_SERVER_PATH}${endpoint}`;
 };
 
@@ -21,74 +17,71 @@ const useApi = (initialLoading = false) => {
   const [loading, setLoading] = useState(initialLoading);
   const [error, setError] = useState(null);
 
-  const fetchData = useCallback(async (
-    url,
-    options = {}
-  ) => {
+  const fetchData = useCallback(async (url, options = {}) => {
     setLoading(true);
     setError(null);
-    setData(null); // Clear previous data
+    setData(null);
 
     const fullUrl = getFullUrl(url);
-
     if (!fullUrl) {
       setError('API URL is not configured correctly.');
       setLoading(false);
-
       return;
     }
 
     try {
+      // Decide headers dynamically
+      let headers = { ...(options.headers || {}) };
+
+      // Only set JSON header if body is plain object (not FormData / Blob)
+      if (!(options.body instanceof FormData) && !(options.body instanceof Blob)) {
+        headers['Content-Type'] = headers['Content-Type'] || 'application/json';
+      }
+
       const response = await fetch(fullUrl, {
-        headers: {
-          'Content-Type': 'application/json',
-          // Add authorization headers here if needed later (e.g., Bearer Token):
-          // 'Authorization': `Bearer YOUR_TOKEN`,
-          ...options.headers,
-        },
         ...options,
+        headers,
       });
 
       if (!response.ok) {
         let errorMessage = `HTTP error! status: ${response.status}`;
-        
         try {
           const errorData = await response.json();
-
           if (errorData.message) {
             errorMessage = errorData.message;
-
-          } else if (typeof errorData === 'string') { // Backend might return plain error string
+          } else if (typeof errorData === 'string') {
             errorMessage = errorData;
-
           } else {
             errorMessage = JSON.stringify(errorData);
           }
-
-        } catch (jsonError) {
-          // If response is not JSON, use default status message
+        } catch (_) {
+          // non-JSON error, keep status text
         }
         throw new Error(errorMessage);
       }
 
-      // Check for empty response (e.g., successful DELETE often returns 200 with no body)
       if (response.status === 204 || response.headers.get('Content-Length') === '0') {
-        setData(true); // Indicate success for no-content responses
-        
+        setData(true);
         return true;
       }
 
-      const result = await response.json();
-      setData(result);
+      const contentType = response.headers.get('Content-Type') || '';
+      let result;
+      if (contentType.includes('application/json')) {
+        result = await response.json();
+      } else if (contentType.includes('application/octet-stream') || contentType.includes('blob')) {
+        result = await response.blob();
+      } else {
+        result = await response.text();
+      }
 
-      return result; // Return data for direct use in the component
+      setData(result);
+      return result;
 
     } catch (err) {
       console.error("API Fetch Error:", err);
       setError(err.message || 'An unknown error occurred');
-
-      return null; // Return null on error
-
+      return null;
     } finally {
       setLoading(false);
     }
