@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Card } from 'react-bootstrap';
-import CustomButton from '../common/CustomButton.jsx';
+import CustomButton from '../../common/CustomButton.jsx';
 import texts from '../../../i18n/texts.js';
 import { getRandomModerateColor } from '../../../utils/colorUtils.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

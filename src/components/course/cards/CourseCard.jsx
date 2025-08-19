@@ -1,8 +1,8 @@
 import React, { useState } from 'react'; // Import useState
 import { Card } from 'react-bootstrap';
-import CustomButton from '../common/CustomButton.jsx';
+import CustomButton from '../../common/CustomButton.jsx';
 import { getRandomModerateColor } from '../../../utils/colorUtils.js';
-import MarkdownRenderer from '../common/MarkdownRender.jsx';
+import MarkdownRenderer from '../../common/MarkdownRender.jsx';
 
 const CourseCard = ({ course, onDetailsClick, learnMoreText, maxDescriptionLength = 30 }) => { // Add a prop for max length
   const [showFullDescription, setShowFullDescription] = useState(false); // State to toggle description

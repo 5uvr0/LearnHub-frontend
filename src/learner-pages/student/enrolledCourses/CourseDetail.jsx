@@ -1,25 +1,46 @@
 import React, { useEffect, useState } from "react";
+import { Container, Row, Col, Spinner, Alert, ProgressBar } from "react-bootstrap";
 import { useParams } from "react-router-dom";
-import { useStudentCourseApi } from "@/api/useStudentCourseApi";
-import ContentListItem from "@/components/ContentListItem";
+import useStudentCourseApi from "../../../learner-hooks/useStudentCourseApi.js";
+import useCourseApi from "../../../course-hooks/useCourseApi.js";
+import ModuleCard from "../../../components/learner/cards/ModuleCard.jsx";
+import texts from "../../../i18n/texts.js";
 
-const CourseDetail = ({ studentId }) => {
+const studentId = 1;
 
+const StudentCourseDetailPage = () => {
   const { courseId } = useParams();
-  const { getCourseDetail } = useStudentCourseApi();
+  const { getStudentCourse } = useCourseApi();
+  const { getStudentCourseProgressDetail } = useStudentCourseApi();
 
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchCourse = async () => {
+      setLoading(true);
+      setError(null);
 
       try {
-        const data = await getCourseDetail(courseId, studentId);
-        setCourse(data);
+        console.log(courseId)
+
+        // 1. Fetch base course
+        const baseCourse = await getStudentCourse(courseId);
+
+        console.log("Base Course")
+        console.log(baseCourse);
+
+        // 2. Send course + studentId to progress API
+        const detailedCourse = await getStudentCourseProgressDetail(studentId, baseCourse);
+
+        setCourse(detailedCourse);
+
+        console.log(detailedCourse);
 
       } catch (err) {
         console.error("Failed to load course detail", err);
+        setError("Failed to load course details. Please try again later.");
 
       } finally {
         setLoading(false);
@@ -27,58 +48,71 @@ const CourseDetail = ({ studentId }) => {
     };
 
     fetchCourse();
-  }, [courseId, studentId]);
+  }, [courseId]);
 
   if (loading) {
-    return <div className="p-6">Loading course details...</div>;
+    return (
+        <Container className="text-center py-5">
+          <Spinner animation="border" role="status" />
+          <p className="mt-3">Loading course details...</p>
+        </Container>
+    );
+  }
+
+  if (error) {
+    return (
+        <Container className="py-5">
+          <Alert variant="danger">{error}</Alert>
+        </Container>
+    );
   }
 
   if (!course) {
-    return <div className="p-6 text-red-500">Course not found.</div>;
+    return (
+        <Container className="py-5">
+          <Alert variant="warning">Course not found.</Alert>
+        </Container>
+    );
   }
 
+  const handleViewContent = (content) => {
+    navigate(`/student/courses/${courseId}/content/${content.id}`);
+  };
+
   return (
-    <div className="p-6">
-
-      {/* Course Header */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-semibold">{course.title}</h1>
-
-        <p className="text-gray-600">{course.description}</p>
-
-        <p className="mt-2 text-sm text-gray-500">
-          Progress: {course.progress?.completed} / {course.progress?.total} contents
-        </p>
-
-      </div>
-
-      {/* Modules */}
-      <div className="space-y-6">
-
-        {course.modules.map((module) => (
-
-          <div key={module.id} className="bg-white rounded-2xl shadow p-4">
-
-            <h2 className="text-xl font-semibold mb-3">{module.title}</h2>
-
-            <p className="text-gray-500 mb-4">{module.description}</p>
-
-            <div className="space-y-2">
-              {module.contents.map((content) => (
-                <ContentListItem key={content.id} content={content} />
-              ))}
-            </div>
-
-            <p className="text-sm text-gray-400 mt-3">
-              Module progress: {module.progress?.completed} / {module.progress?.total}
-            </p>
-
+      <Container className="py-5">
+        {/* Course Header */}
+        <div className="mb-5 text-center">
+          <h2 className="fw-bold text-primary">{course.name}</h2>
+          <div className="text-secondary mb-2">
+            {/* Avoid <p> around div/Markdown content */}
+            {course.description}
           </div>
-        ))}
-        
-      </div>
-    </div>
+          <p className="text-muted mb-2">
+            Instructor: <strong>{course.instructorName}</strong>
+          </p>
+          <ProgressBar
+              now={typeof course.progress === "number" ? course.progress : 0}
+              label={`${course.progress || 0}%`}
+              className="my-3"
+          />
+        </div>
+
+        {/* Modules */}
+        <h3 className="mb-4 fw-bold text-secondary">{texts.sections?.modules || "Modules"}</h3>
+        {course.modules && course.modules.length > 0 ? (
+            <Row className="g-4">
+              {course.modules.map((module) => (
+                  <Col md={12} key={module.id}>
+                    <ModuleCard module={module} onViewContent={handleViewContent} />
+                  </Col>
+              ))}
+            </Row>
+        ) : (
+            <Alert variant="info">{"No modules found in the course."}</Alert>
+        )}
+      </Container>
   );
 };
 
-export default CourseDetail;
+export default StudentCourseDetailPage;

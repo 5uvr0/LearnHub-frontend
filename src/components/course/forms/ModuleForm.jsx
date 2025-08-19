@@ -2,13 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { Form, Alert } from 'react-bootstrap';
-import CustomButton from '../common/CustomButton.jsx';
+import CustomButton from '../../common/CustomButton.jsx';
 import texts from '../../../i18n/texts.js';
 
 const ModuleForm = ({ initialData = {}, onSubmit, isEditMode = false, isLoading = false }) => {
     const [formData, setFormData] = useState({
         title: initialData.title || '',
-        orderIndex: initialData.orderIndex !== undefined ? initialData.orderIndex : '',
     });
     const [formErrors, setFormErrors] = useState({});
 
@@ -16,11 +15,10 @@ const ModuleForm = ({ initialData = {}, onSubmit, isEditMode = false, isLoading 
         if (isEditMode && initialData) {
             setFormData({
                 title: initialData.title || '',
-                orderIndex: initialData.orderIndex !== undefined ? initialData.orderIndex : '',
             });
         } else if (!isEditMode) {
             // Clear form for new module
-            setFormData({ title: '', orderIndex: '' });
+            setFormData({ title: '' });
         }
     }, [initialData, isEditMode]);
 
@@ -28,7 +26,7 @@ const ModuleForm = ({ initialData = {}, onSubmit, isEditMode = false, isLoading 
         const { name, value } = e.target;
         setFormData((prevData) => ({
             ...prevData,
-            [name]: name === 'orderIndex' ? (value === '' ? '' : parseInt(value)) : value, // Convert to number
+            [name]: value,
         }));
         setFormErrors((prevErrors) => ({
             ...prevErrors,
@@ -39,9 +37,6 @@ const ModuleForm = ({ initialData = {}, onSubmit, isEditMode = false, isLoading 
     const validateForm = () => {
         const errors = {};
         if (!formData.title.trim()) errors.title = 'Module title is required.';
-        if (formData.orderIndex === '' || isNaN(formData.orderIndex) || formData.orderIndex < 0) {
-            errors.orderIndex = 'Order index must be a non-negative number.';
-        }
         setFormErrors(errors);
         return Object.keys(errors).length === 0;
     };
@@ -68,19 +63,6 @@ const ModuleForm = ({ initialData = {}, onSubmit, isEditMode = false, isLoading 
                     placeholder="e.g., Introduction to CSS"
                 />
                 <Form.Control.Feedback type="invalid">{formErrors.title}</Form.Control.Feedback>
-            </Form.Group>
-
-            <Form.Group className="mb-4" controlId="moduleOrderIndex">
-                <Form.Label>{texts.forms.moduleOrderIndex}</Form.Label>
-                <Form.Control
-                    type="number"
-                    name="orderIndex"
-                    value={formData.orderIndex}
-                    onChange={handleChange}
-                    isInvalid={!!formErrors.orderIndex}
-                    min="0"
-                />
-                <Form.Control.Feedback type="invalid">{formErrors.orderIndex}</Form.Control.Feedback>
             </Form.Group>
 
             <div className="d-grid">

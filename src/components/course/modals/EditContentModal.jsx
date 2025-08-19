@@ -2,8 +2,8 @@
 
 import React, {useEffect, useState} from 'react';
 import {Alert, Badge, Button, Card, Form, ListGroup, Modal} from 'react-bootstrap';
-import CustomButton from '../common/CustomButton.jsx';
-import MarkdownRenderer from '../common/MarkdownRender.jsx';
+import CustomButton from '../../common/CustomButton.jsx';
+import MarkdownRenderer from '../../common/MarkdownRender.jsx';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faBookOpen, faClipboardList, faInfoCircle, faQuestionCircle} from '@fortawesome/free-solid-svg-icons';
 import MDEditor from '@uiw/react-md-editor';

@@ -1,15 +1,44 @@
 // src/App.jsx
 import React, {useState} from 'react';
 
-import AppFooter from './components/course/layout/AppFooter.jsx';
-import HomePage from './components/common-pages/HomePage.jsx';
-import AppNavbar from './components/course/layout/AppNavbar.jsx';
 import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
+import AppNavbar from './components/course/layout/AppNavbar';
+import AppFooter from './components/course/layout/AppFooter';
+import AppSidebar from './components/course/layout/AppSidebar';
+import HomePage from './common-pages/HomePage';
+import CoursesPage from './course-pages/CoursesPage';
+import InstructorsPage from './course-pages/InstructorsPage';
+import StudentCourseDetailsPage from './course-pages/StudentCourseDetailsPage';
+import TeacherDashboardPage from './course-pages/TeacherDashboardPage';
+import CourseConfiguratorPage from './course-pages/CourseConfiguratorPage';
+import TeacherCourseDetailsPage from './course-pages/TeacherCourseDetailsPage';
+import CoursePublicView from './course-pages/CoursePublicView';
+import ContentVersionsPage from './course-pages/ContentVersionsPage';
+import QuizConfiguratorPage from './course-pages/QuizConfiguratorPage';
+import InstructorDetailsPage from './course-pages/InstructorPublicViewPage';
+import InstructorPublicViewPage from './course-pages/InstructorPublicViewPage';
+import CourseVersionComparisonPage from './course-pages/CourseVersionComparisonPage';
+import LectureDetailsPage from './course-pages/LectureDetailsPage'; // NEW
+import SubmissionDetailsPage from './course-pages/SubmissionDetailsPage'; // NEW
 import LoginPage from './auth-pages/LoginPage.jsx';
 import AdminDashboardPage from './auth-pages/AdminDashboard.jsx';
+import InstructorProfilePage from './course-pages/InstructorProfilePage'
 import RegistrationPage from "./auth-pages/RegistrationPage.jsx";
+
+import StudentDashboard from './learner-pages/student/Dashboard.jsx';
+import StudentCourseDetailPage from "./learner-pages/student/enrolledCourses/CourseDetail.jsx";
+
 import {ThemeProvider} from './contexts/ThemeContext';
 import './index.css';
+import StudentProfilePage from "./learner-pages/student/Profile.jsx";
+import EditStudentPage from "./learner-pages/student/Edit.jsx";
+import ContentDetailPage from "./learner-pages/student/enrolledCourses/content/ContentDetail.jsx";
+
+import LecturePage from "./learner-pages/student/enrolledCourses/content/Lecture.jsx";
+import QuizPage from "./learner-pages/student/enrolledCourses/content/Quiz.jsx";
+import SubmissionPage from "./learner-pages/student/enrolledCourses/content/Submission.jsx";
+import StudentContentPage from "./learner-pages/student/enrolledCourses/content/ContentDetail.jsx";
+
 
 function App() {
     const [showSidebar, setShowSidebar] = useState(false);
@@ -19,19 +48,81 @@ function App() {
 
     return (
         <ThemeProvider>
-            <Router>
+            <Router basename="/learnhub">
                 <div className="App d-flex flex-column min-vh-100">
                     <AppNavbar handleShowSidebar={handleShowSidebar}/>
 
+                    <AppSidebar
+                        show={showSidebar}
+                        handleClose={handleCloseSidebar}
+                    />
+
                     <main className="flex-grow-1">
                         <Routes>
-                            <Route path="/home" element={<HomePage/>}/>
+                            <Route path="/" element={<HomePage/>}/>
+                            <Route path="/courses" element={<CoursesPage/>}/>
+                            <Route path="/courses/:id" element={<StudentCourseDetailsPage/>}/>
+                            <Route path="/public-course-view/:id" element={<CoursePublicView/>}/>
+                            <Route path="/instructors" element={<InstructorsPage/>}/>
+                            <Route path="/instructors/:id" element={<InstructorDetailsPage/>}/>
+                            <Route path="/public-instructors/:id" element={<InstructorPublicViewPage/>}/>
+
+                            {/* Profile, edit, delete etc routes */}
+                            <Route path="/instructor/profile" element={<InstructorProfilePage/>}/>
+
+                            {/* Teacher Dashboard & Course Management Routes */}
+                            <Route path="/teacher/dashboard" element={<TeacherDashboardPage/>}/>
+                            <Route path="/teacher/courses/new" element={<CourseConfiguratorPage/>}/>
+                            <Route path="/teacher/courses/:id/edit" element={<CourseConfiguratorPage/>}/>
+                            <Route path="/teacher/courses/:id" element={<TeacherCourseDetailsPage/>}/>
+                            <Route path="/teacher/courses/:id/compare-versions"
+                                   element={<CourseVersionComparisonPage/>}/>
+
+                            {/* Content Management Routes */}
+                            <Route path="/teacher/contents/:contentId/versions" element={<ContentVersionsPage/>}/>
+                            <Route path="/teacher/quizzes/:contentId" element={<QuizConfiguratorPage/>}/>
+                            <Route path="/teacher/lectures/:releaseId" element={<LectureDetailsPage/>}/> {/* NEW */}
+                            <Route path="/teacher/submissions/:releaseId"
+                                   element={<SubmissionDetailsPage/>}/> {/* NEW */}
+
+                            {/* Teacher Dashboard & Course Management Routes */}
+                            <Route path="/teacher/dashboard" element={<TeacherDashboardPage/>}/>
+                            <Route path="/teacher/courses/new" element={<CourseConfiguratorPage/>}/>
+                            <Route path="/teacher/courses/:id/edit" element={<CourseConfiguratorPage/>}/>
+                            <Route path="/teacher/courses/:id" element={<TeacherCourseDetailsPage/>}/>
+                            <Route path="/teacher/courses/:id/compare-versions"
+                                   element={<CourseVersionComparisonPage/>}/>
+
+                            {/* Content Management Routes */}
+                            <Route path="/teacher/contents/:contentId/versions" element={<ContentVersionsPage/>}/>
+                            <Route path="/teacher/quizzes/:contentId" element={<QuizConfiguratorPage/>}/>
+                            <Route path="/teacher/lectures/:releaseId" element={<LectureDetailsPage/>}/> {/* NEW */}
+                            <Route path="/teacher/submissions/:releaseId"
+                                   element={<SubmissionDetailsPage/>}/> {/* NEW */}
 
                             {/* User Registration & Login Routes */}
                             <Route path="/register" element={<RegistrationPage/>}/>
                             <Route path="/login" element={<LoginPage/>}/>
                             <Route path="/admin-dashboard" element={<AdminDashboardPage />}/>
                             {/*<Route path="/login/error" element={<LoginErrorPage/>}/>*/}
+
+                             {/* Student dashboard and profile */}
+                            <Route path="/student/dashboard" element={<StudentDashboard/>} />
+                            <Route path="/student/profile" element={<StudentProfilePage />} />
+                            <Route path="/student/profile/edit" element={<EditStudentPage />} />
+
+                            {/* Student Course Endpoints */}
+                            <Route path="/student/course/:courseId" element={<StudentCourseDetailPage/>} />
+                            <Route path="/student/courses/:courseId/content/:contentId" element={<StudentContentPage />}/>
+
+                            {/* Student Content Endpoints */}
+                            {/*<Route path="/student/content/:contentId/lecture" element={<LecturePage />} />*/}
+                            {/*<Route path="/student/content/:contentId/quiz" element={<QuizPage />} />*/}
+                            {/*<Route path="/student/content/:contentId/submission" element={<SubmissionPage />} />*/}
+
+
+                            {/* Student Submission Related Endpoints */}
+
 
                             {/* Add more routes for About, Contact, etc. */}
                             <Route path="/about" element={

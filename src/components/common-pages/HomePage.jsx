@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import CustomButton from '../common/CustomButton';
 import texts from '../../i18n/texts';
 
-const HomePage = () => { // Removed setCurrentPage, setCourseDetailId props
+const HomePage = () => {
     const navigate = useNavigate(); // Hook to get navigation function
 
     const handleExploreCoursesClick = () => {
