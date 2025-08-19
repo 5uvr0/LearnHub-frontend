@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 const BASE_URL = import.meta.env.VITE_AUTH_API_BASE_URL;
 const URI = import.meta.env.VITE_AUTH_PATH;
@@ -27,18 +28,18 @@ const useAuthApi = (initialLoading = false) => {
         if (!fullUrl) {
             setError("API URL is not configured correctly.");
             setLoading(false);
-
             return;
         }
 
         try {
+            const token = Cookies.get("accessToken");
+
             const response = await axios({
                 url: fullUrl,
                 method: options.method || "GET",
                 headers: {
                     "Content-Type": "application/json",
-                    // Authorization header example:
-                    // Authorization: `Bearer YOUR_TOKEN`,
+                    ...(token && { Authorization: `Bearer ${token}` }),
                     ...options.headers,
                 },
                 data: options.body || options.data || null,
@@ -47,12 +48,10 @@ const useAuthApi = (initialLoading = false) => {
 
             if (response.status === 204 || !response.data) {
                 setData(true);
-
                 return true;
             }
 
             setData(response.data);
-
             return response.data;
 
         } catch (err) {
@@ -60,34 +59,27 @@ const useAuthApi = (initialLoading = false) => {
 
             if (axios.isAxiosError(err)) {
                 if (err.response?.data) {
-
                     if (typeof err.response.data === "string") {
                         message = err.response.data;
-
                     } else if (err.response.data.message) {
                         message = err.response.data.message;
-
                     } else {
                         message = JSON.stringify(err.response.data);
                     }
-
                 } else if (err.message) {
                     message = err.message;
                 }
-
             } else if (err instanceof Error) {
                 message = err.message;
             }
 
             console.error("API Fetch Error:", message);
             setError(message);
-
             return null;
 
         } finally {
             setLoading(false);
         }
-
     }, []);
 
     return { data, loading, error, fetchData };
