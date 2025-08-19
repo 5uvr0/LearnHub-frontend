@@ -8,6 +8,10 @@ const useFileApi = () => {
   // Upload file (POST multipart form data)
   const uploadFile = useCallback(
       (file, contextMap = {}) => {
+
+          console.log("File: ", file)
+          console.log("Map: ", contextMap)
+
         const formData = new FormData();
         formData.append('file', file);
 
