@@ -1,13 +1,35 @@
-import React from "react";
-import { Container, Button } from "react-bootstrap";
+import React, { useState } from "react";
+import { Container, Button, Spinner } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import useStudentCourseApi from "../../../../learner-hooks/useStudentCourseApi.js";
+
+
+const studentId = 1;
 
 const Lecture = ({ content }) => {
     const navigate = useNavigate();
+    const { markContentCompleted } = useStudentCourseApi();
+    const [marking, setMarking] = useState(false);
+
+    const handleMarkCompleted = async () => {
+        setMarking(true);
+
+        try {
+            await markContentCompleted(studentId, content.id);
+            alert("Lecture marked as completed!");
+            navigate(-1);
+
+        } catch (err) {
+            console.error(err);
+            alert("Failed to mark as completed: " + err.message);
+
+        } finally {
+            setMarking(false);
+        }
+    };
 
     return (
         <Container className="py-4">
-
             <h2 className="fw-bold mb-3">{content.title}</h2>
 
             {content.description && (
@@ -33,13 +55,33 @@ const Lecture = ({ content }) => {
                 </p>
             )}
 
-            <Button
-                variant="outline-secondary"
-                className="mb-3"
-                onClick={() => navigate(-1)}
-            >
-                &larr; Back
-            </Button>
+            <div className="d-flex gap-2 mt-3">
+                <Button
+                    variant="outline-secondary"
+                    onClick={() => navigate(-1)}
+                >
+                    &larr; Back
+                </Button>
+
+                <Button
+                    variant="success"
+                    onClick={handleMarkCompleted}
+                    disabled={marking}
+                >
+                    {marking ? (
+                        <>
+                            <Spinner
+                                animation="border"
+                                size="sm"
+                                className="me-2"
+                            />
+                            Marking...
+                        </>
+                    ) : (
+                        "Mark as Completed"
+                    )}
+                </Button>
+            </div>
         </Container>
     );
 };

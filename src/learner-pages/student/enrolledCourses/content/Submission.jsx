@@ -64,7 +64,6 @@ const Submission = ({ content }) => {
 
             alert(`Submission successful! Submission ID: ${submission}`);
 
-            // Optionally, refresh submissions list
             const data = await getSubmissionsByStudentAndContent(studentId, content.id);
 
             setSubmissions(data || []);
@@ -73,7 +72,13 @@ const Submission = ({ content }) => {
 
         } catch (err) {
             console.error(err);
-            alert("Error submitting assignment");
+
+            if(err) {
+                alert(err);
+
+            } else {
+                alert("Error submitting assignment");
+            }
         }
     };
 
@@ -91,7 +96,6 @@ const Submission = ({ content }) => {
             // Step 2: fetch the file blob
             const blob = await downloadFile(fileDto.formId, signature);
 
-// optional: ensure type matches
             const fileBlob = new Blob([blob], { type:  fileDto.contentType });
 
             const url = window.URL.createObjectURL(fileBlob);
@@ -102,13 +106,11 @@ const Submission = ({ content }) => {
             window.URL.revokeObjectURL(url);
 
 
-
         } catch (err) {
             console.error("Download failed", err);
             alert("Error downloading file");
         }
     };
-
 
 
     return (
