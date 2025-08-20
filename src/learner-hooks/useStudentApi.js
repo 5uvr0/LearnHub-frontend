@@ -25,6 +25,11 @@ const useStudentApi = () => {
     [fetchData]
   );
 
+    const getStudentFromToken = useCallback(
+        () => fetchData(`/students/fromToken`, { method: 'GET' }),
+        [fetchData]
+    );
+
   const updateStudent = useCallback(
     (id, studentData) =>
       fetchData(`/students/${id}`, {
@@ -46,6 +51,7 @@ const useStudentApi = () => {
     getAllStudents,
     createStudent,
     getStudentById,
+      getStudentFromToken,
     updateStudent,
     softDeleteStudent,
   };
