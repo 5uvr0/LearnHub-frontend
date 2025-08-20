@@ -29,7 +29,7 @@ const getContentInfo = (content) => {
         case "SUBMISSION":
             icon = faClipboardList;
             typeLabel = "Submission";
-            variant = "success";
+            variant = "warning";
             break;
         default:
             icon = faInfoCircle;
@@ -48,6 +48,8 @@ const ContentListItem = ({ content }) => {
 
     const { icon, typeLabel, variant } = getContentInfo(content);
 
+    const isCompleted = content.completed ?? false;
+
     const handleClick = () => {
         navigate(`/student/courses/${courseId}/content/${content.id}`);
     };
@@ -63,6 +65,7 @@ const ContentListItem = ({ content }) => {
                 <div>
                     <h5 className="mb-1">
                         {content.title} <Badge bg={variant}>{typeLabel}</Badge>
+                        {isCompleted && <Badge bg="success" className="ms-2">Completed</Badge>}
                     </h5>
 
                     {content.description && (

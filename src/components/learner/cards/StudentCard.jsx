@@ -67,9 +67,7 @@ const StudentCard = ({ student, onDashboard, onCourses, onEdit }) => {
                     <CustomButton variant="primary" onClick={onDashboard}>
                         Go to Dashboard
                     </CustomButton>
-                    <CustomButton variant="success" onClick={onCourses}>
-                        Enrolled Courses
-                    </CustomButton>
+
                     <CustomButton variant="warning" onClick={onEdit}>
                         Edit Profile
                     </CustomButton>
