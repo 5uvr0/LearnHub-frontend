@@ -61,11 +61,11 @@ const TeacherDashboardPage = () => {
     const [editingContent, setEditingContent] = useState(null);
 
     useEffect(() => {
-        getCourseByInstructorId(TEACHER_ID);
-        // getAllMyCourses();
+        // getCourseByInstructorId(TEACHER_ID);
+        getAllMyCourses();
         getAllDraftCourses();
         getAllContentDrafts();
-    }, [refreshTrigger, getCourseByInstructorId, getAllDraftCourses, getAllContentDrafts]);
+    }, [refreshTrigger, getAllMyCourses, getAllDraftCourses, getAllContentDrafts]);
 
     const handleOpenCreateCourseModal = () => {
         setShowCreateCourseModal(true);
