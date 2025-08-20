@@ -1,7 +1,7 @@
 // src/App.jsx
-import React, {useState} from 'react';
-
-import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
+import Cookies from 'js-cookie';
 import AppNavbar from './components/course/layout/AppNavbar';
 import AppFooter from './components/course/layout/AppFooter';
 import AppSidebar from './components/course/layout/AppSidebar';
@@ -18,19 +18,20 @@ import QuizConfiguratorPage from './course-pages/QuizConfiguratorPage';
 import InstructorDetailsPage from './course-pages/InstructorPublicViewPage';
 import InstructorPublicViewPage from './course-pages/InstructorPublicViewPage';
 import CourseVersionComparisonPage from './course-pages/CourseVersionComparisonPage';
-import LectureDetailsPage from './course-pages/LectureDetailsPage'; // NEW
-import SubmissionDetailsPage from './course-pages/SubmissionDetailsPage'; // NEW
+import LectureDetailsPage from './course-pages/LectureDetailsPage';
+import SubmissionDetailsPage from './course-pages/SubmissionDetailsPage';
 import LoginPage from './auth-pages/LoginPage.jsx';
 import AdminDashboardPage from './auth-pages/AdminDashboard.jsx';
 import UserManagementPage from './auth-pages/UserManagementPage';
 import InstructorProfilePage from './course-pages/InstructorProfilePage'
 import RegistrationPage from "./auth-pages/RegistrationPage.jsx";
 import Logout from "./auth-pages/Logout.jsx";
+import LoginErrorPage from './ErrorPages/LoginErrorPage.jsx';
 
 import StudentDashboard from './learner-pages/student/Dashboard.jsx';
 import StudentCourseDetailPage from "./learner-pages/student/enrolledCourses/CourseDetail.jsx";
 
-import {ThemeProvider} from './contexts/ThemeContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import './index.css';
 import StudentProfilePage from "./learner-pages/student/Profile.jsx";
 import EditStudentPage from "./learner-pages/student/Edit.jsx";
@@ -41,118 +42,233 @@ import QuizPage from "./learner-pages/student/enrolledCourses/content/Quiz.jsx";
 import SubmissionPage from "./learner-pages/student/enrolledCourses/content/Submission.jsx";
 import StudentContentPage from "./learner-pages/student/enrolledCourses/content/ContentDetail.jsx";
 
+// Define public routes that don't require authentication
+const PUBLIC_ROUTES = [
+    '/',
+    '/login',
+    '/register',
+    '/login/error',
+    '/about',
+    '/contact',
+    '/public-course-view',
+    '/public-instructors'
+];
 
-function App() {
+// Component to handle protected routes
+function ProtectedRoute({ children }) {
+    const navigate = useNavigate();
+    const location = useLocation();
+    const cookie = Cookies.get("accessToken");
+    
+    React.useEffect(() => {
+        if (!cookie) {
+            // Check if current path is a public route
+            const isPublicRoute = PUBLIC_ROUTES.some(route => {
+                if (route === '/') return location.pathname === '/';
+                if (route === '/public-course-view') return location.pathname.startsWith('/public-course-view/');
+                if (route === '/public-instructors') return location.pathname.startsWith('/public-instructors/');
+                return location.pathname === route;
+            });
+            
+            if (!isPublicRoute) {
+                navigate('/login/error');
+            }
+        }
+    }, [cookie, location.pathname, navigate]);
+    
+    return children;
+}
+
+function AppContent() {
     const [showSidebar, setShowSidebar] = useState(false);
+    const cookie = Cookies.get("accessToken");
 
     const handleCloseSidebar = () => setShowSidebar(false);
     const handleShowSidebar = () => setShowSidebar(true);
 
     return (
+        <div className="App d-flex flex-column min-vh-100">
+            <AppNavbar handleShowSidebar={handleShowSidebar} />
+
+            {cookie && (
+                <AppSidebar
+                    show={showSidebar}
+                    handleClose={handleCloseSidebar}
+                />
+            )}
+
+            <main className="flex-grow-1">
+                <Routes>
+                    {/* Public Routes - No authentication required */}
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/register" element={<RegistrationPage />} />
+                    <Route path="/login/error" element={<LoginErrorPage />} />
+                    <Route path="/public-course-view/:id" element={<CoursePublicView />} />
+                    <Route path="/public-instructors/:id" element={<InstructorPublicViewPage />} />
+                    <Route path="/about" element={
+                        <div className="py-5 text-center">
+                            <h2>About Us</h2>
+                            <p>LearnHub is dedicated to providing quality online education.</p>
+                        </div>
+                    } />
+                    <Route path="/contact" element={
+                        <div className="py-5 text-center">
+                            <h2>Contact Us</h2>
+                            <p>Reach out to us at support@learnhub.com</p>
+                        </div>
+                    } />
+
+                    {/* Protected Routes - Authentication required */}
+                    <Route path="/courses" element={
+                        <ProtectedRoute>
+                            <CoursesPage />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/courses/:id" element={
+                        <ProtectedRoute>
+                            <StudentCourseDetailsPage />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/instructors" element={
+                        <ProtectedRoute>
+                            <InstructorsPage />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/instructors/:id" element={
+                        <ProtectedRoute>
+                            <InstructorDetailsPage />
+                        </ProtectedRoute>
+                    } />
+
+                    {/* Profile, edit, delete etc routes */}
+                    <Route path="/instructor/profile" element={
+                        <ProtectedRoute>
+                            <InstructorProfilePage />
+                        </ProtectedRoute>
+                    } />
+
+                    {/* Teacher Dashboard & Course Management Routes */}
+                    <Route path="/teacher/dashboard" element={
+                        <ProtectedRoute>
+                            <TeacherDashboardPage />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/teacher/courses/new" element={
+                        <ProtectedRoute>
+                            <CourseConfiguratorPage />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/teacher/courses/:id/edit" element={
+                        <ProtectedRoute>
+                            <CourseConfiguratorPage />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/teacher/courses/:id" element={
+                        <ProtectedRoute>
+                            <TeacherCourseDetailsPage />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/teacher/courses/:id/compare-versions" element={
+                        <ProtectedRoute>
+                            <CourseVersionComparisonPage />
+                        </ProtectedRoute>
+                    } />
+
+                    {/* Content Management Routes */}
+                    <Route path="/teacher/contents/:contentId/versions" element={
+                        <ProtectedRoute>
+                            <ContentVersionsPage />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/teacher/quizzes/:contentId" element={
+                        <ProtectedRoute>
+                            <QuizConfiguratorPage />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/teacher/lectures/:releaseId" element={
+                        <ProtectedRoute>
+                            <LectureDetailsPage />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/teacher/submissions/:releaseId" element={
+                        <ProtectedRoute>
+                            <SubmissionDetailsPage />
+                        </ProtectedRoute>
+                    } />
+
+                    {/* Admin Routes */}
+                    <Route path="/admin/dashboard" element={
+                        <ProtectedRoute>
+                            <AdminDashboardPage />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/admin/user-management/:userId" element={
+                        <ProtectedRoute>
+                            <UserManagementPage />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/logout" element={
+                        <ProtectedRoute>
+                            <Logout />
+                        </ProtectedRoute>
+                    } />
+
+                    {/* Student dashboard and profile */}
+                    <Route path="/student/dashboard" element={
+                        <ProtectedRoute>
+                            <StudentDashboard />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/student/profile" element={
+                        <ProtectedRoute>
+                            <StudentProfilePage />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/student/profile/edit" element={
+                        <ProtectedRoute>
+                            <EditStudentPage />
+                        </ProtectedRoute>
+                    } />
+
+                    {/* Student Course Endpoints */}
+                    <Route path="/student/course/:courseId" element={
+                        <ProtectedRoute>
+                            <StudentCourseDetailPage />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/student/courses/:courseId/content/:contentId" element={
+                        <ProtectedRoute>
+                            <StudentContentPage />
+                        </ProtectedRoute>
+                    } />
+
+                    {/* Student Content Endpoints */}
+                    {/*<Route path="/student/content/:contentId/lecture" element={<LecturePage />} />*/}
+                    {/*<Route path="/student/content/:contentId/quiz" element={<QuizPage />} />*/}
+                    {/*<Route path="/student/content/:contentId/submission" element={<SubmissionPage />} />*/}
+
+                    {/* Student Submission Related Endpoints */}
+
+                    {/* Fallback for unknown routes */}
+                    <Route path="*" element={
+                        <div className="py-5 text-center">
+                            <h2>404 - Page Not Found</h2>
+                            <p>Oops! The page you're looking for does not exist.</p>
+                        </div>
+                    } />
+                </Routes>
+            </main>
+            <AppFooter />
+        </div>
+    );
+}
+
+function App() {
+    return (
         <ThemeProvider>
             <Router basename="/learnhub">
-                <div className="App d-flex flex-column min-vh-100">
-                    <AppNavbar handleShowSidebar={handleShowSidebar}/>
-
-                    {/*<AppSidebar*/}
-                    {/*    show={showSidebar}*/}
-                    {/*    handleClose={handleCloseSidebar}*/}
-                    {/*/>*/}
-
-                    <main className="flex-grow-1">
-                        <Routes>
-                            <Route path="/" element={<HomePage/>}/>
-                            <Route path="/courses" element={<CoursesPage/>}/>
-                            <Route path="/courses/:id" element={<StudentCourseDetailsPage/>}/>
-                            <Route path="/public-course-view/:id" element={<CoursePublicView/>}/>
-                            <Route path="/instructors" element={<InstructorsPage/>}/>
-                            <Route path="/instructors/:id" element={<InstructorDetailsPage/>}/>
-                            <Route path="/public-instructors/:id" element={<InstructorPublicViewPage/>}/>
-
-                            {/* Profile, edit, delete etc routes */}
-                            <Route path="/instructor/profile" element={<InstructorProfilePage/>}/>
-
-                            {/* Teacher Dashboard & Course Management Routes */}
-                            <Route path="/teacher/dashboard" element={<TeacherDashboardPage/>}/>
-                            <Route path="/teacher/courses/new" element={<CourseConfiguratorPage/>}/>
-                            <Route path="/teacher/courses/:id/edit" element={<CourseConfiguratorPage/>}/>
-                            <Route path="/teacher/courses/:id" element={<TeacherCourseDetailsPage/>}/>
-                            <Route path="/teacher/courses/:id/compare-versions"
-                                   element={<CourseVersionComparisonPage/>}/>
-
-                            {/* Content Management Routes */}
-                            <Route path="/teacher/contents/:contentId/versions" element={<ContentVersionsPage/>}/>
-                            <Route path="/teacher/quizzes/:contentId" element={<QuizConfiguratorPage/>}/>
-                            <Route path="/teacher/lectures/:releaseId" element={<LectureDetailsPage/>}/> {/* NEW */}
-                            <Route path="/teacher/submissions/:releaseId"
-                                   element={<SubmissionDetailsPage/>}/> {/* NEW */}
-
-                            {/* Teacher Dashboard & Course Management Routes */}
-                            <Route path="/teacher/dashboard" element={<TeacherDashboardPage/>}/>
-                            <Route path="/teacher/courses/new" element={<CourseConfiguratorPage/>}/>
-                            <Route path="/teacher/courses/:id/edit" element={<CourseConfiguratorPage/>}/>
-                            <Route path="/teacher/courses/:id" element={<TeacherCourseDetailsPage/>}/>
-                            <Route path="/teacher/courses/:id/compare-versions"
-                                   element={<CourseVersionComparisonPage/>}/>
-
-                            {/* Content Management Routes */}
-                            <Route path="/teacher/contents/:contentId/versions" element={<ContentVersionsPage/>}/>
-                            <Route path="/teacher/quizzes/:contentId" element={<QuizConfiguratorPage/>}/>
-                            <Route path="/teacher/lectures/:releaseId" element={<LectureDetailsPage/>}/> {/* NEW */}
-                            <Route path="/teacher/submissions/:releaseId"
-                                   element={<SubmissionDetailsPage/>}/> {/* NEW */}
-
-                            {/* User Registration & Login Routes */}
-                            <Route path="/register" element={<RegistrationPage/>}/>
-                            <Route path="/login" element={<LoginPage/>}/>
-                            <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
-                            <Route path="/admin/user-management/:userId" element={<UserManagementPage />} />
-                            <Route path="/logout" element={<Logout />}/>
-                            {/*<Route path="/login/error" element={<LoginErrorPage/>}/>*/}
-
-                             {/* Student dashboard and profile */}
-                            <Route path="/student/dashboard" element={<StudentDashboard/>} />
-                            <Route path="/student/profile" element={<StudentProfilePage />} />
-                            <Route path="/student/profile/edit" element={<EditStudentPage />} />
-
-                            {/* Student Course Endpoints */}
-                            <Route path="/student/course/:courseId" element={<StudentCourseDetailPage/>} />
-                            <Route path="/student/courses/:courseId/content/:contentId" element={<StudentContentPage />}/>
-
-                            {/* Student Content Endpoints */}
-                            {/*<Route path="/student/content/:contentId/lecture" element={<LecturePage />} />*/}
-                            {/*<Route path="/student/content/:contentId/quiz" element={<QuizPage />} />*/}
-                            {/*<Route path="/student/content/:contentId/submission" element={<SubmissionPage />} />*/}
-
-
-                            {/* Student Submission Related Endpoints */}
-
-
-                            {/* Add more routes for About, Contact, etc. */}
-                            <Route path="/about" element={
-                                <div className="py-5 text-center">
-                                    <h2>About Us</h2>
-                                    <p>LearnHub is dedicated to providing quality online education.</p>
-                                </div>
-                            }/>
-                            <Route path="/contact" element={
-                                <div className="py-5 text-center">
-                                    <h2>Contact Us</h2>
-                                    <p>Reach out to us at support@learnhub.com</p>
-                                </div>
-                            }/>
-
-                            {/* Fallback for unknown routes */}
-                            <Route path="*" element={
-                                <div className="py-5 text-center">
-                                    <h2>404 - Page Not Found</h2>
-                                    <p>Oops! The page you're looking for does not exist.</p>
-                                </div>
-                            }/>
-                        </Routes>
-                    </main>
-                    <AppFooter/>
-                </div>
+                <AppContent />
             </Router>
         </ThemeProvider>
     );
