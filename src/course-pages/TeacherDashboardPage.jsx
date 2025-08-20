@@ -32,6 +32,7 @@ const TeacherDashboardPage = () => {
         loading: loadingMyCourses,
         error: myCoursesError,
         getCourseByInstructorId,
+        getAllMyCourses,
         deleteCourse,
         publishCourse,
     } = useCourseApi();
@@ -61,6 +62,7 @@ const TeacherDashboardPage = () => {
 
     useEffect(() => {
         getCourseByInstructorId(TEACHER_ID);
+        // getAllMyCourses();
         getAllDraftCourses();
         getAllContentDrafts();
     }, [refreshTrigger, getCourseByInstructorId, getAllDraftCourses, getAllContentDrafts]);
