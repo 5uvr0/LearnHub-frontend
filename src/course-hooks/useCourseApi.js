@@ -33,6 +33,7 @@ const useCourseApi = () => {
   const getCourseVersionById = useCallback((courseId, versionNumber) => fetchData(`/courses/${courseId}/versions/${versionNumber}`, { method: 'GET' }), [fetchData]);
   const getDraftCourseById = useCallback((courseId) => fetchData(`/courses/draft/${courseId}`, { method: 'GET' }), [fetchData]);
   const getCourseByInstructorId = useCallback((instructorId) => fetchData(`/courses/byInstructor/${instructorId}`, { method: 'GET' }), [fetchData]);
+  const getAllMyCourses = useCallback(() => fetchData('/courses/byInstructor', { method: 'GET' }), [fetchData]);
 
   // Student APIs
   const getStudentCourse = useCallback((id) => fetchData(`/courses/${id}`, { method: 'GET' }), [fetchData]);
@@ -42,7 +43,7 @@ const useCourseApi = () => {
     getAllCoursesCatalog, getCourseByIdPublic, getCoursesByInstructorIdPublic,
     getAllDraftCourses, createCourse, getCourseDetails, updateCourse,
     deleteCourse, publishCourse, reorderModules,
-    getAllCourseVersions, getCourseVersionById, getDraftCourseById, getCourseByInstructorId,
+    getAllCourseVersions, getCourseVersionById, getDraftCourseById, getCourseByInstructorId, getAllMyCourses,
     getStudentCourse
   };
 };
