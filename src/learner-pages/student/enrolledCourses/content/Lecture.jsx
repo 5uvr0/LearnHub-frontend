@@ -2,20 +2,24 @@ import React, { useState } from "react";
 import { Container, Button, Spinner } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import useStudentCourseApi from "../../../../learner-hooks/useStudentCourseApi.js";
-
-
-const studentId = 1;
+import useCurrentStudent from "../../../../learner-hooks/useCurrentStudent.js";
 
 const Lecture = ({ content }) => {
     const navigate = useNavigate();
+    const { student, loading: studentLoading, error: studentError } = useCurrentStudent();
     const { markContentCompleted } = useStudentCourseApi();
     const [marking, setMarking] = useState(false);
 
     const handleMarkCompleted = async () => {
+        if (!student?.id) {
+            alert("Cannot mark completed: student not loaded.");
+            return;
+        }
+
         setMarking(true);
 
         try {
-            await markContentCompleted(studentId, content.id);
+            await markContentCompleted(student.id, content.id);
             alert("Lecture marked as completed!");
             navigate(-1);
 
@@ -27,6 +31,23 @@ const Lecture = ({ content }) => {
             setMarking(false);
         }
     };
+
+    if (studentLoading) {
+        return (
+            <Container className="text-center py-5">
+                <Spinner animation="border" role="status" />
+                <p className="mt-3">Loading student info...</p>
+            </Container>
+        );
+    }
+
+    if (studentError) {
+        return (
+            <Container className="py-5">
+                <Alert variant="danger">{`Failed to load student info: ${studentError}`}</Alert>
+            </Container>
+        );
+    }
 
     return (
         <Container className="py-4">

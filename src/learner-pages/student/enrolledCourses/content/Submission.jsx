@@ -6,15 +6,16 @@ import { faChevronDown, faChevronRight } from "@fortawesome/free-solid-svg-icons
 import useSubmissionApi from "../../../../learner-hooks/useSubmisionApi.js";
 import useFileApi from "../../../../file-server-hooks/useServerApi.js";
 import {generateSignature} from "../../../../utils/fileSignature.js";
+import useCurrentStudent from "../../../../learner-hooks/useCurrentStudent.js";
 
 const studentId= 1
 
 const Submission = ({ content }) => {
     const navigate = useNavigate();
 
+    const { student, loading: studentLoading, error: studentError } = useCurrentStudent();
     const { getSubmissionsByStudentAndContent, submitAssignment } = useSubmissionApi();
     const { uploadFile, downloadFile} = useFileApi();
-
 
     const [selectedFile, setSelectedFile] = useState(null);
 
@@ -23,23 +24,16 @@ const Submission = ({ content }) => {
     const [showHistory, setShowHistory] = useState(false);
 
     useEffect(() => {
-        console.log("useEffect triggered with:", { studentId, content });
-
-        if (studentId && content?.id) {
-            console.log("Hitting to get Submissions!");
+        if (student?.id && content?.id) {
             setLoading(true);
 
-            getSubmissionsByStudentAndContent(studentId, content.id)
+            getSubmissionsByStudentAndContent(student.id, content.id)
                 .then((data) => {
-                    console.log("Fetched submissions:", data);
                     setSubmissions(data || []);
-
                 })
                 .finally(() => setLoading(false));
         }
-    }, [studentId, content?.id, getSubmissionsByStudentAndContent]);
-
-    const latestSubmission = submissions.length > 0 ? submissions[0] : null;
+    }, [student?.id, content?.id, getSubmissionsByStudentAndContent]);
 
     const handleSubmit = async () => {
         if (!selectedFile) {
@@ -112,6 +106,7 @@ const Submission = ({ content }) => {
         }
     };
 
+    const latestSubmission = submissions.length > 0 ? submissions[0] : null;
 
     return (
         <Container className="py-4">
