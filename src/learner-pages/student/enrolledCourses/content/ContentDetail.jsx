@@ -4,11 +4,17 @@ import { Container, Spinner, Alert } from "react-bootstrap";
 import Lecture from "./Lecture.jsx";
 import Quiz from "./Quiz.jsx";
 import Submission from "./Submission.jsx";
-import useStudentCourseApi from "../../../../course-hooks/useContentApi.js";
+import useContentApi from "../../../../course-hooks/useContentApi.js";
+import useCurrentStudent from "../../../../learner-hooks/useCurrentStudent";
+import useStudentCourseApi from "../../../../learner-hooks/useStudentCourseApi.js";
 
 const StudentContentPage = () => {
-    const { contentId } = useParams();
-    const { getStudentContentDetails } = useStudentCourseApi();
+    const { courseId, contentId } = useParams();
+
+    const { getStudentContentDetails } = useContentApi();
+    const { student } = useCurrentStudent();
+    const { getEnrolledCourseIdsByStudent } = useStudentCourseApi()
+
     const [content, setContent] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -17,23 +23,44 @@ const StudentContentPage = () => {
         const fetchContent = async () => {
             try {
                 setLoading(true);
+                setError(null);
+
+                // 1. Check if student is enrolled in this course
+                if (!student?.id) {
+                    setError("Student not loaded.");
+
+                    return;
+                }
+
+                const enrolledIds = await getEnrolledCourseIdsByStudent(student.id);
+                const enrolled = enrolledIds.includes(parseInt(courseId));
+
+                if (!enrolled) {
+                    setError("Cannot access this content ! You are not enrolled in this course.");
+
+                    return; // stop fetching content
+                }
+
+                // 2. Fetch content details
                 const data = await getStudentContentDetails(contentId);
 
-                setContent(data);
+                if (data) {
+                    data.courseId = courseId;
+                }
 
-                console.log(data)
+                setContent(data);
 
             } catch (err) {
                 console.error(err);
                 setError("Failed to load content.");
-
             } finally {
                 setLoading(false);
             }
         };
 
         fetchContent();
-    }, [contentId, getStudentContentDetails]);
+    }, [contentId, courseId, getStudentContentDetails, student?.id, getEnrolledCourseIdsByStudent]);
+
 
     if (loading) return <Spinner animation="border" className="d-block mx-auto mt-5" />;
     if (error) return <Alert variant="danger">{error}</Alert>;

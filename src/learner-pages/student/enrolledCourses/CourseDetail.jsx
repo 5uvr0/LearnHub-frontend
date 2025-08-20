@@ -1,5 +1,6 @@
+// src/student-pages/StudentCourseDetailPage.jsx
 import React, { useEffect, useState } from "react";
-import { Container, Row, Col, Spinner, Alert, ProgressBar } from "react-bootstrap";
+import { Container, Row, Col, Spinner, Alert, ProgressBar, Button } from "react-bootstrap";
 import { useParams, useNavigate } from "react-router-dom";
 import useStudentCourseApi from "../../../learner-hooks/useStudentCourseApi.js";
 import useCourseApi from "../../../course-hooks/useCourseApi.js";
@@ -13,24 +14,36 @@ const StudentCourseDetailPage = () => {
 
   const { student, loading: studentLoading, error: studentError } = useCurrentStudent();
   const { getStudentCourse } = useCourseApi();
-  const { getStudentCourseProgressDetail } = useStudentCourseApi();
+  const { getStudentCourseProgressDetail, getEnrolledCourseIdsByStudent, enrollInCourse } = useStudentCourseApi();
 
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isEnrolled, setIsEnrolled] = useState(false);
+  const [checkingEnrollment, setCheckingEnrollment] = useState(true);
 
   useEffect(() => {
-    const fetchCourse = async () => {
+    const checkEnrollmentAndFetch = async () => {
       if (!student?.id) return;
 
-      setLoading(true);
+      setCheckingEnrollment(true);
       setError(null);
 
       try {
-        // 1. Fetch base course
+        // 1. Check enrollment
+        const enrolledIds = await getEnrolledCourseIdsByStudent(student.id);
+        const enrolled = enrolledIds.includes(parseInt(courseId));
+        setIsEnrolled(enrolled);
+
+        if (!enrolled) {
+          setError("You are not enrolled in this course.");
+          return; // skip fetching course details
+        }
+
+        // 2. Fetch base course
         const baseCourse = await getStudentCourse(courseId);
 
-        // 2. Fetch detailed progress using logged-in student
+        // 3. Fetch detailed progress
         const detailedCourse = await getStudentCourseProgressDetail(student.id, baseCourse);
 
         setCourse(detailedCourse);
@@ -40,13 +53,28 @@ const StudentCourseDetailPage = () => {
         setError("Failed to load course details. Please try again later.");
       } finally {
         setLoading(false);
+        setCheckingEnrollment(false);
       }
     };
 
-    fetchCourse();
-  }, [student?.id, courseId, getStudentCourse, getStudentCourseProgressDetail]);
+    checkEnrollmentAndFetch();
+  }, [student?.id, courseId, getStudentCourse, getStudentCourseProgressDetail, getEnrolledCourseIdsByStudent]);
 
-  if (studentLoading || loading) {
+  const handleEnroll = async () => {
+    if (!student?.id) return;
+
+    try {
+      await enrollInCourse(student.id, parseInt(courseId));
+      alert("You are enrolled into the course!");
+      // reload page
+      window.location.reload();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to enroll: " + err.message);
+    }
+  };
+
+  if (studentLoading || loading || checkingEnrollment) {
     return (
         <Container className="text-center py-5">
           <Spinner animation="border" role="status" />
@@ -63,10 +91,11 @@ const StudentCourseDetailPage = () => {
     );
   }
 
-  if (error) {
+  if (error && !isEnrolled) {
     return (
-        <Container className="py-5">
-          <Alert variant="danger">{error}</Alert>
+        <Container className="py-5 text-center">
+          <Alert variant="warning">{error}</Alert>
+          <Button variant="primary" onClick={handleEnroll}>Enroll in this course</Button>
         </Container>
     );
   }
@@ -107,7 +136,7 @@ const StudentCourseDetailPage = () => {
         {course.modules && course.modules.length > 0 ? (
             <Row className="g-4">
               {course.modules
-                  .slice() // make a shallow copy so we don't mutate state
+                  .slice()
                   .sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0))
                   .map((module) => (
                       <Col md={12} key={module.id}>
