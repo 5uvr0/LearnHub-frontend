@@ -1,4 +1,3 @@
-// src/learner-hooks/useApi.js
 import { useState, useCallback } from 'react';
 import Cookies from "js-cookie";
 import axios from "axios";
@@ -11,10 +10,8 @@ const LEARNING_PROCESSOR_PATH = import.meta.env.VITE_LEARNING_PROCESSOR_PATH;
 const getFullUrl = (endpoint) => {
   if (!API_BASE_URL || !LEARNING_PROCESSOR_PATH) {
     console.error('API environment variables are not defined in .env');
-    
     return null;
   }
-
   return `${API_BASE_URL}${LEARNING_PROCESSOR_PATH}${endpoint}`;
 };
 
@@ -24,25 +21,23 @@ const useApi = (initialLoading = false) => {
   const [error, setError] = useState(null);
 
   const fetchData = useCallback(async (
-    url,
-    options = {}
+      url,
+      options = {}
   ) => {
     setLoading(true);
     setError(null);
-    setData(null); // Clear previous data
+    setData(null);
 
     const fullUrl = getFullUrl(url);
 
     if (!fullUrl) {
       setError('API URL is not configured correctly.');
       setLoading(false);
-
-      return;
+      return null; // Return null consistently on error
     }
 
     try {
       const token = Cookies.get("accessToken");
-
       const response = await axios({
         url: fullUrl,
         method: options.method || "GET",
@@ -55,45 +50,30 @@ const useApi = (initialLoading = false) => {
         params: options.params || null,
       });
 
-      if (!response.ok) {
-        let errorMessage = `HTTP error! status: ${response.status}`;
-        
-        try {
-          const errorData = await response.json();
+      // The check `response.ok` is not needed with axios.
+      // Axios throws an error for non-2xx status codes, which are caught below.
 
-          if (errorData.message) {
-            errorMessage = errorData.message;
-
-          } else if (typeof errorData === 'string') { // Backend might return plain error string
-            errorMessage = errorData;
-
-          } else {
-            errorMessage = JSON.stringify(errorData);
-          }
-
-        } catch (jsonError) {
-          // If response is not JSON, use default status message
-        }
-        throw new Error(errorMessage);
-      }
-
-      // Check for empty response (e.g., successful DELETE often returns 200 with no body)
-      if (response.status === 204 || response.headers.get('Content-Length') === '0') {
-        setData(true); // Indicate success for no-content responses
-        
+      // Handle successful but no-content responses (e.g., 204)
+      if (response.status === 204) {
+        setData(true);
         return true;
       }
 
-      const result = await response.json();
-      setData(result);
+      // Check for empty data response
+      if (!response.data) {
+        setData(true);
+        return true;
+      }
 
-      return result; // Return data for direct use in the component
+      setData(response.data);
+      return response.data;
 
     } catch (err) {
-      console.error("API Fetch Error:", err);
-      setError(err.message || 'An unknown error occurred');
-
-      return null; // Return null on error
+      // Axios error objects have a `response` property with the server's response
+      const serverError = err.response?.data?.message || err.message || 'An unknown error occurred';
+      console.error("API Fetch Error:", serverError);
+      setError(serverError);
+      return null;
 
     } finally {
       setLoading(false);
