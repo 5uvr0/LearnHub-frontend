@@ -107,7 +107,7 @@ const TeacherCourseDetailsPage = () => {
             return;
         }
         fetchCourseDetails();
-        getStudentsEnrolledInCourse?.(courseId);
+        fetchEnrollmentsInCourse();
     }, [courseId, refreshTrigger, getCourseDetails]);
 
     const fetchCourseDetails = async () => {
@@ -115,6 +115,14 @@ const TeacherCourseDetailsPage = () => {
             await getCourseDetails?.(courseId);
         } catch (err) {
             console.error("Error fetching course details:", err);
+        }
+    };
+
+    const fetchEnrollmentsInCourse = async () => {
+        try {
+            await getStudentsEnrolledInCourse?.(courseId);
+        } catch (err) {
+            console.error("Error fetching enrollments:", err);
         }
     };
 

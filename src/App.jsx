@@ -54,10 +54,10 @@ function App() {
                 <div className="App d-flex flex-column min-vh-100">
                     <AppNavbar handleShowSidebar={handleShowSidebar}/>
 
-                    <AppSidebar
-                        show={showSidebar}
-                        handleClose={handleCloseSidebar}
-                    />
+                    {/*<AppSidebar*/}
+                    {/*    show={showSidebar}*/}
+                    {/*    handleClose={handleCloseSidebar}*/}
+                    {/*/>*/}
 
                     <main className="flex-grow-1">
                         <Routes>
