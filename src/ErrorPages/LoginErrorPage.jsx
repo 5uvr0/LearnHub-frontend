@@ -1,32 +1,24 @@
-// src/pages/LoginErrorPage.jsx
-
 import React, { useState } from "react";
 import { Container, Alert, Spinner, Row, Col } from "react-bootstrap";
-import { useNavigate, Link } from "react-router-dom"; // Import useNavigate and Link
+import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 import CustomButton from "../components/common/CustomButton";
-import useApi from "../hooks/useApi";
+import useAuthApi from "../auth-hooks/useAuthApi";
 import texts from "../i18n/texts";
 
 const LoginErrorPage = () => {
-    const navigate = useNavigate(); // Initialize navigate hook
+    const navigate = useNavigate();
 
-    const { data: refreshData, loading: refreshLoading, error: refreshApiError, fetchData: refreshSession } = useApi();
+    const { data: refreshData, loading: refreshLoading, error: refreshApiError, fetchData: refreshSession } = useAuthApi();
 
     const [message, setMessage] = useState("");
     const [messageVariant, setMessageVariant] = useState("");
-
-    const getCookie = (name) => {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(";").shift();
-        return null;
-    };
 
     const handleRefreshSession = async () => {
         setMessage("");
         setMessageVariant("");
 
-        const refreshToken = getCookie("refreshToken");
+        const refreshToken = localStorage.getItem("refreshToken");
 
         if (!refreshToken) {
             setMessage(texts.alerts?.noRefreshToken || "No refresh token found. Please log in again.");
@@ -34,19 +26,36 @@ const LoginErrorPage = () => {
             return;
         }
 
-        const result = await refreshSession("/auth/refresh", {
+        const result = await refreshSession("/api/refresh", {
             method: "POST",
-            data: { refreshToken: refreshToken },
+            data: {
+                refreshToken: refreshToken
+            },
         });
 
         if (result) {
-            setMessage(
-                texts.alerts?.refreshSuccess ||
-                    "Session refreshed successfully! You can now try accessing the previous page."
-            );
-            setMessageVariant("success");
-            // Assuming successful refresh means the user can go to their dashboard or home
-            navigate("/dashboard"); // Or navigate to '/' or a specific protected route
+            const newAccessToken = result.accessToken || result.access_token;
+            
+            if (newAccessToken) {
+                Cookies.set("accessToken", newAccessToken, { 
+                    expires: 1,
+                    secure: true, 
+                    sameSite: 'strict' 
+                });
+                
+                setMessage(
+                    texts.alerts?.refreshSuccess ||
+                        "Session refreshed successfully! Redirecting to homepage..."
+                );
+                setMessageVariant("success");
+                
+                setTimeout(() => {
+                    navigate("/");
+                }, 1500);
+            } else {
+                setMessage("Invalid response from server. Please log in again.");
+                setMessageVariant("danger");
+            }
         } else if (refreshApiError) {
             setMessage(
                 refreshApiError || texts.alerts?.refreshFailed || "Failed to refresh session. Please log in again."
@@ -61,7 +70,9 @@ const LoginErrorPage = () => {
     };
 
     const handleLoginAgain = () => {
-        navigate("/login"); // Navigate to the login page
+        localStorage.removeItem("refreshToken");
+        Cookies.remove("accessToken");
+        navigate("/login");
     };
 
     return (
