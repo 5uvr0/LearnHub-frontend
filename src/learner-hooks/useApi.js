@@ -69,13 +69,19 @@ const useApi = (initialLoading = false) => {
       return response.data;
 
     } catch (err) {
-      // Axios error objects have a `response` property with the server's response
-      const serverError = err.response?.data?.message || err.message || 'An unknown error occurred';
+      const serverError = err.response?.data;
       console.error("API Fetch Error:", serverError);
-      setError(serverError);
-      return null;
 
-    } finally {
+      if (serverError?.details) {
+        setError(serverError.details);
+      } else {
+        setError(serverError?.message || err.message || 'An unknown error occurred');
+      }
+
+      // Re-throw so the calling code can handle it
+      throw serverError || err;
+
+    }  finally {
       setLoading(false);
     }
   }, []);

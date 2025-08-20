@@ -33,7 +33,7 @@ const useStudentApi = () => {
   const updateStudent = useCallback(
     (id, studentData) =>
       fetchData(`/students/${id}`, {
-        method: 'PATCH',
+        method: 'PUT',
         body: JSON.stringify(studentData),
       }),
     [fetchData]

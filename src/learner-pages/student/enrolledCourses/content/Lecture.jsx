@@ -19,7 +19,7 @@ const Lecture = ({ content }) => {
         setMarking(true);
 
         try {
-            await markContentCompleted(student.id, content.id);
+            await markContentCompleted(student.id, content.courseId, content.id);
             alert("Lecture marked as completed!");
             navigate(-1);
 
