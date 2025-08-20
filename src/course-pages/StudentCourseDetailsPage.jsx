@@ -1,16 +1,12 @@
 // src/pages/StudentCourseDetailsPage.jsx
-
 import React, { useEffect, useState } from 'react';
-import { Container, Row, Col, Spinner, Alert, Button } from 'react-bootstrap';
+import { Container, Spinner, Alert, Button } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
-import ModuleCard from '../components/course/cards/ModuleCard';
 import texts from '../i18n/texts';
 import useCourseApi from '../course-hooks/useCourseApi';
-import { getRandomModerateColor } from '../utils/colorUtils';
 import useStudentCourseApi from "../learner-hooks/useStudentCourseApi.js";
-
-// Replace with actual auth logic
-const studentId = 1;
+import useCurrentStudent from "../learner-hooks/useCurrentStudent.js";
+import { getRandomModerateColor } from '../utils/colorUtils';
 
 const StudentCourseDetailsPage = () => {
   const { id: courseIdParam } = useParams();
@@ -19,15 +15,19 @@ const StudentCourseDetailsPage = () => {
 
   const { getEnrolledCourseIdsByStudent, enrollInCourse } = useStudentCourseApi();
   const { data: course, loading, error, getCourseByIdPublic } = useCourseApi();
+  const { student, loading: studentLoading } = useCurrentStudent();
 
   const [enrolledCourseIds, setEnrolledCourseIds] = useState([]);
   const [checkingEnrollment, setCheckingEnrollment] = useState(false);
 
-  // Determine if a student is logged in
-  const studentLoggedIn = !!studentId;
+  // Determine role from localStorage
+  const role = localStorage.getItem("role") || "PUBLIC";
+  const studentLoggedIn = role === "STUDENT";
+  const instructorView = role === "INSTRUCTOR";
+  const publicView = role === "PUBLIC";
+
   const isEnrolled = enrolledCourseIds.includes(courseId);
 
-  // Generate a random color for the course card
   const cardColor = getRandomModerateColor();
 
   const generateCourseSvg = (bgColor) => `
@@ -49,14 +49,14 @@ const StudentCourseDetailsPage = () => {
     getCourseByIdPublic?.(courseId);
   }, [courseId, getCourseByIdPublic]);
 
-  // Fetch student enrollment if logged in
+  // Fetch student enrollment
   useEffect(() => {
-    if (!studentLoggedIn) return;
+    if (!studentLoggedIn || !student?.id) return;
 
     const fetchEnrollment = async () => {
       setCheckingEnrollment(true);
       try {
-        const ids = await getEnrolledCourseIdsByStudent(studentId);
+        const ids = await getEnrolledCourseIdsByStudent(student.id);
         setEnrolledCourseIds(ids || []);
       } catch (err) {
         console.error("Error fetching enrolled courses:", err);
@@ -66,14 +66,12 @@ const StudentCourseDetailsPage = () => {
     };
 
     fetchEnrollment();
-  }, [getEnrolledCourseIdsByStudent, studentLoggedIn]);
+  }, [studentLoggedIn, student?.id, getEnrolledCourseIdsByStudent]);
 
-  if (loading) {
+  if (loading || (studentLoggedIn && studentLoading)) {
     return (
         <Container className="text-center py-5">
-          <Spinner animation="border" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </Spinner>
+          <Spinner animation="border" role="status" />
           <p className="mt-3">Loading course details...</p>
         </Container>
     );
@@ -99,7 +97,7 @@ const StudentCourseDetailsPage = () => {
       <section className="course-details-page py-5">
         <Container>
           <h2 className="mb-4 fw-bold text-primary text-center">
-            {texts.sections?.courseDetails}: {course?.name}
+            {texts.sections?.courseDetails}: {course.name}
           </h2>
 
           <div className="row mb-5 align-items-center">
@@ -110,13 +108,12 @@ const StudentCourseDetailsPage = () => {
             ></div>
 
             <div className="col-md-8">
-              <p className="lead text-secondary" dangerouslySetInnerHTML={{ __html: course?.description }}></p>
-              <p className="mb-0"><strong>Instructor:</strong> {course?.instructorName}</p>
-              <p><strong>Course ID:</strong> {course?.courseId}</p>
-              <p><strong>Published Version:</strong> {course?.currentPublishedVersion || 'N/A'}</p>
+              <p className="lead text-secondary" dangerouslySetInnerHTML={{ __html: course.description }}></p>
+              <p className="mb-0"><strong>Instructor:</strong> {course.instructorName}</p>
+              <p><strong>Course ID:</strong> {courseId}</p>
 
-              {/* Enrollment / Go to Course buttons */}
-              {studentLoggedIn && (
+              {/* STUDENT view */}
+              {studentLoggedIn && !studentLoading && (
                   <div className="my-4">
                     {checkingEnrollment ? (
                         <Spinner animation="border" size="sm" />
@@ -134,10 +131,9 @@ const StudentCourseDetailsPage = () => {
                             className="me-2"
                             onClick={async () => {
                               try {
-                                await enrollInCourse(studentId, courseId);
-
+                                await enrollInCourse(student.id, courseId);
+                                alert("You are enrolled into the course!");
                                 setEnrolledCourseIds(prev => [...prev, courseId]);
-
                               } catch (err) {
                                 console.error(err);
                                 alert("Failed to enroll: " + err.message);
@@ -149,20 +145,34 @@ const StudentCourseDetailsPage = () => {
                     )}
                   </div>
               )}
+
+              {/* PUBLIC view */}
+              {publicView && (
+                  <div className="my-4">
+                    <Button
+                        variant="primary"
+                        onClick={() => {
+                          alert("You need to login first to enroll in this course.");
+                          navigate("/login");
+                        }}
+                    >
+                      Enroll
+                    </Button>
+                  </div>
+              )}
+
+              {/* INSTRUCTOR view: no buttons */}
             </div>
           </div>
 
-
-          {studentLoggedIn && (
+          {/* STUDENT messages */}
+          {studentLoggedIn && !studentLoading && (
               isEnrolled ? (
-                  <Alert variant="info">Go to course view page to see full course detail </Alert>
-
+                  <Alert variant="info">Go to course view page to see full course detail</Alert>
               ) : (
                   <Alert variant="info">{texts.alerts?.unenrolledCourse}</Alert>
               )
           )}
-
-
         </Container>
       </section>
   );
