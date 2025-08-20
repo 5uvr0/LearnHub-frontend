@@ -8,6 +8,7 @@ const texts = {
         aboutUs: "About Us",
         contact: "Contact",
         signUp: "Sign Up",
+        logIn: "Login"
     },
     hero: {
         headline: "Your Journey to Knowledge Starts Here",

@@ -103,6 +103,7 @@ const AppNavbar = () => { // handleShowSidebar prop is no longer needed here
               <Nav.Link as={Link} to="/contact" className="mx-2">{texts.nav?.contact}</Nav.Link>
 
               <Nav.Link as={Link} to="/login" className="mx-2">{texts.nav?.logIn}</Nav.Link>
+              
               {
                 isLoggedIn ? (
                   <Nav.Link as={Link} to="/logout" className="mx-2 border rounded px-3">{texts.nav?.logout || 'Logout'}</Nav.Link>
