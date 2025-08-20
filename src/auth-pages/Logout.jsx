@@ -5,13 +5,16 @@ import Cookie from 'js-cookie';
 const Logout = () => {
     const navigate = useNavigate();
 
-    Cookie.remove('accessToken');
-    localStorage.clear();
-
-    alert("Logged out successfully!");
-
-    navigate('/');
+    useEffect(() => {
+        // Perform logout operations
+        Cookie.remove('accessToken');
+        localStorage.clear();
         
+        // Navigate to home with logout parameter
+        navigate('/?logout=success');
+        
+    }, [navigate]);
+
     return (
         <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '200px' }}>
             <div className="text-center">
