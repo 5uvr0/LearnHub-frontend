@@ -1,27 +1,31 @@
-// src/components/course/modals/InstructorEditModal.jsx
-
 import React, { useState, useEffect } from 'react';
-import { Modal, Form, Button } from 'react-bootstrap';
+import { Modal, Form } from 'react-bootstrap';
 import CustomButton from '../../common/CustomButton.jsx';
 import texts from '../../../i18n/texts';
 
 const InstructorEditModal = ({ show, onHide, instructor, onSave, isLoading }) => {
+    // Initialize formData with all fields expected by the PATCH API
     const [formData, setFormData] = useState({
         name: '',
         email: '',
-        phone: '',
-        bio: ''
+        phone: '', // Keep phone if your backend uses it, otherwise remove
+        dateOfBirth: '', // Added from PATCH body
+        imageUrl: ''     // Added from PATCH body
     });
+    const [originalData, setOriginalData] = useState({});
     const [formErrors, setFormErrors] = useState({});
 
     useEffect(() => {
         if (instructor) {
-            setFormData({
+            const initialData = {
                 name: instructor.name || '',
                 email: instructor.email || '',
-                phone: instructor.phone || '',
-                bio: instructor.bio || ''
-            });
+                // Ensure dateOfBirth is formatted correctly for input type="date"
+                dateOfBirth: instructor.dateOfBirth ? new Date(instructor.dateOfBirth).toISOString().split('T')[0] : '',
+                imageUrl: instructor.imageUrl || ''
+            };
+            setFormData(initialData);
+            setOriginalData(initialData); // Store original data for comparison
         }
     }, [instructor]);
 
@@ -35,7 +39,7 @@ const InstructorEditModal = ({ show, onHide, instructor, onSave, isLoading }) =>
         const errors = {};
         if (!formData.name.trim()) errors.name = 'Name is required.';
         if (!formData.email.trim()) errors.email = 'Email is required.';
-        // Add more validation rules as needed
+        // Add more validation rules as needed, e.g., for dateOfBirth format
         setFormErrors(errors);
         return Object.keys(errors).length === 0;
     };
@@ -43,7 +47,27 @@ const InstructorEditModal = ({ show, onHide, instructor, onSave, isLoading }) =>
     const handleSubmit = (e) => {
         e.preventDefault();
         if (validateForm()) {
-            onSave(formData);
+            // Create a new object containing only the changed fields
+            const changedData = {};
+            // The API expects 'id' in the body even for PATCH for some reason based on your screenshot
+            // However, typical PATCH only sends changed fields.
+            // If the backend strictly needs ID, you might include it, but it's often not required for PATCH
+            // changedData.id = instructor.id; // Only if backend explicitly requires ID in PATCH body
+
+            for (const key in formData) {
+                // Check if the current value is different from the original value
+                if (formData[key] !== originalData[key]) {
+                    changedData[key] = formData[key];
+                }
+            }
+
+            // If nothing has changed, just hide the modal and do nothing else
+            if (Object.keys(changedData).length === 0) {
+                onHide();
+                return;
+            }
+
+            onSave(changedData); // Send only the changed fields for a PATCH request
         }
     };
 
@@ -88,16 +112,30 @@ const InstructorEditModal = ({ show, onHide, instructor, onSave, isLoading }) =>
                             maxLength={20}
                         />
                     </Form.Group>
-                    <Form.Group className="mb-3" controlId="editBio">
-                        <Form.Label>Biography</Form.Label>
+
+                    {/* New Fields from PATCH request body screenshot */}
+                    <Form.Group className="mb-3" controlId="editDateOfBirth">
+                        <Form.Label>Date of Birth</Form.Label>
                         <Form.Control
-                            as="textarea"
-                            rows={3}
-                            name="bio"
-                            value={formData.bio}
+                            type="date"
+                            name="dateOfBirth"
+                            value={formData.dateOfBirth}
+                            onChange={handleChange}
+                            isInvalid={!!formErrors.dateOfBirth}
+                        />
+                        <Form.Control.Feedback type="invalid">{formErrors.dateOfBirth}</Form.Control.Feedback>
+                    </Form.Group>
+
+                    <Form.Group className="mb-3" controlId="editImageUrl">
+                        <Form.Label>Image URL</Form.Label>
+                        <Form.Control
+                            type="url" // Use type="url" for image URLs
+                            name="imageUrl"
+                            value={formData.imageUrl}
                             onChange={handleChange}
                         />
                     </Form.Group>
+
                     <div className="d-grid gap-2">
                         <CustomButton variant="primary" type="submit" isLoading={isLoading}>
                             Save Changes
