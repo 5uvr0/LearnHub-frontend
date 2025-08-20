@@ -77,7 +77,7 @@ const AdminDashboardPage = () => {
 
             {/* Admin Information Card */}
             {adminInfo && (
-                <div className="bg-white shadow-sm rounded-lg p-4 mb-4">
+                <div className="bg-light shadow-sm rounded-lg p-4 mb-4">
                     <h2 className="text-xl font-bold mb-2">My Profile</h2>
                     <div className="d-flex align-items-center">
                         <FontAwesomeIcon icon={faUserTie} size="2x" className="text-primary me-3" />
