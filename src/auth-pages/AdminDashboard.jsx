@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import useAuthApi from "../auth-hooks/useAuthApi";
-import UserCard from "../components/auth/UserCard"; // Assuming this path, will create next
+import UserCard from "../components/auth/cards/UserCard"; // Assuming this path, will create next
 
 const AdminDashboardPage = () => {
     const { data: users, loading, error, fetchData } = useAuthApi();
     const [refresh, setRefresh] = useState(false);
 
     useEffect(() => {
-        fetchData("/admin/users"); // Assuming this endpoint, will confirm or adjust
+        fetchData("/admin/users");
     }, [fetchData, refresh]);
 
     const handleUserUpdate = () => {
