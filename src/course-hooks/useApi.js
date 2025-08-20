@@ -54,7 +54,6 @@ const useApi = (initialLoading = false) => {
 
         try {
             const token = Cookies.get("accessToken");
-            console.log('access token: '+token);
             const response = await fetch(fullUrl, {
                 headers: {
                     'Content-Type': 'application/json',
@@ -116,9 +115,11 @@ const useApi = (initialLoading = false) => {
         }
 
         try {
+            const token = Cookies.get("accessToken");
             const response = await fetch(fullUrl, {
                 headers: {
                     'Content-Type': 'application/json',
+                    ...(token && { Authorization: `Bearer ${token}` }),
                     ...options.headers,
                 },
                 ...options,

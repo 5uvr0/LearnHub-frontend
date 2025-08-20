@@ -4,6 +4,7 @@ import React from 'react';
 import { Modal, ListGroup, Button, Alert } from 'react-bootstrap';
 import texts from '../../../i18n/texts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {Spinner} from "react-bootstrap";
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 
 const StudentListModal = ({ show, onHide, students, isLoading, error }) => {
