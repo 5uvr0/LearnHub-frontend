@@ -1,13 +1,26 @@
 // src/pages/HomePage.jsx
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Container } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate, useSearchParams } from 'react-router-dom'; 
 import CustomButton from "../components/common/CustomButton.jsx";
 import texts from "../i18n/texts.js";
 
-const HomePage = () => { // Removed setCurrentPage, setCourseDetailId props
-    const navigate = useNavigate(); // Hook to get navigation function
+const HomePage = () => { 
+    const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams(); // Hook to read URL parameters
+
+    // Check for logout success parameter
+    useEffect(() => {
+        if (searchParams.get('logout') === 'success') {
+            // Show the alert
+            alert('Logged out successfully!');
+            
+            // Clean up the URL by removing the parameter
+            searchParams.delete('logout');
+            setSearchParams(searchParams);
+        }
+    }, [searchParams, setSearchParams]);
 
     const handleExploreCoursesClick = () => {
         alert(texts.alerts.exploreCoursesClicked);

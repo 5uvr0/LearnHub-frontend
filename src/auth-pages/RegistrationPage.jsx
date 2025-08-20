@@ -23,36 +23,32 @@ const RegistrationPage = () => {
         });
 
         if (result) {
-            setMessage(result.message || texts.auth?.registrationSuccess || 'Registration successful!');
+            setMessage(result.message || texts.auth?.registrationSuccess);
             setMessageVariant('success');
 
-            alert("Registration Succesful! Check your email. You need to activate your account first before you try to login.");
+            alert(texts.auth?.registrationSuccessAlert);
             navigate("/login");
             
-        } else if (error) {
+        } else {
             setMessageVariant('danger');
             
             try {
                 const parsedError = JSON.parse(error);
                 
                 if (parsedError.errors?.error) {
-                    setMessage(`${parsedError.message || 'Error'}: ${parsedError.errors.error}`);
+                    setMessage(parsedError.errors.error);
 
-                } else {
-                    setMessage(parsedError.message || texts.auth?.registrationFailed || 'Registration failed.');
-                }
-                
-                if (parsedError.errors && !parsedError.errors.error) {
+                } else if (parsedError.errors) {
                     setFormErrors(parsedError.errors);
+                    setMessage(parsedError.message || texts.auth?.validationFailed);
+                    
+                } else {
+                    setMessage(parsedError.message || texts.auth?.registrationFailed);
                 }
                 
             } catch (e) {
-                setMessage(error || texts.auth?.registrationFailed || 'Registration failed.');
+                setMessage(texts.auth?.registrationFailed);
             }
-
-        } else {
-            setMessage(texts.auth?.registrationFailed || 'Registration failed. Please try again.');
-            setMessageVariant('danger');
         }
     };
 
@@ -64,9 +60,9 @@ const RegistrationPage = () => {
                         {loading && (
                             <div className="text-center mb-3">
                                 <Spinner animation="border" role="status" className="mb-2">
-                                    <span className="visually-hidden">Registering...</span>
+                                    <span className="visually-hidden">{texts.auth?.registering}</span>
                                 </Spinner>
-                                <p className="text-muted">{texts.auth?.registering || 'Registering...'}</p>
+                                <p className="text-muted">{texts.auth?.registering}</p>
                             </div>
                         )}
 
