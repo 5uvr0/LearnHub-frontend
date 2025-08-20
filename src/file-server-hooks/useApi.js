@@ -73,10 +73,13 @@ const useApi = (initialLoading = false) => {
 
       setData(result);
       return result;
+
     } catch (err) {
       console.error("API Fetch Error:", err);
       setError(err.message || 'An unknown error occurred');
-      return null;
+
+      throw err;
+
     } finally {
       setLoading(false);
     }

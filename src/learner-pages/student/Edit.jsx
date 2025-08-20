@@ -2,41 +2,40 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useStudentApi from "../../learner-hooks/useStudentApi";
-
-const studentId = 1; // later can be dynamic from auth/session
+import useCurrentStudent from "../../learner-hooks/useCurrentStudent";
 
 const EditStudentPage = () => {
     const navigate = useNavigate();
-    const { getStudentById, updateStudent } = useStudentApi();
+    const { updateStudent, loading, error } = useStudentApi();
+    const { student } = useCurrentStudent();
 
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [student, setStudent] = useState(null);
     const [formData, setFormData] = useState({
-        name: "",
-        email: "",
+        firstName: "",
+        lastName: "",
+        gender: "",
+        dateOfBirth: "",
         phone: "",
+        address: "",
+        imageUrl: "",
+        email: "", // read-only
     });
 
+    const [fieldErrors, setFieldErrors] = useState({}); // field-level errors
+
     useEffect(() => {
-        const fetchStudent = async () => {
-            try {
-                const result = await getStudentById(studentId);
-                setStudent(result);
-                setFormData({
-                    name: result.name || "",
-                    email: result.email || "",
-                    phone: result.phone || "",
-                });
-            } catch (err) {
-                console.error("Failed to load student", err);
-                setError("Failed to load Student");
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchStudent();
-    }, [studentId, getStudentById]);
+        if (student) {
+            setFormData({
+                firstName: student.firstName || "",
+                lastName: student.lastName || "",
+                gender: student.gender || "",
+                dateOfBirth: student.dateOfBirth || "",
+                phone: student.phone || "",
+                address: student.address || "",
+                imageUrl: student.imageUrl || "",
+                email: student.email || "",
+            });
+        }
+    }, [student]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -44,18 +43,30 @@ const EditStudentPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!student) return;
+
+        setFieldErrors({}); // clear previous errors
+
         try {
-            await updateStudent(studentId, formData);
-            navigate("/student/profile"); // back to profile after save
+            const updatedStudent = await updateStudent(student.id, formData);
+
+            // If API returns a student, success
+            if (updatedStudent) {
+                alert("Student updated successfully!");
+                navigate("/student/profile");
+            }
         } catch (err) {
+            // Axios / useApi errors are thrown here
             console.error("Failed to update student", err);
-            setError("Failed to update Student");
+
+            if (err?.details) {
+                // Backend returned field-level validation errors
+                setFieldErrors(err.details);
+            } else {
+                alert("Failed to update student: " + (err.message || err));
+            }
         }
     };
-
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error: {error}</p>;
-    if (!student) return <p>No student found</p>;
 
     return (
         <div className="container py-5">
@@ -66,30 +77,75 @@ const EditStudentPage = () => {
             <div className="row justify-content-center">
                 <div className="col-md-8 col-lg-6">
                     <form onSubmit={handleSubmit} className="card p-4 shadow-sm">
+
+                        {/* First Name */}
                         <div className="mb-3">
-                            <label className="form-label">Name</label>
+                            <label className="form-label">First Name</label>
                             <input
                                 type="text"
-                                name="name"
-                                value={formData.name}
+                                name="firstName"
+                                value={formData.firstName}
                                 onChange={handleChange}
-                                className="form-control"
+                                className={`form-control ${fieldErrors.firstName ? 'is-invalid' : ''}`}
                                 required
                             />
+                            {fieldErrors.firstName && (
+                                <div className="invalid-feedback">{fieldErrors.firstName}</div>
+                            )}
                         </div>
 
+                        {/* Last Name */}
                         <div className="mb-3">
-                            <label className="form-label">Email</label>
+                            <label className="form-label">Last Name</label>
                             <input
-                                type="email"
-                                name="email"
-                                value={formData.email}
+                                type="text"
+                                name="lastName"
+                                value={formData.lastName}
                                 onChange={handleChange}
-                                className="form-control"
+                                className={`form-control ${fieldErrors.lastName ? 'is-invalid' : ''}`}
                                 required
                             />
+                            {fieldErrors.lastName && (
+                                <div className="invalid-feedback">{fieldErrors.lastName}</div>
+                            )}
                         </div>
 
+                        {/* Gender */}
+                        <div className="mb-3">
+                            <label className="form-label">Gender</label>
+                            <select
+                                name="gender"
+                                value={formData.gender}
+                                onChange={handleChange}
+                                className={`form-select ${fieldErrors.gender ? 'is-invalid' : ''}`}
+                                required
+                            >
+                                <option value="">Select Gender</option>
+                                <option value="MALE">Male</option>
+                                <option value="FEMALE">Female</option>
+                                <option value="OTHER">Other</option>
+                            </select>
+                            {fieldErrors.gender && (
+                                <div className="invalid-feedback">{fieldErrors.gender}</div>
+                            )}
+                        </div>
+
+                        {/* Date of Birth */}
+                        <div className="mb-3">
+                            <label className="form-label">Date of Birth</label>
+                            <input
+                                type="date"
+                                name="dateOfBirth"
+                                value={formData.dateOfBirth}
+                                onChange={handleChange}
+                                className={`form-control ${fieldErrors.dateOfBirth ? 'is-invalid' : ''}`}
+                            />
+                            {fieldErrors.dateOfBirth && (
+                                <div className="invalid-feedback">{fieldErrors.dateOfBirth}</div>
+                            )}
+                        </div>
+
+                        {/* Phone */}
                         <div className="mb-3">
                             <label className="form-label">Phone</label>
                             <input
@@ -97,10 +153,56 @@ const EditStudentPage = () => {
                                 name="phone"
                                 value={formData.phone}
                                 onChange={handleChange}
+                                className={`form-control ${fieldErrors.phone ? 'is-invalid' : ''}`}
+                            />
+                            {fieldErrors.phone && (
+                                <div className="invalid-feedback">{fieldErrors.phone}</div>
+                            )}
+                        </div>
+
+                        {/* Address */}
+                        <div className="mb-3">
+                            <label className="form-label">Address</label>
+                            <textarea
+                                name="address"
+                                value={formData.address}
+                                onChange={handleChange}
+                                className={`form-control ${fieldErrors.address ? 'is-invalid' : ''}`}
+                                rows="3"
+                            />
+                            {fieldErrors.address && (
+                                <div className="invalid-feedback">{fieldErrors.address}</div>
+                            )}
+                        </div>
+
+                        {/* Profile Image URL */}
+                        <div className="mb-3">
+                            <label className="form-label">Profile Image URL</label>
+                            <input
+                                type="text"
+                                name="imageUrl"
+                                value={formData.imageUrl}
+                                onChange={handleChange}
+                                className={`form-control ${fieldErrors.imageUrl ? 'is-invalid' : ''}`}
+                            />
+                            {fieldErrors.imageUrl && (
+                                <div className="invalid-feedback">{fieldErrors.imageUrl}</div>
+                            )}
+                        </div>
+
+                        {/* Email */}
+                        <div className="mb-3">
+                            <label className="form-label">Email (cannot change)</label>
+                            <input
+                                type="email"
+                                name="email"
+                                value={formData.email}
                                 className="form-control"
+                                disabled
                             />
                         </div>
 
+                        {/* Buttons */}
                         <div className="d-flex justify-content-between">
                             <button
                                 type="button"
@@ -113,6 +215,7 @@ const EditStudentPage = () => {
                                 Save Changes
                             </button>
                         </div>
+
                     </form>
                 </div>
             </div>

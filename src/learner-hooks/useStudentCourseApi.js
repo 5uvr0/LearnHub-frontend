@@ -91,8 +91,8 @@ const useStudentCourseApi = () => {
 
   // Mark content completed (PATCH)
   const markContentCompleted = useCallback(
-    (studentId, contentId) =>
-      fetchData(`/student-course/student-contents/${studentId}/${contentId}/complete`, {
+    (studentId, courseId, contentId) =>
+      fetchData(`/student-course/student-contents/student/${studentId}/course/${courseId}/content/${contentId}/complete`, {
         method: 'PATCH',
       }),
     [fetchData]
