@@ -15,25 +15,25 @@ const useSubmissionApi = () => {
     [fetchData]
   );
 
-  // Submit an assignment (POST) with multipart form data (file upload)
-  const submitAssignment = useCallback(
-    (studentId, contentId, file) => {
-      const formData = new FormData();
-      formData.append('file', file);
+    /**
+     * Submit an assignment (POST) with multipart form data (file upload)
+     */
+    const submitAssignment = useCallback(
+        (studentId, contentId, fileDto) => {
+            return fetchData(
+                `/submissions/assignments?studentId=${studentId}&contentId=${contentId}`,
+                {
+                    method: 'POST',
+                    headers: { "Content-Type": "application/json" }, // explicitly JSON
+                    body: JSON.stringify(fileDto),                   // send DTO as JSON
+                }
+            );
+        },
+        [fetchData]
+    );
 
-      return fetchData(
-        `/submissions/assignments?studentId=${studentId}&contentId=${contentId}`,
-        {
-          method: 'POST',
-          body: formData,
-          // DO NOT set Content-Type here; browser sets it automatically for multipart
-        }
-      );
-    },
-    [fetchData]
-  );
 
-  // Get submissions by student (GET)
+    // Get submissions by student (GET)
   const getSubmissionsByStudent = useCallback(
     (studentId) => fetchData(`/submissions/student/${studentId}`, { method: 'GET' }),
     [fetchData]
@@ -64,6 +64,9 @@ const useSubmissionApi = () => {
     (contentId) => fetchData(`/submissions/content/${contentId}`, { method: 'GET' }),
     [fetchData]
   );
+
+
+
 
   return {
     data,

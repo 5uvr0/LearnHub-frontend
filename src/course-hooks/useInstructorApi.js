@@ -25,14 +25,16 @@ const useInstructorApi = () => {
     body: JSON.stringify(instructorData),
   }), [fetchData]);
   const softDeleteInstructor = useCallback((id) => fetchData(`/instructors/${id}`, { method: 'DELETE' }), [fetchData]);
+  const getMyProfile = useCallback(() => fetchData(`/instructors/myProfile`, { method: 'GET' }), [fetchData]);
 
-  return {
+    return {
     // These states are directly from the underlying useApi hook
     data,
     loading, // This is your loading feature
     error,
     getAllInstructorsPublic, getInstructorByIdPublic,
-    getAllInstructors, createInstructor, getInstructorById, updateInstructor, softDeleteInstructor
+    getAllInstructors, createInstructor, getInstructorById, updateInstructor, softDeleteInstructor,
+    getMyProfile
   };
 };
 

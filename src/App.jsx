@@ -21,10 +21,26 @@ import CourseVersionComparisonPage from './course-pages/CourseVersionComparisonP
 import LectureDetailsPage from './course-pages/LectureDetailsPage'; // NEW
 import SubmissionDetailsPage from './course-pages/SubmissionDetailsPage'; // NEW
 import LoginPage from './auth-pages/LoginPage.jsx';
+import AdminDashboardPage from './auth-pages/AdminDashboard.jsx';
+import UserManagementPage from './auth-pages/UserManagementPage';
 import InstructorProfilePage from './course-pages/InstructorProfilePage'
 import RegistrationPage from "./auth-pages/RegistrationPage.jsx";
+import Logout from "./auth-pages/Logout.jsx";
+
+import StudentDashboard from './learner-pages/student/Dashboard.jsx';
+import StudentCourseDetailPage from "./learner-pages/student/enrolledCourses/CourseDetail.jsx";
+
 import {ThemeProvider} from './contexts/ThemeContext';
 import './index.css';
+import StudentProfilePage from "./learner-pages/student/Profile.jsx";
+import EditStudentPage from "./learner-pages/student/Edit.jsx";
+import ContentDetailPage from "./learner-pages/student/enrolledCourses/content/ContentDetail.jsx";
+
+import LecturePage from "./learner-pages/student/enrolledCourses/content/Lecture.jsx";
+import QuizPage from "./learner-pages/student/enrolledCourses/content/Quiz.jsx";
+import SubmissionPage from "./learner-pages/student/enrolledCourses/content/Submission.jsx";
+import StudentContentPage from "./learner-pages/student/enrolledCourses/content/ContentDetail.jsx";
+
 
 function App() {
     const [showSidebar, setShowSidebar] = useState(false);
@@ -34,14 +50,14 @@ function App() {
 
     return (
         <ThemeProvider>
-            <Router>
+            <Router basename="/learnhub">
                 <div className="App d-flex flex-column min-vh-100">
                     <AppNavbar handleShowSidebar={handleShowSidebar}/>
 
-                    <AppSidebar
-                        show={showSidebar}
-                        handleClose={handleCloseSidebar}
-                    />
+                    {/*<AppSidebar*/}
+                    {/*    show={showSidebar}*/}
+                    {/*    handleClose={handleCloseSidebar}*/}
+                    {/*/>*/}
 
                     <main className="flex-grow-1">
                         <Routes>
@@ -89,7 +105,28 @@ function App() {
                             {/* User Registration & Login Routes */}
                             <Route path="/register" element={<RegistrationPage/>}/>
                             <Route path="/login" element={<LoginPage/>}/>
+                            <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
+                            <Route path="/admin/user-management/:userId" element={<UserManagementPage />} />
+                            <Route path="/logout" element={<Logout />}/>
                             {/*<Route path="/login/error" element={<LoginErrorPage/>}/>*/}
+
+                             {/* Student dashboard and profile */}
+                            <Route path="/student/dashboard" element={<StudentDashboard/>} />
+                            <Route path="/student/profile" element={<StudentProfilePage />} />
+                            <Route path="/student/profile/edit" element={<EditStudentPage />} />
+
+                            {/* Student Course Endpoints */}
+                            <Route path="/student/course/:courseId" element={<StudentCourseDetailPage/>} />
+                            <Route path="/student/courses/:courseId/content/:contentId" element={<StudentContentPage />}/>
+
+                            {/* Student Content Endpoints */}
+                            {/*<Route path="/student/content/:contentId/lecture" element={<LecturePage />} />*/}
+                            {/*<Route path="/student/content/:contentId/quiz" element={<QuizPage />} />*/}
+                            {/*<Route path="/student/content/:contentId/submission" element={<SubmissionPage />} />*/}
+
+
+                            {/* Student Submission Related Endpoints */}
+
 
                             {/* Add more routes for About, Contact, etc. */}
                             <Route path="/about" element={

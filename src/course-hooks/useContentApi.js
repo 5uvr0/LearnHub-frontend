@@ -58,6 +58,10 @@ const useContentApi = () => {
     const getAllContentDrafts = useCallback(() => fetchData('/contents/draft', { method: 'GET' }), [fetchData]);
 
 
+    //Student APIS
+    const getStudentContentDetails = useCallback((contentId) => fetchData(`/contents/detail/${contentId}`, { method: 'GET' }), [fetchData]);
+
+
     return {
         data, loading, error, addQuizOption,
         createContent, editContentMetadata, publishContentRelease, deleteContentRelease,
@@ -66,6 +70,7 @@ const useContentApi = () => {
         createNewQuizQuestion, deleteQuizQuestion, getAllQuizQuestions,
         editQuizQuestion, editQuizOption,
         getAllContentDrafts, // NEW: Return the new function
+        getStudentContentDetails
     };
 };
 

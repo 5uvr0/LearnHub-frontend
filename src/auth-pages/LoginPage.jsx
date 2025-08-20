@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import LoginForm from '../components/auth/forms/LoginForm.jsx';
 import useAuthApi from '../auth-hooks/useAuthApi';
 import texts from '../i18n/texts';
+import Cookie from 'js-cookie';
 
 const LoginPage = () => {
     const { data, loading, error, fetchData: loginUser } = useAuthApi();
@@ -22,36 +23,40 @@ const LoginPage = () => {
             data: formData
         });
 
-        if (result) {
-            setMessage(result.message || texts.auth?.loginSuccess || 'Login successful!');
+        if (result && result.accessToken) {
+            setMessage(result.message || texts.auth?.loginSuccess);
             setMessageVariant('success');
 
-            navigate("/home");
+            Cookie.set("accessToken", result.accessToken);
+            localStorage.setItem("refreshToken", result.refreshToken);
+
+            localStorage.setItem("email", result.email);
+            localStorage.setItem("role", result.role);
+
+            navigate("/");
             
-        } else if (error) {
+        } else {
             setMessageVariant('danger');
             
             try {
                 const parsedError = JSON.parse(error);
                 
-                if (parsedError.errors?.error) {
-                    setMessage(`${parsedError.message || 'Error'}: ${parsedError.errors.error}`);
+                if (parsedError.errors) {
+                    if (Object.keys(parsedError.errors).length > 0) {
+                        setFormErrors(parsedError.errors);
+                        setMessage(parsedError.message || texts.auth?.validationFailed);
+                        
+                    } else {
+                        setMessage(parsedError.message || texts.auth?.loginFailed);
+                    }
 
                 } else {
-                    setMessage(parsedError.message || texts.auth?.loginFailed || 'Login failed.');
-                }
-                
-                if (parsedError.errors && !parsedError.errors.error) {
-                    setFormErrors(parsedError.errors);
+                    setMessage(parsedError.message || texts.auth?.loginFailed);
                 }
                 
             } catch (e) {
-                setMessage(error || texts.auth?.loginFailed || 'Login failed.');
+                setMessage(texts.auth?.loginFailed);
             }
-
-        } else {
-            setMessage(texts.auth?.loginFailed || 'Login failed. Please try again.');
-            setMessageVariant('danger');
         }
     };
 
@@ -63,9 +68,9 @@ const LoginPage = () => {
                         {loading && (
                             <div className="text-center mb-3">
                                 <Spinner animation="border" role="status" className="mb-2">
-                                    <span className="visually-hidden">Logging in...</span>
+                                    <span className="visually-hidden">{texts.auth?.loggingIn}</span>
                                 </Spinner>
-                                <p className="text-muted">{texts.auth?.loggingIn || 'Logging in...'}</p>
+                                <p className="text-muted">{texts.auth?.loggingIn}</p>
                             </div>
                         )}
 
