@@ -11,6 +11,7 @@ import texts from '../../../i18n/texts.js';
 
 // Import Lucide icons for the Offcanvas menu
 import { Home, BookOpen, Users, Settings, LogOut, LayoutDashboard, UserCircle2, GraduationCap, FileText, Info, Mail } from 'lucide-react';
+import Cookie from 'js-cookie';
 
 const AppNavbar = () => { // handleShowSidebar prop is no longer needed here
   const { theme, toggleTheme } = useTheme();
@@ -28,6 +29,8 @@ const AppNavbar = () => { // handleShowSidebar prop is no longer needed here
     // Removed alert() as per instructions
   };
 
+  const isLoggedIn = Cookie.get('accessToken') !== undefined; // Check for accessToken cookie
+
   // Define menu items for the Offcanvas
   const offcanvasMenuItems = [
     { name: texts.nav?.home || 'Home', icon: <Home size={20} />, path: '/' },
@@ -37,8 +40,8 @@ const AppNavbar = () => { // handleShowSidebar prop is no longer needed here
     { name: 'Profile', icon: <UserCircle2 size={20} />, path: '/instructor/profile' },
     { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/teacher/dashboard' },
     { name: 'Submissions', icon: <FileText size={20} />, path: '/submissions' },
-
-  ];
+    isLoggedIn ? { name: texts.nav?.logout || 'Logout', icon: <LogOut size={20} />, path: '/logout' } : null,
+  ].filter(Boolean);
 
   return (
     <>
@@ -100,7 +103,13 @@ const AppNavbar = () => { // handleShowSidebar prop is no longer needed here
               <Nav.Link as={Link} to="/contact" className="mx-2">{texts.nav?.contact}</Nav.Link>
 
               <Nav.Link as={Link} to="/login" className="mx-2">{texts.nav?.logIn}</Nav.Link>
-              <Nav.Link as={Link} to="/register" className="mx-2 border rounded px-3">{texts.nav?.signUp}</Nav.Link>
+              {
+                isLoggedIn ? (
+                  <Nav.Link as={Link} to="/logout" className="mx-2 border rounded px-3">{texts.nav?.logout || 'Logout'}</Nav.Link>
+                ) : (
+                  <Nav.Link as={Link} to="/register" className="mx-2 border rounded px-3">{texts.nav?.signUp}</Nav.Link>
+                )
+              }
               
               <Button
                 variant="link"

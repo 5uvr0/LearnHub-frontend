@@ -55,31 +55,32 @@ const useAuthApi = (initialLoading = false) => {
             return response.data;
 
         } catch (err) {
-            let message = "An unknown error occurred";
+            let message = "An unknown error occurred.";
 
-            if (axios.isAxiosError(err)) {
-                if (err.response?.data) {
-                    if (typeof err.response.data === "string") {
-                        message = err.response.data;
-                    } else if (err.response.data.message) {
-                        message = err.response.data.message;
-                    } else {
-                        message = JSON.stringify(err.response.data);
-                    }
-                } else if (err.message) {
-                    message = err.message;
+            if (axios.isAxiosError(err) && err.response) {
+                try {
+                    message = JSON.stringify(err.response.data);
+
+                } catch (e) {
+                    message = err.response.statusText || message;
                 }
-            } else if (err instanceof Error) {
-                message = err.message;
-            }
 
+            } else if (err.request) {
+                message = "No response from server. Please check your network connection.";
+
+            } else {
+                message = err.message || message;
+            }
+            
             console.error("API Fetch Error:", message);
             setError(message);
+
             return null;
 
         } finally {
             setLoading(false);
         }
+
     }, []);
 
     return { data, loading, error, fetchData };

@@ -2,12 +2,12 @@
 
 import React from 'react';
 import { Container } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom'; 
 import CustomButton from "../components/common/CustomButton.jsx";
 import texts from "../i18n/texts.js";
 
-const HomePage = () => { // Removed setCurrentPage, setCourseDetailId props
-    const navigate = useNavigate(); // Hook to get navigation function
+const HomePage = () => { 
+    const navigate = useNavigate(); 
 
     const handleExploreCoursesClick = () => {
         alert(texts.alerts.exploreCoursesClicked);
