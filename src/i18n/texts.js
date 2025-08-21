@@ -72,6 +72,8 @@ const texts = {
         lectureDetails: "Lecture Details", // NEW
         submissionDetails: "Submission Details", // NEW
         sessionExpired: "Session Expired",
+        current: "Current Version",
+        previous: "An Older Version"
     },
     forms: {
         courseName: "Course Name",
