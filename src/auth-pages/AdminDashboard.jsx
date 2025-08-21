@@ -5,7 +5,7 @@ import UserCard from "../components/auth/cards/UserCard";
 import CustomButton from '../components/common/CustomButton';
 import { Card, Badge, Form, FormControl, Pagination } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChartBar, faUsers, faUserTie } from '@fortawesome/free-solid-svg-icons';
+import { faChartBar, faUsers, faUserTie, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 
 const AdminDashboardPage = () => {
     const { data: users, loading, error, fetchData } = useAuthApi();
@@ -44,16 +44,17 @@ const AdminDashboardPage = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
+    const handleExternalLink = (url) => {
+        window.open(url, '_blank', 'noopener,noreferrer');
+    };
+
     const filteredUsers = users?.filter(user =>
         user.email.toLowerCase().includes(searchTerm.toLowerCase())
-        
     ).sort((a, b) => {
         const dateA = new Date(a.createdAt);
         const dateB = new Date(b.createdAt);
-
         if (sortOrder === 'newest') {
             return dateB - dateA;
-
         } else {
             return dateA - dateB;
         }
@@ -75,7 +76,7 @@ const AdminDashboardPage = () => {
 
     return (
         <div className="container mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-4"><b>Admin Dashboard</b></h1>
+            <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
 
             {/* Admin Information Card */}
             {adminInfo && (
@@ -101,6 +102,21 @@ const AdminDashboardPage = () => {
                     className="me-md-3 mb-2 mb-md-0"
                 >
                     {showStats ? "Hide Site Statistics" : "Show Site Statistics"}
+                </CustomButton>
+                <CustomButton
+                    variant="outline-secondary"
+                    icon={faExternalLinkAlt}
+                    onClick={() => handleExternalLink('https://app-rnd01.therapbd.net/kafka-ui')}
+                    className="me-md-3 mb-2 mb-md-0"
+                >
+                    Go to Kafka Dashboard
+                </CustomButton>
+                <CustomButton
+                    variant="outline-secondary"
+                    icon={faExternalLinkAlt}
+                    onClick={() => handleExternalLink('https://app-rnd01.therapbd.net/management-center')}
+                >
+                    Go to Hazelcast Dashboard
                 </CustomButton>
             </div>
 
@@ -140,7 +156,7 @@ const AdminDashboardPage = () => {
             <hr className="my-4" />
 
             {/* User Management Section */}
-            <h2 className="text-xl font-bold mb-3"><b>Manage Users</b></h2>
+            <h2 className="text-xl font-bold mb-3">Manage Users</h2>
             
             {/* Filter and Sort Controls */}
             <div className="d-flex flex-column flex-md-row align-items-center mb-4">
