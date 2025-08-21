@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Form } from 'react-bootstrap';
+import { Form, InputGroup } from 'react-bootstrap';
+import { Eye, EyeOff } from 'lucide-react';
 import CustomButton from '../../common/CustomButton.jsx';
 import texts from '../../../i18n/texts.js';
 
@@ -8,24 +9,70 @@ const RegistrationForm = ({ onSubmit, isLoading = false, apiErrors = {} }) => {
     const [formData, setFormData] = useState({
         email: '',
         password: '',
+        confirmPassword: '',
         role: ''
     });
 
     const [formErrors, setFormErrors] = useState({});
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     useEffect(() => {
         setFormErrors(apiErrors);
     }, [apiErrors]);
 
+    const validatePasswords = () => {
+        const errors = {};
+        
+        if (formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword) {
+            errors.confirmPassword = 'Passwords do not match';
+        }
+        
+        return errors;
+    };
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+        
         setFormErrors(prev => ({ ...prev, [name]: '' }));
+        
+        // If changing password or confirm password, validate in real-time
+        if (name === 'password' || name === 'confirmPassword') {
+            setTimeout(() => {
+                const updatedData = { ...formData, [name]: value };
+                if (updatedData.password && updatedData.confirmPassword) {
+                    const passwordErrors = {};
+                    if (updatedData.password !== updatedData.confirmPassword) {
+                        passwordErrors.confirmPassword = 'Passwords do not match';
+                    }
+                    setFormErrors(prev => ({ ...prev, ...passwordErrors }));
+                }
+            }, 300); // Small delay for better UX
+        }
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSubmit(formData);
+        
+        // Validate passwords before submitting
+        const passwordErrors = validatePasswords();
+        if (Object.keys(passwordErrors).length > 0) {
+            setFormErrors(prev => ({ ...prev, ...passwordErrors }));
+            return;
+        }
+        
+        // Remove confirmPassword from the data sent to API
+        const { confirmPassword, ...submitData } = formData;
+        onSubmit(submitData);
+    };
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
+
+    const toggleConfirmPasswordVisibility = () => {
+        setShowConfirmPassword(!showConfirmPassword);
     };
 
     return (
@@ -47,15 +94,56 @@ const RegistrationForm = ({ onSubmit, isLoading = false, apiErrors = {} }) => {
 
             <Form.Group className="mb-3" controlId="userPassword">
                 <Form.Label>{texts.forms?.password || 'Password'}</Form.Label>
-                <Form.Control
-                    type="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    isInvalid={!!formErrors.password}
-                    placeholder="Enter your password"
-                />
-                <Form.Control.Feedback type="invalid">{formErrors.password}</Form.Control.Feedback>
+                <InputGroup>
+                    <Form.Control
+                        type={showPassword ? "text" : "password"}
+                        name="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        isInvalid={!!formErrors.password}
+                        placeholder="Enter your password"
+                    />
+                    <InputGroup.Text 
+                        style={{ cursor: 'pointer', backgroundColor: 'transparent' }}
+                        onClick={togglePasswordVisibility}
+                    >
+                        {showPassword ? (
+                            <EyeOff size={16} className="text-muted" />
+                        ) : (
+                            <Eye size={16} className="text-muted" />
+                        )}
+                    </InputGroup.Text>
+                </InputGroup>
+                <Form.Control.Feedback type="invalid" className={formErrors.password ? 'd-block' : ''}>
+                    {formErrors.password}
+                </Form.Control.Feedback>
+            </Form.Group>
+
+            <Form.Group className="mb-3" controlId="userConfirmPassword">
+                <Form.Label>{texts.forms?.confirmPassword || 'Confirm Password'}</Form.Label>
+                <InputGroup>
+                    <Form.Control
+                        type={showConfirmPassword ? "text" : "password"}
+                        name="confirmPassword"
+                        value={formData.confirmPassword}
+                        onChange={handleChange}
+                        isInvalid={!!formErrors.confirmPassword}
+                        placeholder="Confirm your password"
+                    />
+                    <InputGroup.Text 
+                        style={{ cursor: 'pointer', backgroundColor: 'transparent' }}
+                        onClick={toggleConfirmPasswordVisibility}
+                    >
+                        {showConfirmPassword ? (
+                            <EyeOff size={16} className="text-muted" />
+                        ) : (
+                            <Eye size={16} className="text-muted" />
+                        )}
+                    </InputGroup.Text>
+                </InputGroup>
+                <Form.Control.Feedback type="invalid" className={formErrors.confirmPassword ? 'd-block' : ''}>
+                    {formErrors.confirmPassword}
+                </Form.Control.Feedback>
             </Form.Group>
 
             <Form.Group className="mb-4" controlId="userRole">
