@@ -90,8 +90,21 @@ const AdminDashboardPage = () => {
     const disabledAccounts = users ? users.filter(user => !user.enabled).length : 0;
     const deletedAccounts = users ? users.filter(user => user.deleted).length : 0;
 
-    if (loading) return <div>Loading dashboard...</div>;
-    if (error) return <div>Error loading data: {error}</div>;
+    if (loading) return <center><div><b>Loading dashboard...</b></div></center>;
+    if (error) {
+        return (
+            <div className="container p-4">
+                <Card className="text-center border-danger shadow-sm rounded-4">
+                    <Card.Body>
+                        <h4 className="text-danger">Error!</h4>
+                        <p className="text-muted">{error.message}</p>
+                        <hr />
+                        <p className="mb-0 text-muted">{error.error}</p>
+                    </Card.Body>
+                </Card>
+            </div>
+        );
+    }
 
     return (
         <div className="container mx-auto p-4">
