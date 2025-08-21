@@ -6,11 +6,9 @@ const Logout = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Perform logout operations
         Cookie.remove('accessToken');
         localStorage.clear();
         
-        // Navigate to home with logout parameter
         navigate('/?logout=success');
         
     }, [navigate]);

@@ -5,13 +5,14 @@ import UserCard from "../components/auth/cards/UserCard";
 import CustomButton from '../components/common/CustomButton';
 import { Card, Badge, Form, FormControl, Pagination } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChartBar, faUsers, faUserTie, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
+import { faChartBar, faUsers, faUserTie, faExternalLinkAlt, faUserCheck, faUserSlash, faUserMinus } from '@fortawesome/free-solid-svg-icons';
 
 const AdminDashboardPage = () => {
     const { data: users, loading, error, fetchData } = useAuthApi();
     const [showStats, setShowStats] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const [sortOrder, setSortOrder] = useState('newest');
+    const [sortOrder, setSortOrder] = useState('newest'); // 'newest' or 'oldest' for createdAt
+    const [filterStatus, setFilterStatus] = useState('all'); // 'all', 'enabled', 'disabled', 'deleted'
     const navigate = useNavigate();
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -31,41 +32,59 @@ const AdminDashboardPage = () => {
 
     const handleSearchChange = (event) => {
         setSearchTerm(event.target.value);
-        setCurrentPage(1);
+        setCurrentPage(1); // Reset to the first page on a new search
     };
 
     const handleSortChange = (event) => {
         setSortOrder(event.target.value);
-        setCurrentPage(1);
+        setCurrentPage(1); // Reset to the first page on a new sort
+    };
+
+    const handleFilterStatusChange = (status) => {
+        setFilterStatus(status);
+        setCurrentPage(1); // Reset to the first page on a new filter
     };
     
     const paginate = (pageNumber) => {
         setCurrentPage(pageNumber);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top on page change
     };
 
     const handleExternalLink = (url) => {
         window.open(url, '_blank', 'noopener,noreferrer');
     };
 
-    const filteredUsers = users?.filter(user =>
-        user.email.toLowerCase().includes(searchTerm.toLowerCase())
-    ).sort((a, b) => {
+    const sortedAndFilteredUsers = users?.filter(user => {
+        // Apply status filter first
+        if (filterStatus === 'enabled' && !user.enabled) return false;
+        if (filterStatus === 'disabled' && user.enabled) return false;
+        if (filterStatus === 'deleted' && !user.deleted) return false;
+        
+        // Apply search term filter
+        return user.email.toLowerCase().includes(searchTerm.toLowerCase());
+    }).sort((a, b) => {
+        // Primary sort: by role lexicographically
+        const roleComparison = a.role.localeCompare(b.role);
+        if (roleComparison !== 0) {
+            return roleComparison;
+        }
+
+        // Secondary sort: by createdAt date
         const dateA = new Date(a.createdAt);
         const dateB = new Date(b.createdAt);
         if (sortOrder === 'newest') {
-            return dateB - dateA;
+            return dateB - dateA; // Newest first
         } else {
-            return dateA - dateB;
+            return dateA - dateB; // Oldest first
         }
     }) || [];
     
     const indexOfLastUser = currentPage * usersPerPage;
     const indexOfFirstUser = indexOfLastUser - usersPerPage;
-    const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
-    const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+    const currentUsers = sortedAndFilteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+    const totalPages = Math.ceil(sortedAndFilteredUsers.length / usersPerPage);
 
-    const adminInfo = users?.find(user => user.role === "ADMIN");
+    const adminInfo = users?.find(user => user.role === "ADMIN"); // Assuming the logged-in admin is in the fetched users list
     const registeredUsers = users ? users.length : 0;
     const enabledAccounts = users ? users.filter(user => user.enabled).length : 0;
     const disabledAccounts = users ? users.filter(user => !user.enabled).length : 0;
@@ -169,12 +188,47 @@ const AdminDashboardPage = () => {
                     />
                 </Form.Group>
                 
-                <Form.Group className="w-100">
+                <Form.Group className="me-md-3 mb-2 mb-md-0 w-100">
                     <Form.Select onChange={handleSortChange} value={sortOrder}>
                         <option value="newest">Sort by: Newest First</option>
                         <option value="oldest">Sort by: Oldest First</option>
                     </Form.Select>
                 </Form.Group>
+
+                {/* New Filter Buttons */}
+                <div className="d-flex g-2">
+                    <CustomButton
+                        variant={filterStatus === 'all' ? 'primary' : 'outline-primary'}
+                        size="sm"
+                        onClick={() => handleFilterStatusChange('all')}
+                        className="me-1"
+                    >
+                        <FontAwesomeIcon icon={faUsers} className="me-1" /> All
+                    </CustomButton>
+                    <CustomButton
+                        variant={filterStatus === 'enabled' ? 'success' : 'outline-success'}
+                        size="sm"
+                        onClick={() => handleFilterStatusChange('enabled')}
+                        className="me-1"
+                    >
+                        <FontAwesomeIcon icon={faUserCheck} className="me-1" /> Enabled
+                    </CustomButton>
+                    <CustomButton
+                        variant={filterStatus === 'disabled' ? 'warning' : 'outline-warning'}
+                        size="sm"
+                        onClick={() => handleFilterStatusChange('disabled')}
+                        className="me-1"
+                    >
+                        <FontAwesomeIcon icon={faUserSlash} className="me-1" /> Disabled
+                    </CustomButton>
+                    <CustomButton
+                        variant={filterStatus === 'deleted' ? 'danger' : 'outline-danger'}
+                        size="sm"
+                        onClick={() => handleFilterStatusChange('deleted')}
+                    >
+                        <FontAwesomeIcon icon={faUserMinus} className="me-1" /> Deleted
+                    </CustomButton>
+                </div>
             </div>
 
             {/* User Cards Grid */}
