@@ -34,7 +34,12 @@ const LoginPage = () => {
             localStorage.setItem("email", result.email);
             localStorage.setItem("role", result.role);
 
-            navigate("/");
+            // Conditional redirection based on user role
+            if (result.role === "ADMIN") {
+                navigate("/admin/dashboard");
+            } else {
+                navigate("/");
+            }
             
         } else {
             setMessageVariant('danger');

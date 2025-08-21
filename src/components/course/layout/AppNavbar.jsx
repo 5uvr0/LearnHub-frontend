@@ -8,6 +8,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useTheme } from '../../../course-hooks/useTheme.js';
 import texts from '../../../i18n/texts.js';
 import { Home, BookOpen, Users, Settings, LogOut, LayoutDashboard, UserCircle2, GraduationCap, FileText, Info, Mail } from 'lucide-react';
+import Cookies from 'js-cookie';
 
 const AppNavbar = () => {
     const { theme, toggleTheme } = useTheme();
@@ -19,7 +20,7 @@ const AppNavbar = () => {
 
     const handleThemeToggle = () => toggleTheme();
 
-    const isLoggedIn = localStorage.getItem('role') !== null;
+    const isLoggedIn = Cookies.get('accessToken') !== undefined;
     const userRole = localStorage.getItem('role');
 
     // Define menu items for each role
