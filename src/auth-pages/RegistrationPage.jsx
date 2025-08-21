@@ -17,40 +17,60 @@ const RegistrationPage = () => {
         setMessageVariant('');
         setFormErrors({});
 
-        const result = await registerUser('/api/register', {
-            method: 'POST',
-            data: formData
-        });
+        try {
+            const result = await registerUser('/api/register', {
+                method: 'POST',
+                data: formData
+            });
 
-        if (result) {
-            setMessage(result.message || texts.auth?.registrationSuccess);
-            setMessageVariant('success');
+            if (result) {
+                setFormErrors({});
+                setMessage(result.message || texts.auth?.registrationSuccess);
+                setMessageVariant('success');
 
-            alert(texts.auth?.registrationSuccessAlert);
-            navigate("/login");
-            
-        } else {
+                alert(texts.auth?.registrationSuccessAlert);
+                navigate("/login");
+            }
+        } catch (err) {
             setMessageVariant('danger');
+            console.log('Caught error:', err);
+            
+            setMessage(texts.auth?.registrationFailed);
+        }
+    };
+
+
+    React.useEffect(() => {
+        if (error && !loading) {
+            console.log('Error state updated:', error);
             
             try {
                 const parsedError = JSON.parse(error);
+                console.log('Parsed error in useEffect:', parsedError);
                 
-                if (parsedError.errors?.error) {
-                    setMessage(parsedError.errors.error);
+                if (parsedError.formErrors?.error) {
+                    setMessage(parsedError.formErrors.error);
+                    setFormErrors({});
 
-                } else if (parsedError.errors) {
-                    setFormErrors(parsedError.errors);
+                } else if (parsedError.formErrors && Object.keys(parsedError.formErrors).length > 0) {
+                    setFormErrors(parsedError.formErrors);
                     setMessage(parsedError.message || texts.auth?.validationFailed);
-                    
+
                 } else {
+                    setFormErrors({});
                     setMessage(parsedError.message || texts.auth?.registrationFailed);
                 }
                 
+                setMessageVariant('danger');
+                
             } catch (e) {
+                console.error('Error parsing API error:', e);
+                setFormErrors({});
                 setMessage(texts.auth?.registrationFailed);
+                setMessageVariant('danger');
             }
         }
-    };
+    }, [error, loading]);
 
     return (
         <section className="registration-page py-5">
