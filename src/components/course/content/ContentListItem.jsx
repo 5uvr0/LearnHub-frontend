@@ -93,7 +93,8 @@ const ContentListItem = ({
                     <FontAwesomeIcon icon={icon} className="me-3 text-muted" size="lg"/>
                     <div>
                         <h5 className="mb-0">
-                            {content?.title} <Badge bg={variant} className="ms-2">{typeLabel}</Badge>
+
+                            {currentReleaseForDisplay?.orderIndex}. {content?.title} <Badge bg={variant} className="ms-2">{typeLabel}</Badge>
                         </h5>
                         {!isTeacherView && currentReleaseForDisplay?.description && (
                             <MarkdownRenderer markdownText={currentReleaseForDisplay.description}
@@ -101,8 +102,8 @@ const ContentListItem = ({
                         )}
                         {isTeacherView && (
                             <small className="text-muted">
-                                Content ID: {content?.id} | Current
-                                Release: {content?.currentContentRelease?.releaseNum || 'N/A'}
+                                Content ID: {content?.id}
+                                <text className="text-primary"> Current Version: {content?.currentContentRelease?.releaseNum} </text>
                                 {content?.currentContentRelease && content.currentContentRelease?.id && (
                                     <span className="ms-2">(Release ID: {content.currentContentRelease.id})</span>
                                 )}
@@ -151,8 +152,8 @@ const ContentListItem = ({
                                         <ListGroup.Item key={release?.id}
                                                         className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center bg-light-subtle py-2 px-3">
                                             <div>
-                                                <strong
-                                                    className="text-dark">Version {release?.releaseNum}</strong> - {release?.title} (<Badge
+                                                <Badge
+                                                    className="">Version {release?.releaseNum}</Badge> - {release?.title} (<Badge
                                                 bg={getContentInfo(release).variant}>{release?.type}</Badge>)
                                                 <br/>
                                                 {release?.id &&
@@ -174,10 +175,17 @@ const ContentListItem = ({
                                                 {/* Check if this release is the current published one */}
                                                 {content?.currentContentRelease?.id === release?.id ? (
                                                     <Badge bg="success"
-                                                           className="me-2 mb-md-2">{texts?.sections.published}</Badge>
+                                                           className="me-2 mb-md-2">{texts?.sections?.current}</Badge>
                                                 ) : (
                                                     <Badge bg="danger"
-                                                           className="me-2 mb-md-2">{texts?.sections.draft}</Badge>
+                                                           className="me-2 mb-md-2">{texts?.sections?.previous}</Badge>
+                                                )}
+                                                {content?.currentContentRelease?.releaseNum !== 0 ? (
+                                                    <Badge bg="success"
+                                                           className="me-2 mb-md-2">{texts?.sections?.published}</Badge>
+                                                ) : (
+                                                    <Badge bg="danger"
+                                                           className="me-2 mb-md-2">{texts?.sections?.draft}</Badge>
                                                 )}
                                                 {/* View Details Button */}
                                                 <CustomButton variant="outline-info" size="sm" icon={faEye}
@@ -189,7 +197,7 @@ const ContentListItem = ({
                                                 <CustomButton variant="outline-success" size="sm"
                                                               icon={faCloudUploadAlt} className="me-2 mb-md-2"
                                                               onClick={() => onPublishContent?.(release?.id, release, content?.id)}>
-                                                    {content?.currentContentRelease?.id === release?.id ? texts?.buttons?.publishNewVersion : texts?.buttons?.publish}
+                                                    {content?.currentContentRelease?.releaseNum !== 0 ? texts?.buttons?.publishNewVersion : texts?.buttons?.publish}
                                                 </CustomButton>
                                                 <CustomButton variant="outline-primary" size="sm" icon={faEdit}
                                                               className="me-2 mb-md-2"

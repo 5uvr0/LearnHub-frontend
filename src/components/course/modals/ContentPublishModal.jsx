@@ -229,6 +229,7 @@ const ContentPublishModal = ({ show, onHide, contentToPublish, parentContent, on
             return;
         }
 
+        // Initialize payload with common fields
         const payloadToSend = {
             id: contentToPublish?.id,
             title: formData.title,
@@ -248,15 +249,21 @@ const ContentPublishModal = ({ show, onHide, contentToPublish, parentContent, on
             const finalQuestions = formData.questions.map(q => ({
                 ...q,
                 id: typeof q.id === 'string' && q.id.startsWith('temp-') ? null : q.id,
-                options: q.options.map(o => ({
+                options: (q.options || []).map(o => ({
                     ...o,
                     id: typeof o.id === 'string' && o.id.startsWith('temp-') ? null : o.id,
                 }))
             }));
+
+            // This is where you assign the processed questions to the payload
             payloadToSend.questions = finalQuestions;
-            console.log(finalQuestions);
+
+            // Corrected console.log to show the object content correctly
+            console.log("final questions:", payloadToSend.questions);
         }
 
+        console.log("payload to send: ", payloadToSend);
+        // Now the payloadToSend object will have the 'questions' property for quizzes.
         onConfirmPublish?.(payloadToSend);
     };
 

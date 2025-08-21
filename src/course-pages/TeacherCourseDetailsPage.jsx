@@ -1,7 +1,7 @@
 // src/pages/TeacherCourseDetailsPage.jsx
 
 import React, {useEffect, useState} from 'react';
-import {Accordion, Alert, Col, Container, Modal, Spinner} from 'react-bootstrap';
+import {Accordion, Alert, Badge, Col, Container, Modal, Spinner} from 'react-bootstrap';
 import {useNavigate, useParams} from 'react-router-dom';
 import ModuleCard from '../components/course/cards/ModuleCard';
 import ModuleForm from '../components/course/forms/ModuleForm';
@@ -296,12 +296,38 @@ const TeacherCourseDetailsPage = () => {
                 payload.resourceLink = formDataFromModal?.resourceLink;
             }
 
-            await publishContentRelease?.(payload?.id, payload);
+            // Capture the response from the publish API call
+            const publishedContent = await publishContentRelease?.(payload?.id, payload);
+
             alert(texts.alerts?.contentPublishedSuccess);
             setShowPublishContentModal(false);
             setContentToPublish(null);
             setParentContentForPublish(null);
             setRefreshTrigger((prev) => prev + 1);
+
+            // --- NEW: Navigation Logic ---
+            if (publishedContent && publishedContent.id && publishedContent.type) {
+                let navigationPath = '';
+                switch (publishedContent.type) {
+                    case 'LECTURE':
+                        navigationPath = `/teacher/lectures/${publishedContent.id}`;
+                        break;
+                    case 'SUBMISSION':
+                        navigationPath = `/teacher/submissions/${publishedContent.id}`;
+                        break;
+                    case 'QUIZ':
+                        navigationPath = `/teacher/quizzes/${publishedContent.id}/configure`;
+                        break;
+                    default:
+                        // Fallback or do nothing if type is unknown
+                        console.warn("Published content type is unknown, cannot navigate.");
+                        return;
+                }
+                // Navigate to the new page using the generated path
+                navigate(navigationPath);
+            }
+            // --- END NEW: Navigation Logic ---
+
         } catch (err) {
             alert(texts.alerts?.apiError?.(contentApiError?.message || err?.message));
         }
@@ -503,7 +529,20 @@ const TeacherCourseDetailsPage = () => {
                         <MarkdownRenderer markdownText={course?.description} className="lead text-secondary"/>
                         <p className="mb-0"><strong>Instructor:</strong> {course?.instructorName}</p>
                         <p><strong>Course ID:</strong> {course?.id}</p>
-                        <p><strong>Current Published Version:</strong> {course?.currentRelease || 'N/A'}</p>
+                        <p>
+                            <strong>Current Published Version:</strong> {course?.currentRelease}
+                            {
+                                course?.currentRelease !== 0 ? (
+                                    <Badge bg="success"
+                                           className="me-2 mb-md-2 ms-2">{texts?.sections?.published}</Badge>
+                                ) : (
+                                    <Badge bg="danger"
+                                           className="me-2 mb-md-2">{texts?.sections?.draft}</Badge>
+                                )
+                            }
+                        </p>
+
+
                     </Col>
                 </div>
 

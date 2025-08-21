@@ -5,6 +5,7 @@ import LoginForm from '../components/auth/forms/LoginForm.jsx';
 import useAuthApi from '../auth-hooks/useAuthApi';
 import texts from '../i18n/texts';
 import Cookie from 'js-cookie';
+import { parse } from '@fortawesome/fontawesome-svg-core';
 
 const LoginPage = () => {
     const { data, loading, error, fetchData: loginUser } = useAuthApi();
@@ -40,6 +41,7 @@ const LoginPage = () => {
             
             try {
                 const parsedError = JSON.parse(error);
+                console.log(parsedError);
                 
                 if (parsedError.errors) {
                     if (Object.keys(parsedError.errors).length > 0) {

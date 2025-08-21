@@ -1,14 +1,14 @@
-import React, {useState} from "react";
-import { Container, Button, Card, Row, Col } from "react-bootstrap";
+import React, { useState } from "react";
+import { Container, Button, Card, Row, Col, Spinner, Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import useSubmissionApi from "../../../../learner-hooks/useSubmisionApi.js";
-
-const studentId = 1;
+import useCurrentStudent from "../../../../learner-hooks/useCurrentStudent.js";
 
 const Quiz = ({ content }) => {
     const navigate = useNavigate();
+    const { student, loading: studentLoading, error: studentError } = useCurrentStudent();
     const [answers, setAnswers] = useState({});
-    const { submitQuiz, loading, error } = useSubmissionApi();
+    const { submitQuiz, loading: submitLoading, error: submitError } = useSubmissionApi();
 
     const handleSelect = (questionId, optionId) => {
         setAnswers((prev) => ({
@@ -18,20 +18,20 @@ const Quiz = ({ content }) => {
     };
 
     const handleSubmit = async () => {
+        if (!student?.id) {
+            alert("Cannot submit quiz: student not loaded.");
+            return;
+        }
+
         const submissionPayload = {
-            studentId: studentId,
+            studentId: student.id,
             contentId: content.id,
             answers: answers,
             quiz: content
         };
 
         try {
-
-            console.log(submissionPayload)
-
             const result = await submitQuiz(submissionPayload);
-
-            console.log(result)
 
             alert(
                 `Score: ${result.scorePercentage}% - ${
@@ -46,6 +46,23 @@ const Quiz = ({ content }) => {
             alert("Error submitting quiz");
         }
     };
+
+    if (studentLoading) {
+        return (
+            <Container className="text-center py-5">
+                <Spinner animation="border" role="status" />
+                <p className="mt-3">Loading student info...</p>
+            </Container>
+        );
+    }
+
+    if (studentError) {
+        return (
+            <Container className="py-5">
+                <Alert variant="danger">{`Failed to load student info: ${studentError}`}</Alert>
+            </Container>
+        );
+    }
 
     return (
         <Container className="py-4">
@@ -78,11 +95,18 @@ const Quiz = ({ content }) => {
                 </Card>
             ))}
 
+            {submitError && (
+                <Alert variant="danger" className="mt-3">
+                    {submitError}
+                </Alert>
+            )}
+
             <Row className="mt-4">
                 <Col>
                     <Button
                         variant="outline-secondary"
                         onClick={() => navigate(-1)}
+                        disabled={submitLoading}
                     >
                         &larr; Back
                     </Button>
@@ -90,9 +114,17 @@ const Quiz = ({ content }) => {
                 <Col className="text-end">
                     <Button
                         variant="primary"
-                        onClick={() => handleSubmit()}
+                        onClick={handleSubmit}
+                        disabled={submitLoading}
                     >
-                        Submit
+                        {submitLoading ? (
+                            <>
+                                <Spinner animation="border" size="sm" className="me-2" />
+                                Submitting...
+                            </>
+                        ) : (
+                            "Submit"
+                        )}
                     </Button>
                 </Col>
             </Row>
