@@ -39,7 +39,6 @@ const AdminDashboardPage = () => {
         setCurrentPage(1);
     };
     
-    // Updated function to handle page changes and scroll to top
     const paginate = (pageNumber) => {
         setCurrentPage(pageNumber);
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -47,11 +46,14 @@ const AdminDashboardPage = () => {
 
     const filteredUsers = users?.filter(user =>
         user.email.toLowerCase().includes(searchTerm.toLowerCase())
+        
     ).sort((a, b) => {
         const dateA = new Date(a.createdAt);
         const dateB = new Date(b.createdAt);
+
         if (sortOrder === 'newest') {
             return dateB - dateA;
+
         } else {
             return dateA - dateB;
         }
@@ -73,7 +75,7 @@ const AdminDashboardPage = () => {
 
     return (
         <div className="container mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
+            <h1 className="text-2xl font-bold mb-4"><b>Admin Dashboard</b></h1>
 
             {/* Admin Information Card */}
             {adminInfo && (
@@ -138,7 +140,7 @@ const AdminDashboardPage = () => {
             <hr className="my-4" />
 
             {/* User Management Section */}
-            <h2 className="text-xl font-bold mb-3">Manage Users</h2>
+            <h2 className="text-xl font-bold mb-3"><b>Manage Users</b></h2>
             
             {/* Filter and Sort Controls */}
             <div className="d-flex flex-column flex-md-row align-items-center mb-4">

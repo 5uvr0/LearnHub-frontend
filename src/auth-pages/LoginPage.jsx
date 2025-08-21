@@ -48,9 +48,9 @@ const LoginPage = () => {
                 const parsedError = JSON.parse(error);
                 console.log(parsedError);
                 
-                if (parsedError.errors) {
-                    if (Object.keys(parsedError.errors).length > 0) {
-                        setFormErrors(parsedError.errors);
+                if (parsedError.formErrors) {
+                    if (Object.keys(parsedError.formErrors).length > 0) {
+                        setFormErrors(parsedError.formErrors);
                         setMessage(parsedError.message || texts.auth?.validationFailed);
                         
                     } else {

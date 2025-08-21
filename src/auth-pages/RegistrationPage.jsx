@@ -35,11 +35,11 @@ const RegistrationPage = () => {
             try {
                 const parsedError = JSON.parse(error);
                 
-                if (parsedError.errors?.error) {
-                    setMessage(parsedError.errors.error);
+                if (parsedError.formErrors?.error) {
+                    setMessage(parsedError.formErrors.error);
 
-                } else if (parsedError.errors) {
-                    setFormErrors(parsedError.errors);
+                } else if (parsedError.formErrors) {
+                    setFormErrors(parsedError.formErrors);
                     setMessage(parsedError.message || texts.auth?.validationFailed);
                     
                 } else {
