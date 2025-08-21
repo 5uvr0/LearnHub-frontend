@@ -5,7 +5,8 @@ import LoginForm from '../components/auth/forms/LoginForm.jsx';
 import useAuthApi from '../auth-hooks/useAuthApi';
 import texts from '../i18n/texts';
 import Cookie from 'js-cookie';
-import { parse } from '@fortawesome/fontawesome-svg-core';
+
+const ADMIN_DASHBOARD_URL = import.meta.env.VITE_ADMIN_DASHBOARD_PATH;
 
 const LoginPage = () => {
     const { data, loading, error, fetchData: loginUser } = useAuthApi();
@@ -19,53 +20,62 @@ const LoginPage = () => {
         setMessageVariant('');
         setFormErrors({});
 
-        const result = await loginUser('/api/login', {
-            method: 'POST',
-            data: formData
-        });
+        try {
+            const result = await loginUser('/api/login', {
+                method: 'POST',
+                data: formData
+            });
 
-        if (result && result.accessToken) {
-            setMessage(result.message || texts.auth?.loginSuccess);
-            setMessageVariant('success');
+            if (result && result.accessToken) {
+                setMessage(result.message || texts.auth?.loginSuccess);
+                setMessageVariant('success');
 
-            Cookie.set("accessToken", result.accessToken);
-            localStorage.setItem("refreshToken", result.refreshToken);
+                Cookie.set("accessToken", result.accessToken);
+                localStorage.setItem("refreshToken", result.refreshToken);
+                localStorage.setItem("email", result.email);
+                localStorage.setItem("role", result.role);
 
-            localStorage.setItem("email", result.email);
-            localStorage.setItem("role", result.role);
+                if (result.role === "ADMIN") {
+                    navigate(ADMIN_DASHBOARD_URL);
 
-            // Conditional redirection based on user role
-            if (result.role === "ADMIN") {
-                navigate("/admin/dashboard");
-            } else {
-                navigate("/");
+                } else {
+                    navigate("/");
+                }
             }
-            
-        } else {
+
+        } catch (err) {
             setMessageVariant('danger');
+            console.log('Caught error:', err);
+            
+            setMessage(texts.auth?.loginFailed);
+        }
+    };
+
+    React.useEffect(() => {
+        if (error && !loading) {
+            console.log('Error state updated:', error);
             
             try {
                 const parsedError = JSON.parse(error);
-                console.log(parsedError);
+                console.log('Parsed error in useEffect:', parsedError);
                 
-                if (parsedError.formErrors) {
-                    if (Object.keys(parsedError.formErrors).length > 0) {
-                        setFormErrors(parsedError.formErrors);
-                        setMessage(parsedError.message || texts.auth?.validationFailed);
-                        
-                    } else {
-                        setMessage(parsedError.message || texts.auth?.loginFailed);
-                    }
+                if (parsedError.formErrors && Object.keys(parsedError.formErrors).length > 0) {
+                    setFormErrors(parsedError.formErrors);
+                    setMessage(parsedError.message || texts.auth?.validationFailed);
 
                 } else {
                     setMessage(parsedError.message || texts.auth?.loginFailed);
                 }
                 
+                setMessageVariant('danger');
+                
             } catch (e) {
+                console.error('Error parsing API error:', e);
                 setMessage(texts.auth?.loginFailed);
+                setMessageVariant('danger');
             }
         }
-    };
+    }, [error, loading]);
 
     return (
         <section className="login-page py-5">
