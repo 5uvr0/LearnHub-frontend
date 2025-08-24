@@ -26,17 +26,20 @@ const useEnrollmentApi = () => {
         }), [fetchDataEnrollment]);
 
     // NEW: API to mark a submission as resolved
-    const markSubmissionAsResolved = useCallback((submissionId) =>
-        fetchDataEnrollment(`/submissions/${submissionId}/resolve`, {
-            method: 'PATCH', // Assuming PATCH for updating status
-        }), [fetchDataEnrollment]);
-
-    // NEW: Placeholder API for downloading a submission file
-    const downloadSubmissionFile = useCallback((submissionId) =>
-        fetchDataEnrollment(`/submissions/${submissionId}/download`, {
-            method: 'GET',
-            responseType: 'blob', // Important for file downloads
-        }), [fetchDataEnrollment]);
+    // const markContentCompleted = useCallback(
+    //     (studentId, courseId, contentId) =>
+    //         fetchData(`/student-course/student-contents/student/${studentId}/course/${courseId}/content/${contentId}/complete`, {
+    //             method: 'PATCH',
+    //         }),
+    //     [fetchData]
+    // );
+    //
+    // // NEW: Placeholder API for downloading a submission file
+    // const downloadSubmissionFile = useCallback((submissionId) =>
+    //     fetchDataEnrollment(`/submissions/${submissionId}/download`, {
+    //         method: 'GET',
+    //         responseType: 'blob', // Important for file downloads
+    //     }), [fetchDataEnrollment]);
 
     return {
         data,
@@ -45,8 +48,8 @@ const useEnrollmentApi = () => {
         getStudentsEnrolledInCourse,
         getContentStatus,
         getLatestSubmissionsForContent, // NEW: Return the new function
-        markSubmissionAsResolved,       // NEW: Return the new function
-        downloadSubmissionFile,         // NEW: Return the new function
+        // markSubmissionAsResolved,       // NEW: Return the new function
+        // downloadSubmissionFile,         // NEW: Return the new function
     };
 };
 

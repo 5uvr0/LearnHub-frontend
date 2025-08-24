@@ -9,6 +9,9 @@ import CustomButton from '../components/common/CustomButton';
 import texts from '../i18n/texts';
 import useEnrollmentApi from '../course-hooks/useEnrollmentApi';
 import useContentApi from '../course-hooks/useContentApi';
+import useSubmissionApi from "../learner-hooks/useSubmisionApi.js";
+import useFileApi from "../file-server-hooks/useServerApi.js";
+import useStudentCourseApi from "../learner-hooks/useStudentCourseApi.js";
 
 const SubmittedFilesPage = () => {
     // Remove courseId from useParams
@@ -21,9 +24,11 @@ const SubmittedFilesPage = () => {
         loading: loadingSubmissions,
         error: submissionsError,
         getLatestSubmissionsForContent,
-        markSubmissionAsResolved,
-        downloadSubmissionFile
     } = useEnrollmentApi();
+
+    const {   generateSignature } = useSubmissionApi();
+    const {  downloadFile} = useFileApi();
+    const { markContentCompleted } = useStudentCourseApi();
 
     const {
         data: course,
@@ -53,7 +58,8 @@ const SubmittedFilesPage = () => {
     const handleMarkAsResolved = async (submissionId, studentName) => {
         if (window.confirm(`Mark submission by ${studentName} as resolved?`)) {
             try {
-                await markSubmissionAsResolved?.(submissionId);
+                await markContentCompleted?.(studentId, courseId, contentId)
+
                 alert(`Submission by ${studentName} marked as resolved!`);
                 setRefreshTrigger(prev => prev + 1);
             } catch (err) {
@@ -62,12 +68,34 @@ const SubmittedFilesPage = () => {
         }
     };
 
-    const handleDownloadFile = async (submissionId, fileName) => {
+    const handleDownloadFile = async (fileDto) => {
         try {
-            alert(`Initiating download for: ${fileName} (Submission ID: ${submissionId})`);
-            // await downloadSubmissionFile?.(submissionId);
+
+            console.log(fileDto)
+
+            // Step 1: generate HMAC signature for this file
+            // const signature = generateSignature(fileDto);
+            const signature = await generateSignature(content.courseId, fileDto);
+
+            console.log(fileDto.formId)
+            console.log("Signature: " + signature)
+
+            // Step 2: fetch the file blob
+            const blob = await downloadFile(fileDto.formId, signature);
+
+            const fileBlob = new Blob([blob], { type:  fileDto.contentType });
+
+            const url = window.URL.createObjectURL(fileBlob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = fileDto.originalFileName;
+            a.click();
+            window.URL.revokeObjectURL(url);
+
+
         } catch (err) {
-            alert(texts.alerts?.apiError?.(err?.message || 'Failed to download file.'));
+            console.error("Download failed", err);
+            alert("Error downloading file: "+ err.message);
         }
     };
 
