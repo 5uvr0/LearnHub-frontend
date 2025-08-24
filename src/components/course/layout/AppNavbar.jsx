@@ -42,13 +42,10 @@ const AppNavbar = () => {
         { name: 'Profile', icon: <UserCircle2 size={20} />, path: '/instructor/profile' },
     ]), []);
 
-    // Corrected menu items for admin
     const adminSpecificMenuItems = useMemo(() => ([
         { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/admin/dashboard' },
-        { name: 'Profile', icon: <UserCircle2 size={20} />, path: '/admin/profile' }, // Added for consistency
     ]), []);
 
-    // Combine menu items based on the user's role
     const menuItems = useMemo(() => {
         let items = [...commonMenuItems];
         if (isLoggedIn) {
