@@ -9,6 +9,7 @@ import { useTheme } from '../../../course-hooks/useTheme.js';
 import texts from '../../../i18n/texts.js';
 import { Home, BookOpen, Users, Settings, LogOut, LayoutDashboard, UserCircle2, GraduationCap, FileText, Info, Mail } from 'lucide-react';
 import Cookies from 'js-cookie';
+const ADMIN_DASHBOARD_PATH = import.meta.env.VITE_ADMIN_DASHBOARD_PATH;
 
 const AppNavbar = () => {
     const { theme, toggleTheme } = useTheme();
@@ -42,13 +43,10 @@ const AppNavbar = () => {
         { name: 'Profile', icon: <UserCircle2 size={20} />, path: '/instructor/profile' },
     ]), []);
 
-    // Corrected menu items for admin
     const adminSpecificMenuItems = useMemo(() => ([
-        { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/admin/dashboard' },
-        { name: 'Profile', icon: <UserCircle2 size={20} />, path: '/admin/profile' }, // Added for consistency
+        { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: ADMIN_DASHBOARD_PATH },
     ]), []);
 
-    // Combine menu items based on the user's role
     const menuItems = useMemo(() => {
         let items = [...commonMenuItems];
         if (isLoggedIn) {
