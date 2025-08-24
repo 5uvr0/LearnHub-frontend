@@ -28,8 +28,9 @@ const RegistrationPage = () => {
                 setMessage(result.message || texts.auth?.registrationSuccess);
                 setMessageVariant('success');
 
-                alert(result.message || texts.auth?.registrationSuccessAlert);
-                navigate("/login");
+                alert(texts.auth?.registrationSuccessAlert);
+                // navigate("/login");
+                navigate("/email-verification", { state: { token: result.message } });
             }
 
         } catch (err) {
