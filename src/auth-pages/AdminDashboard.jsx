@@ -92,14 +92,16 @@ const AdminDashboardPage = () => {
 
     if (loading) return <center><div><b>Loading dashboard...</b></div></center>;
     if (error) {
+        let ApiError = JSON.parse(error);
+
         return (
             <div className="container p-4">
                 <Card className="text-center border-danger shadow-sm rounded-4">
                     <Card.Body>
                         <h4 className="text-danger">Error!</h4>
-                        <p className="text-muted">{error.message}</p>
+                        <p className="text-muted">{ApiError.message}</p>
                         <hr />
-                        <p className="mb-0 text-muted">{error.error}</p>
+                        <p className="mb-0 text-muted">{ApiError.error}</p>
                     </Card.Body>
                 </Card>
             </div>

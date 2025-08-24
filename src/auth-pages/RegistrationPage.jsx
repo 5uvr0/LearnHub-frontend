@@ -28,9 +28,10 @@ const RegistrationPage = () => {
                 setMessage(result.message || texts.auth?.registrationSuccess);
                 setMessageVariant('success');
 
-                alert(texts.auth?.registrationSuccessAlert);
+                alert(result.message || texts.auth?.registrationSuccessAlert);
                 navigate("/login");
             }
+
         } catch (err) {
             setMessageVariant('danger');
             console.log('Caught error:', err);
