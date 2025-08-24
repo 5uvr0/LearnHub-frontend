@@ -117,7 +117,7 @@ const InstructorPublicViewPage = () => {
                             <Carousel.Item key={groupIndex}>
                                 <Row className="justify-content-center g-2">
                                     {courseGroup?.map((course) => (
-                                        <Col md={4} key={course?.courseId} className="d-flex">
+                                        <Col md={4} key={course?.id} className="d-flex">
                                             <CourseCard
                                                 course={course}
                                                 onDetailsClick={handleCourseDetailsClick}

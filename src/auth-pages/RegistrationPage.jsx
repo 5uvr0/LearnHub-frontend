@@ -35,11 +35,6 @@ const RegistrationPage = () => {
         } catch (err) {
             setMessageVariant('danger');
             console.log('Caught error:', err);
-<<<<<<< HEAD
-
-=======
-            
->>>>>>> c48a963 (Fixed formError timing issue)
             setMessage(texts.auth?.registrationFailed);
         }
     };
@@ -53,15 +48,11 @@ const RegistrationPage = () => {
                 const parsedError = JSON.parse(error);
                 console.log('Parsed error in useEffect:', parsedError);
                 
-<<<<<<< HEAD
                 if (parsedError.formErrors && Object.keys(parsedError.formErrors).length > 0) {
-=======
-                if (parsedError.formErrors?.error) {
                     setMessage(parsedError.formErrors.error);
                     setFormErrors({});
 
                 } else if (parsedError.formErrors && Object.keys(parsedError.formErrors).length > 0) {
->>>>>>> c48a963 (Fixed formError timing issue)
                     setFormErrors(parsedError.formErrors);
                     setMessage(parsedError.message || texts.auth?.validationFailed);
 

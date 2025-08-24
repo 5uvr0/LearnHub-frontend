@@ -70,7 +70,7 @@ const ContentListItem = ({
                              onViewContentVersions,
                              onManageQuiz,
                              onViewContentDetails
-                         }) => { // NEW: onViewContentDetails
+                         }) => {
     const [open, setOpen] = useState(false);
     const {icon, typeLabel, variant} = getContentInfo(content || {});
 
