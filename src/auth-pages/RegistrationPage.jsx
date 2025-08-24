@@ -30,7 +30,7 @@ const RegistrationPage = () => {
 
                 alert(texts.auth?.registrationSuccessAlert);
                 // navigate("/login");
-                navigate("/email-verification", { state: { message: result.message } });
+                navigate("/email-verification", { state: { token: result.message } });
             }
 
         } catch (err) {

@@ -1,98 +1,80 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Alert, Spinner, Button } from 'react-bootstrap';
-import { useLocation, useSearchParams, useNavigate } from 'react-router-dom';
+import { Container, Card, Spinner } from 'react-bootstrap';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEnvelopeOpenText, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import useAuthApi from '../auth-hooks/useAuthApi';
-import texts from '../i18n/texts';
-import { Link } from 'react-router-dom';
+const VERIFICATION_PATH = import.meta.env.VITE_AUTH_VERIFICATION_PATH;
 
 const EmailVerificationPage = () => {
-    const location = useLocation();
-    const navigate = useNavigate();
-    const [searchParams] = useSearchParams();
-    const token = searchParams.get('token'); 
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { fetchData } = useAuthApi(true);
 
-    const { data: verificationResult, loading: verifying, error: verificationError, fetchData: sendVerificationRequest } = useAuthApi();
+  const token = location.state?.token;
+  const [message, setMessage] = useState('');
+  const [isVerified, setIsVerified] = useState(false);
 
-    const [displayMessage, setDisplayMessage] = useState('');
-    const [messageVariant, setMessageVariant] = useState('info');
+  useEffect(() => {
+    if (!token) {
+      setMessage('No token provided.');
+      setIsVerified(false);
+      return;
+    }
 
-    const initialRegistrationMessage = location.state?.message;
+    console.log("Found Token ", token);
 
-    useEffect(() => {
-        if (initialRegistrationMessage) {
-            setDisplayMessage(initialRegistrationMessage);
-            setMessageVariant('info');
+    const verifyEmail = async () => {
+      try {
+        const response = await fetchData(`${VERIFICATION_PATH}?token=${token}`, { method: 'GET' });
+        if (response) {
+          setMessage(response.message || 'Verification successful!');
+          setIsVerified(response.message?.toLowerCase().includes('success'));
+          if (response.message?.toLowerCase().includes('success')) {
+            setTimeout(() => navigate('/login'), 3000);
+          }
+        } else {
+          setMessage('Verification failed. Please try again.');
+          setIsVerified(false);
         }
-    }, [initialRegistrationMessage]);
+      } catch (e) {
+        setMessage('Verification failed. Please try again.');
+        setIsVerified(false);
+      }
+    };
 
-    useEffect(() => {
-        if (token) {
-            setDisplayMessage(texts.auth?.verifyingEmail || 'Verifying your email...');
-            setMessageVariant('info');
-            sendVerificationRequest(`/api/verify-email?token=${token}`);
-        }
-    }, [token, sendVerificationRequest]);
+    verifyEmail();
+  }, [token, fetchData, navigate]);
 
-    useEffect(() => {
-        if (verificationResult) {
-            setDisplayMessage(verificationResult.message || texts.auth?.verificationSuccess);
-            setMessageVariant('success');
-
-        } else if (verificationError) {
-            try {
-                const parsedError = JSON.parse(verificationError);
-                setDisplayMessage(parsedError.message || texts.auth?.verificationFailed);
-            } catch (e) {
-                setDisplayMessage(texts.auth?.verificationFailed);
-            }
-            setMessageVariant('danger');
-        }
-    }, [verificationResult, verificationError, navigate]);
-
-    return (
-        <section className="email-verification-page py-5">
-            <Container>
-                <div className="text-center">
-                    {verifying && (
-                        <div className="mb-3">
-                            <Spinner animation="border" role="status" className="mb-2">
-                                <span className="visually-hidden">{texts.auth?.verifyingEmail}</span>
-                            </Spinner>
-                            <p className="text-muted">{texts.auth?.verifyingEmail}</p>
-                        </div>
-                    )}
-
-                    {displayMessage && (
-                        <Alert variant={messageVariant} className="text-center">
-                            <h4 className="alert-heading">{messageVariant === 'success' ? 'Success!' : 'Information'}</h4>
-                            <p dangerouslySetInnerHTML={{ __html: displayMessage }}></p>
-
-                            {/* If an initial message with a link was displayed, but no token was processed yet */}
-                            {initialRegistrationMessage && !token && messageVariant === 'info' && (
-                                <p className="mt-3 text-muted">
-                                    Please click the verification link sent to your email to complete registration.
-                                </p>
-                            )}
-
-                            {!verifying && messageVariant === 'success' && (
-                                <Button as={Link} to="/login" variant="primary" className="mt-3">
-                                    Go to Login
-                                </Button>
-                            )}
-                        </Alert>
-                    )}
-
-                    {!verifying && !displayMessage && !token && (
-                         <Alert variant="info" className="text-center">
-                            <h4 className="alert-heading">Email Verification</h4>
-                            <p>If you've just registered, a verification link has been sent to your email address.</p>
-                            <p className="mb-0">Please check your inbox (and spam folder) to complete your registration.</p>
-                        </Alert>
-                    )}
-                </div>
-            </Container>
-        </section>
-    );
+  return (
+    <section className="py-5">
+      <Container className="text-center">
+        <Card className="shadow-lg border-0 rounded-4" style={{ maxWidth: 600, margin: '0 auto' }}>
+          <Card.Body className="p-5">
+            {!message ? (
+              <>
+                <Spinner animation="border" />
+                <p className="mt-3">Verifying your email...</p>
+              </>
+            ) : isVerified ? (
+              <>
+                <FontAwesomeIcon icon={faEnvelopeOpenText} size="3x" className="text-success mb-3" />
+                <h4>Verification Successful!</h4>
+                <p>{message}</p>
+                <p>Redirecting to login...</p>
+              </>
+            ) : (
+              <>
+                <FontAwesomeIcon icon={faExclamationCircle} size="3x" className="text-danger mb-3" />
+                <h4>Verification Failed</h4>
+                <p>{message}</p>
+              </>
+            )}
+          </Card.Body>
+        </Card>
+      </Container>
+    </section>
+  );
 };
 
 export default EmailVerificationPage;

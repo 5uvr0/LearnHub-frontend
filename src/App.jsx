@@ -27,6 +27,7 @@ import InstructorProfilePage from './course-pages/InstructorProfilePage'
 import RegistrationPage from "./auth-pages/RegistrationPage.jsx";
 import Logout from "./auth-pages/Logout.jsx";
 import LoginErrorPage from './ErrorPages/LoginErrorPage.jsx';
+import EmailVerificationPage from './auth-pages/EmailVerificationPage.jsx';
 
 import StudentDashboard from './learner-pages/student/Dashboard.jsx';
 import StudentCourseDetailPage from "./learner-pages/student/enrolledCourses/CourseDetail.jsx";
@@ -106,6 +107,7 @@ function AppContent() {
                     <Route path="/login/error" element={<LoginErrorPage />} />
                     <Route path="/public-course-view/:id" element={<CoursePublicView />} />
                     <Route path="/public-instructors/:id" element={<InstructorPublicViewPage />} />
+                    <Route path="/email-verification" element={<EmailVerificationPage />} />
                     <Route path="/about" element={
                         <div className="py-5 text-center">
                             <h2>About Us</h2>
