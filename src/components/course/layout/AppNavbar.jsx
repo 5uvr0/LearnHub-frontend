@@ -35,16 +35,17 @@ const AppNavbar = () => {
     const studentSpecificMenuItems = useMemo(() => ([
         { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/student/dashboard' },
         { name: 'Profile', icon: <UserCircle2 size={20} />, path: '/student/profile' },
-        // Add more student-specific routes here
     ]), []);
 
     const instructorSpecificMenuItems = useMemo(() => ([
         { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/teacher/dashboard' },
         { name: 'Profile', icon: <UserCircle2 size={20} />, path: '/instructor/profile' },
-        // Add more instructor-specific routes here
     ]), []);
 
-    // Combine menu items based on the user's role
+    const adminSpecificMenuItems = useMemo(() => ([
+        { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/admin/dashboard' },
+    ]), []);
+
     const menuItems = useMemo(() => {
         let items = [...commonMenuItems];
         if (isLoggedIn) {
@@ -53,12 +54,11 @@ const AppNavbar = () => {
             } else if (userRole === 'STUDENT') {
                 items = [...items, ...studentSpecificMenuItems];
             } else if (userRole === 'ADMIN') {
-                // Admins can see everything for now
-                items = [...items, ...instructorSpecificMenuItems, ...studentSpecificMenuItems];
+                items = [...items, ...adminSpecificMenuItems];
             }
         }
         return items;
-    }, [isLoggedIn, userRole, commonMenuItems, studentSpecificMenuItems, instructorSpecificMenuItems]);
+    }, [isLoggedIn, userRole, commonMenuItems, studentSpecificMenuItems, instructorSpecificMenuItems, adminSpecificMenuItems]);
 
 
     return (
