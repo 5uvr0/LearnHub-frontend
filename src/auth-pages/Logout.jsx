@@ -8,6 +8,7 @@ const Logout = () => {
     useEffect(() => {
         // Perform logout operations
         Cookie.remove('accessToken');
+        Cookie.remove('studentId')
         localStorage.clear();
         
         // Navigate to home with logout parameter
