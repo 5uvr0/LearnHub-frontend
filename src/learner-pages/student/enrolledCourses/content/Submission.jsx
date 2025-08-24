@@ -5,16 +5,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import useSubmissionApi from "../../../../learner-hooks/useSubmisionApi.js";
 import useFileApi from "../../../../file-server-hooks/useServerApi.js";
-import {generateSignature} from "../../../../utils/fileSignature.js";
 import useCurrentStudent from "../../../../learner-hooks/useCurrentStudent.js";
-
-const studentId= 1
 
 const Submission = ({ content }) => {
     const navigate = useNavigate();
 
-    const { student, loading: studentLoading, error: studentError } = useCurrentStudent();
-    const { getSubmissionsByStudentAndContent, submitAssignment } = useSubmissionApi();
+    const { student } = useCurrentStudent();
+    const { getSubmissionsByStudentAndContent, submitAssignment, generateSignature } = useSubmissionApi();
     const { uploadFile, downloadFile} = useFileApi();
 
     const [selectedFile, setSelectedFile] = useState(null);
@@ -44,21 +41,21 @@ const Submission = ({ content }) => {
         try {
             // Step 1: Upload the file
             const uploadedFile = await uploadFile(selectedFile, {
-                uploaderEmail: studentId,
+                uploaderEmail: student?.email,
             });
 
             console.log("File uploaded")
             console.log(uploadedFile)
 
             // Step 2: Submit assignment with uploaded file DTO
-            const submission = await submitAssignment(studentId, content.id, uploadedFile);
+            const submission = await submitAssignment(student?.id, content.id, uploadedFile);
 
             console.log("Submission added")
             console.log(submission)
 
-            alert(`Submission successful! Submission ID: ${submission}`);
+            alert(`Submission successful! File name: ${submission.originalFileName}`);
 
-            const data = await getSubmissionsByStudentAndContent(studentId, content.id);
+            const data = await getSubmissionsByStudentAndContent(student?.id, content.id);
 
             setSubmissions(data || []);
 
@@ -82,10 +79,11 @@ const Submission = ({ content }) => {
             console.log(fileDto)
 
             // Step 1: generate HMAC signature for this file
-            const signature = generateSignature(fileDto);
+            // const signature = generateSignature(fileDto);
+            const signature = await generateSignature(content.courseId, fileDto);
 
             console.log(fileDto.formId)
-            console.log(signature)
+            console.log("Signature: " + signature)
 
             // Step 2: fetch the file blob
             const blob = await downloadFile(fileDto.formId, signature);
@@ -102,7 +100,7 @@ const Submission = ({ content }) => {
 
         } catch (err) {
             console.error("Download failed", err);
-            alert("Error downloading file");
+            alert("Error downloading file: "+ err.message);
         }
     };
 

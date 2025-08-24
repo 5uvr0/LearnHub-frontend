@@ -7,6 +7,7 @@ const Logout = () => {
 
     useEffect(() => {
         Cookie.remove('accessToken');
+        Cookie.remove('studentId')
         localStorage.clear();
         
         navigate('/?logout=success');

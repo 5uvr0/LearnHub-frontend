@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Container, Card, Spinner, Alert, Button, Row, Col } from 'react-bootstrap';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash, faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import useInstructorApi from '../course-hooks/useInstructorApi';
@@ -11,15 +11,13 @@ import CustomButton from '../components/common/CustomButton';
 import InstructorEditModal from '../components/course/modals/InstructorEditModal'; // New modal for editing
 
 const InstructorProfilePage = () => {
-    const { id: instructorIdParam } = useParams();
-    const instructorId = parseInt(instructorIdParam, 10);
     const navigate = useNavigate();
 
     const {
-        data: instructor,
+        data: instructor, // This will hold the fetched instructor profile
         loading: loadingInstructor,
         error: instructorError,
-        getInstructorById,
+        getMyProfile, // API call to fetch the logged-in instructor's profile
         softDeleteInstructor,
         updateInstructor
     } = useInstructorApi();
@@ -28,32 +26,40 @@ const InstructorProfilePage = () => {
     const [showEditModal, setShowEditModal] = useState(false);
 
     useEffect(() => {
-        if (isNaN(instructorId)) {
-            console.error("Invalid instructor ID provided in URL.");
-            return;
-        }
-        getInstructorById?.(instructorId);
-    }, [instructorId, refreshTrigger, getInstructorById]);
+        // Call getMyProfile directly as it should fetch the currently logged-in user's profile
+        getMyProfile();
+    }, [refreshTrigger, getMyProfile]); // Dependency on refreshTrigger to refetch after edits
 
-    const handleEditProfile = (instructorData) => {
+    const handleEditProfile = () => {
+        // No need to pass instructorData here, as the modal will receive the 'instructor' prop
         setShowEditModal(true);
     };
 
     const handleSaveProfile = async (updatedData) => {
+        if (!instructor?.id) {
+            alert(texts.alerts?.apiError?.('Instructor ID not available for update.'));
+            return;
+        }
         try {
-            await updateInstructor?.(instructorId, updatedData);
+            // Use the ID from the fetched instructor data
+            await updateInstructor?.(instructor.id, updatedData);
             alert(texts.alerts?.instructorUpdatedSuccess);
             setShowEditModal(false);
-            setRefreshTrigger(prev => prev + 1);
+            setRefreshTrigger(prev => prev + 1); // Trigger a re-fetch of the profile
         } catch (err) {
             alert(texts.alerts?.apiError?.(err.message || 'Failed to update instructor.'));
         }
     };
 
     const handleDeleteProfile = async () => {
+        if (!instructor?.id) {
+            alert(texts.alerts?.apiError?.('Instructor ID not available for deletion.'));
+            return;
+        }
         if (window.confirm(texts.instructorCard?.confirmDelete?.(instructor?.name))) {
             try {
-                await softDeleteInstructor?.(instructorId);
+                // Use the ID from the fetched instructor data
+                await softDeleteInstructor?.(instructor.id);
                 alert(texts.alerts?.instructorDeletedSuccess);
                 navigate('/instructors'); // Navigate back to the list of instructors
             } catch (err) {
@@ -79,10 +85,11 @@ const InstructorProfilePage = () => {
         );
     }
 
+    // Check if instructor data is available after loading, before rendering
     if (!instructor) {
         return (
             <Container className="py-5">
-                <Alert variant="warning">{texts.alerts?.instructorNotFound}</Alert>
+                <Alert variant="warning">{texts.alerts?.instructorNotFound || 'Instructor profile not found.'}</Alert>
             </Container>
         );
     }
@@ -119,7 +126,7 @@ const InstructorProfilePage = () => {
             <InstructorEditModal
                 show={showEditModal}
                 onHide={() => setShowEditModal(false)}
-                instructor={instructor}
+                instructor={instructor} // Pass the fetched instructor object directly
                 onSave={handleSaveProfile}
                 isLoading={loadingInstructor}
             />
