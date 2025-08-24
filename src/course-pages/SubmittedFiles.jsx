@@ -55,12 +55,12 @@ const SubmittedFilesPage = () => {
     }, [course, refreshTrigger, getLatestSubmissionsForContent]);
 
 
-    const handleMarkAsResolved = async (submissionId, studentName) => {
-        if (window.confirm(`Mark submission by ${studentName} as resolved?`)) {
+    const handleMarkAsResolved = async (studentId, courseId, contentId) => {
+        if (window.confirm(`Mark submission by ${studentId} as resolved?`)) {
             try {
                 await markContentCompleted?.(studentId, courseId, contentId)
 
-                alert(`Submission by ${studentName} marked as resolved!`);
+                alert(`Submission by ${studentId} marked as resolved!`);
                 setRefreshTrigger(prev => prev + 1);
             } catch (err) {
                 alert(texts.alerts?.apiError?.(err?.message || 'Failed to mark submission as resolved.'));
@@ -75,7 +75,7 @@ const SubmittedFilesPage = () => {
 
             // Step 1: generate HMAC signature for this file
             // const signature = generateSignature(fileDto);
-            const signature = await generateSignature(content.courseId, fileDto);
+            const signature = await generateSignature(course?.id, fileDto);
 
             console.log(fileDto.formId)
             console.log("Signature: " + signature)
@@ -151,7 +151,7 @@ const SubmittedFilesPage = () => {
                                             size="sm"
                                             icon={faDownload}
                                             className="me-2"
-                                            onClick={() => handleDownloadFile(submission?.id, submission?.fileName || 'file')}
+                                            onClick={() => handleDownloadFile(submission)}
                                         >
                                             Download
                                         </CustomButton>
@@ -160,7 +160,7 @@ const SubmittedFilesPage = () => {
                                                 variant="outline-success"
                                                 size="sm"
                                                 icon={faCheckCircle}
-                                                onClick={() => handleMarkAsResolved(submission?.id, submission?.studentName)}
+                                                onClick={() => handleMarkAsResolved(submission.studentId, course.id, contentId)}
                                             >
                                                 Mark as Resolved
                                             </CustomButton>
@@ -168,10 +168,10 @@ const SubmittedFilesPage = () => {
                                     </div>
                                 </div>
                                 <p className="text-muted mb-1">
-                                    Submitted On: {new Date(submission?.submissionDate).toLocaleString()}
+                                    Submitted On: {new Date(submission?.submittedAt).toLocaleString()}
                                 </p>
                                 <p className="text-muted mb-0">
-                                    File: {submission?.fileName || 'N/A'}
+                                    File: {submission?.originalFileName || 'N/A'}
                                 </p>
                             </ListGroup.Item>
                         ))}

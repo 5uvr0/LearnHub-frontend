@@ -103,12 +103,6 @@ const SubmissionDetailsPage = () => {
                             <ListGroup.Item>
                                 <strong>Release ID:</strong> {submission?.id}
                             </ListGroup.Item>
-                            <ListGroup.Item>
-                                <strong>Course ID:</strong> {submission?.courseId}
-                            </ListGroup.Item>
-                            <ListGroup.Item>
-                                <strong>Module ID:</strong> {submission?.moduleId}
-                            </ListGroup.Item>
                         </ListGroup>
                     </Card.Body>
                 </Card>
