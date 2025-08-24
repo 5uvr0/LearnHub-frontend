@@ -23,7 +23,8 @@ import SubmissionDetailsPage from './course-pages/SubmissionDetailsPage';
 import LoginPage from './auth-pages/LoginPage.jsx';
 import AdminDashboardPage from './auth-pages/AdminDashboard.jsx';
 import UserManagementPage from './auth-pages/UserManagementPage';
-import InstructorProfilePage from './course-pages/InstructorProfilePage'
+import InstructorProfilePage from './course-pages/InstructorProfilePage';
+import SubmittedFilesPage from "./course-pages/SubmittedFiles.jsx";
 import RegistrationPage from "./auth-pages/RegistrationPage.jsx";
 import Logout from "./auth-pages/Logout.jsx";
 import LoginErrorPage from './ErrorPages/LoginErrorPage.jsx';
@@ -196,6 +197,11 @@ function AppContent() {
                     <Route path="/teacher/submissions/:releaseId" element={
                         <ProtectedRoute>
                             <SubmissionDetailsPage />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/teacher/submission/attachments/:contentId" element={
+                        <ProtectedRoute>
+                            <SubmittedFilesPage />
                         </ProtectedRoute>
                     } />
 
