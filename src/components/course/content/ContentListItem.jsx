@@ -114,8 +114,6 @@ const ContentListItem = ({
 
                 {isTeacherView && isParentContentDTO && (
                     <div className="d-flex align-items-center flex-wrap justify-content-end">
-                        <CustomButton variant="outline-primary" size="sm" icon={faEdit} className="mb-1 me-2"
-                                      onClick={() => onEditContent?.(content, false)}>Edit Metadata</CustomButton>
                         <CustomButton variant="outline-info" size="sm" icon={faCodeBranch} className="mb-1 me-2"
                                       onClick={() => onViewContentVersions?.(content?.id, content?.title)}>View
                             Versions</CustomButton>
