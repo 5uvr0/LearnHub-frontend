@@ -61,12 +61,10 @@ const LoginPage = () => {
                 
                 if (parsedError.formErrors && Object.keys(parsedError.formErrors).length > 0) {
                     setFormErrors(parsedError.formErrors);
-                    setMessage(parsedError.message || texts.auth?.validationFailed);
-
-                } else {
-                    setMessage(parsedError.message || texts.auth?.loginFailed);
                 }
-                
+
+                setMessage(parsedError.message + " " + parsedError.error);
+
                 setMessageVariant('danger');
                 
             } catch (e) {
