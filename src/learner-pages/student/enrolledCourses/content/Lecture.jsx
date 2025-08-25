@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Container, Button, Spinner } from "react-bootstrap";
+import { Container, Button, Spinner, Alert, Badge } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import useStudentCourseApi from "../../../../learner-hooks/useStudentCourseApi.js";
 import useCurrentStudent from "../../../../learner-hooks/useCurrentStudent.js";
@@ -16,17 +16,20 @@ const Lecture = ({ content }) => {
             return;
         }
 
+        if (content.completed) {
+            alert("This lecture is already marked as completed.");
+            return;
+        }
+
         setMarking(true);
 
         try {
             await markContentCompleted(student.id, content.courseId, content.id);
             alert("Lecture marked as completed!");
             navigate(-1);
-
         } catch (err) {
             console.error(err);
             alert("Failed to mark as completed: " + err.message);
-
         } finally {
             setMarking(false);
         }
@@ -51,7 +54,20 @@ const Lecture = ({ content }) => {
 
     return (
         <Container className="py-4">
-            <h2 className="fw-bold mb-3">{content.title}</h2>
+            <div className="d-flex align-items-center justify-content-between mb-3">
+                <h2 className="fw-bold mb-0">{content.title}</h2>
+                {content.completed && (
+                    <Badge
+                        bg="success"
+                        className="fs-6 px-3 py-1 rounded-pill shadow-sm"
+                        style={{ fontWeight: "500" }}
+                    >
+                        ✓ Completed
+                    </Badge>
+                )}
+            </div>
+
+
 
             {content.description && (
                 <p dangerouslySetInnerHTML={{ __html: content.description }}></p>
@@ -84,24 +100,26 @@ const Lecture = ({ content }) => {
                     &larr; Back
                 </Button>
 
-                <Button
-                    variant="success"
-                    onClick={handleMarkCompleted}
-                    disabled={marking}
-                >
-                    {marking ? (
-                        <>
-                            <Spinner
-                                animation="border"
-                                size="sm"
-                                className="me-2"
-                            />
-                            Marking...
-                        </>
-                    ) : (
-                        "Mark as Completed"
-                    )}
-                </Button>
+                {!content.completed && (
+                    <Button
+                        variant="success"
+                        onClick={handleMarkCompleted}
+                        disabled={marking}
+                    >
+                        {marking ? (
+                            <>
+                                <Spinner
+                                    animation="border"
+                                    size="sm"
+                                    className="me-2"
+                                />
+                                Marking...
+                            </>
+                        ) : (
+                            "Mark as Completed"
+                        )}
+                    </Button>
+                )}
             </div>
         </Container>
     );

@@ -59,13 +59,8 @@ const useApi = (initialLoading = false) => {
         return true;
       }
 
-      // Check for empty data response
-      if (!response.data) {
-        setData(true);
-        return true;
-      }
-
       setData(response.data);
+
       return response.data;
 
     } catch (err) {
