@@ -17,12 +17,10 @@ const RegistrationForm = ({ onSubmit, isLoading = false, apiErrors = {} }) => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-    // Sync backend validation errors
     useEffect(() => {
         setFormErrors(apiErrors);
     }, [apiErrors]);
 
-    // Validate passwords whenever they change
     useEffect(() => {
         if (formData.password && formData.confirmPassword) {
             setFormErrors(prev => ({
