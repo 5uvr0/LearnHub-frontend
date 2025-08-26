@@ -98,6 +98,14 @@ const useStudentCourseApi = () => {
     [fetchData]
   );
 
+    const isContentCompleted = useCallback(
+        (studentId, courseId, contentId) =>
+            fetchData(`/student-course/content-status/student/${studentId}/course/${courseId}/content/${contentId}`, {
+                method: 'GET',
+            }),
+        [fetchData]
+    );
+
   return {
     data,
     loading,
@@ -111,6 +119,7 @@ const useStudentCourseApi = () => {
     getAllStudentProgressForCourse,
     getContentStatus,
     markContentCompleted,
+      isContentCompleted,
   };
 };
 
