@@ -64,7 +64,7 @@ const useAuthApi = (initialLoading = false) => {
                 message = "No response from server. Please check your network connection.";
 
             } else {
-                message = err.message || err.error;
+                message = err.message + err.error;
             }
             
             console.error("API Fetch Error:", message);
