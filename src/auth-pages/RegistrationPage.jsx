@@ -51,10 +51,6 @@ const RegistrationPage = () => {
                 let message = parsedError.message;
                 
                 if (parsedError.formErrors && Object.keys(parsedError.formErrors).length > 0) {
-                    setMessage(parsedError.formErrors.error);
-                    setFormErrors({});
-
-                } else if (parsedError.formErrors && Object.keys(parsedError.formErrors).length > 0) {
                     setFormErrors(parsedError.formErrors);
 
                 } else {
