@@ -35,7 +35,6 @@ const RegistrationPage = () => {
         } catch (err) {
             setMessageVariant('danger');
             console.log('Caught error:', err);
-
             setMessage(texts.auth?.registrationFailed);
         }
     };
@@ -48,15 +47,21 @@ const RegistrationPage = () => {
             try {
                 const parsedError = JSON.parse(error);
                 console.log('Parsed error in useEffect:', parsedError);
+
+                let message = parsedError.message;
                 
                 if (parsedError.formErrors && Object.keys(parsedError.formErrors).length > 0) {
                     setFormErrors(parsedError.formErrors);
-                    setMessage(parsedError.message || texts.auth?.validationFailed);
 
                 } else {
                     setFormErrors({});
-                    setMessage(parsedError.message || texts.auth?.registrationFailed);
                 }
+                
+                if (parsedError.error) {
+                    message = message + " " + parsedError.error;
+                }
+
+                setMessage(message);
                 
                 setMessageVariant('danger');
                 
