@@ -10,8 +10,10 @@ const LEARNING_PROCESSOR_PATH = import.meta.env.VITE_LEARNING_PROCESSOR_PATH;
 const getFullUrl = (endpoint) => {
   if (!API_BASE_URL || !LEARNING_PROCESSOR_PATH) {
     console.error('API environment variables are not defined in .env');
+
     return null;
   }
+
   return `${API_BASE_URL}${LEARNING_PROCESSOR_PATH}${endpoint}`;
 };
 
@@ -33,11 +35,13 @@ const useApi = (initialLoading = false) => {
     if (!fullUrl) {
       setError('API URL is not configured correctly.');
       setLoading(false);
+
       return null; // Return null consistently on error
     }
 
     try {
       const token = Cookies.get("accessToken");
+
       const response = await axios({
         url: fullUrl,
         method: options.method || "GET",
@@ -69,6 +73,7 @@ const useApi = (initialLoading = false) => {
 
       if (serverError?.details) {
         setError(serverError.details);
+
       } else {
         setError(serverError?.message || err.message || 'An unknown error occurred');
       }

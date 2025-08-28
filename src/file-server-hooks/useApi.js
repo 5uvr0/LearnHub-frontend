@@ -1,5 +1,6 @@
 // src/learner-hooks/useApi.js
 import { useState, useCallback } from 'react';
+import Cookies from "js-cookie";
 
 const API_BASE_URL = import.meta.env.VITE_FILE_SERVER_BASE_URL;
 const FILE_SERVER_PATH = import.meta.env.VITE_FILE_SERVER_PATH;
@@ -33,6 +34,12 @@ const useApi = (initialLoading = false) => {
       // Decide headers dynamically
       let headers = { ...(options.headers || {}) };
 
+      // Add Jwt token if available
+      const token = Cookies.get('accessToken');
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       // Only set JSON header if body is plain object (not FormData / Blob)
       if (!(options.body instanceof FormData) && !(options.body instanceof Blob)) {
         headers['Content-Type'] = headers['Content-Type'] || 'application/json';
@@ -42,11 +49,20 @@ const useApi = (initialLoading = false) => {
 
       if (!response.ok) {
         let errorMessage = `HTTP error! status: ${response.status}`;
+
         try {
           const errorData = await response.json();
-          if (errorData.message) errorMessage = errorData.message;
-          else if (typeof errorData === 'string') errorMessage = errorData;
-          else errorMessage = JSON.stringify(errorData);
+
+          if (errorData.message) {
+            errorMessage = errorData.message;
+
+          } else if (typeof errorData === 'string') {
+            errorMessage = errorData;
+
+          } else {
+            errorMessage = JSON.stringify(errorData);
+          }
+
         } catch (_) {}
         throw new Error(errorMessage);
       }
@@ -54,6 +70,7 @@ const useApi = (initialLoading = false) => {
       // No content
       if (response.status === 204 || response.headers.get('Content-Length') === '0') {
         setData(true);
+
         return true;
       }
 
@@ -62,16 +79,20 @@ const useApi = (initialLoading = false) => {
         // Return raw Blob for files
         const blob = await response.blob();
         setData(blob);
+
         return blob;
       }
 
       const contentType = response.headers.get('Content-Type') || '';
+
       let result;
+
       if (contentType.includes('application/json')) result = await response.json();
       else if (contentType.includes('text/')) result = await response.text();
       else result = await response.blob(); // fallback for unknown content
 
       setData(result);
+
       return result;
 
     } catch (err) {
