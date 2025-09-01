@@ -116,6 +116,7 @@ const ContentPublishModal = ({ show, onHide, contentToPublish, parentContent, on
                 videoUrl: contentToPublish?.videoUrl || '',
                 resourceLink: contentToPublish?.resourceLink || '',
                 questions: contentToPublish?.questions || [],
+                moduleId:contentToPublish?.moduleId || null,
             });
             setIsAlreadyPublished(contentToPublish.releaseNum > 0);
         } else {
