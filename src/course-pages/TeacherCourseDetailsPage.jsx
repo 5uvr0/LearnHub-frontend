@@ -305,7 +305,7 @@ const TeacherCourseDetailsPage = () => {
                 payload.resourceLink = formDataFromModal?.resourceLink;
 
             } else if (originalContentRelease?.type === 'QUIZ') {
-                payload.questions = originalContentRelease?.questions;
+                payload.questions = originalContentRelease?.questions + formDataFromModal?.questions;
             }
 
             // Capture the response from the publish API call
@@ -328,7 +328,7 @@ const TeacherCourseDetailsPage = () => {
                         navigationPath = `/teacher/submissions/${publishedContent.id}`;
                         break;
                     case 'QUIZ':
-                        navigationPath = `/teacher/quizzes/${publishedContent.id}/configure`;
+                        navigationPath = `/teacher/quizzes/${publishedContent.id}`;
                         break;
                     default:
                         // Fallback or do nothing if type is unknown
