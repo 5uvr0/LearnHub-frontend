@@ -4,7 +4,7 @@ test.use({
     ignoreHTTPSErrors: true
 });
 
-test('AdminDashboard UserStatus', async ({ page }) => {
+test('Admin Dashboard User Status Toggle', async ({ page }) => {
     await page.goto('https://app-rnd01.therapbd.net/learnhub');
     await page.getByRole('link', { name: 'Login' }).click();
     await page.getByRole('textbox', { name: 'Email Address' }).click();

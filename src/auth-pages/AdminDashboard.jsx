@@ -5,7 +5,7 @@ import UserCard from "../components/auth/cards/UserCard";
 import CustomButton from '../components/common/CustomButton';
 import { Card, Badge, Form, FormControl, Pagination } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChartBar, faUsers, faUserTie, faExternalLinkAlt, faUserCheck, faUserSlash, faUserMinus } from '@fortawesome/free-solid-svg-icons';
+import { faChartBar, faUsers, faUserTie, faExternalLinkAlt, faUserCheck, faUserSlash, faUserMinus, faGraduationCap } from '@fortawesome/free-solid-svg-icons';
 
 const AdminDashboardPage = () => {
     const { data: users, loading, error, fetchData } = useAuthApi();
@@ -44,7 +44,7 @@ const AdminDashboardPage = () => {
         setFilterStatus(status);
         setCurrentPage(1); // Reset to the first page on a new filter
     };
-    
+
     const paginate = (pageNumber) => {
         setCurrentPage(pageNumber);
         window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top on page change
@@ -59,11 +59,9 @@ const AdminDashboardPage = () => {
         if (filterStatus === 'enabled' && !user.enabled) return false;
         if (filterStatus === 'disabled' && user.enabled) return false;
         if (filterStatus === 'deleted' && !user.deleted) return false;
-        
-        // Apply search term filter
+
         return user.email.toLowerCase().includes(searchTerm.toLowerCase());
     }).sort((a, b) => {
-        // Primary sort: by role lexicographically
         const roleComparison = a.role.localeCompare(b.role);
         if (roleComparison !== 0) {
             return roleComparison;
@@ -78,7 +76,7 @@ const AdminDashboardPage = () => {
             return dateA - dateB; // Oldest first
         }
     }) || [];
-    
+
     const indexOfLastUser = currentPage * usersPerPage;
     const indexOfFirstUser = indexOfLastUser - usersPerPage;
     const currentUsers = sortedAndFilteredUsers.slice(indexOfFirstUser, indexOfLastUser);
@@ -128,27 +126,48 @@ const AdminDashboardPage = () => {
             )}
 
             {/* Dashboard Actions */}
-            <div className="d-flex flex-column flex-md-row justify-content-start align-items-center g-3 mb-4">
-                <CustomButton 
-                    variant="info" 
+            <div className="d-flex flex-column flex-md-row justify-content-start align-items-center g-2 mb-4">
+                <CustomButton
+                    variant="info"
                     icon={faChartBar}
                     onClick={handleToggleStats}
-                    className="me-md-3 mb-2 mb-md-0"
+                    className="me-md-3 mb-2 mb-md-0 btn-sm"
                 >
                     {showStats ? "Hide Site Statistics" : "Show Site Statistics"}
                 </CustomButton>
+
+                <CustomButton
+                    variant="success"
+                    icon={faGraduationCap}
+                    onClick={() => navigate('/admin/students')}
+                    className="me-md-3 mb-2 mb-md-0 btn-sm"
+                >
+                    See all Registered Students
+                </CustomButton>
+
+                <CustomButton
+                    variant="warning"
+                    icon={faGraduationCap}
+                    onClick={() => navigate('/admin/instructors')}
+                    className="me-md-3 mb-2 mb-md-0 btn-sm"
+                >
+                    See all Instructors
+                </CustomButton>
+
                 <CustomButton
                     variant="outline-secondary"
                     icon={faExternalLinkAlt}
                     onClick={() => handleExternalLink('https://app-rnd01.therapbd.net/kafka-ui')}
-                    className="me-md-3 mb-2 mb-md-0"
+                    className="me-md-3 mb-2 mb-md-0 btn-sm"
                 >
                     Go to Kafka Dashboard
                 </CustomButton>
+
                 <CustomButton
                     variant="outline-secondary"
                     icon={faExternalLinkAlt}
                     onClick={() => handleExternalLink('https://app-rnd01.therapbd.net/management-center')}
+                    className="me-md-3 mb-2 mb-md-0 btn-sm"
                 >
                     Go to Hazelcast Dashboard
                 </CustomButton>
@@ -191,7 +210,7 @@ const AdminDashboardPage = () => {
 
             {/* User Management Section */}
             <h2 className="text-xl font-bold mb-3">Manage Users</h2>
-            
+
             {/* Filter and Sort Controls */}
             <div className="d-flex flex-column flex-md-row align-items-center mb-4">
                 <Form.Group className="me-md-3 mb-2 mb-md-0 w-100">
@@ -202,7 +221,7 @@ const AdminDashboardPage = () => {
                         onChange={handleSearchChange}
                     />
                 </Form.Group>
-                
+
                 <Form.Group className="me-md-3 mb-2 mb-md-0 w-100">
                     <Form.Select onChange={handleSortChange} value={sortOrder}>
                         <option value="newest">Sort by: Newest First</option>
@@ -250,10 +269,10 @@ const AdminDashboardPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {currentUsers.length > 0 ? (
                     currentUsers.map((user) => (
-                        <UserCard 
-                            key={user.id} 
-                            user={user} 
-                            onUserUpdate={handleUserUpdate} 
+                        <UserCard
+                            key={user.id}
+                            user={user}
+                            onUserUpdate={handleUserUpdate}
                         />
                     ))
                 ) : (
@@ -267,17 +286,17 @@ const AdminDashboardPage = () => {
                     <Pagination>
                         <Pagination.First onClick={() => paginate(1)} disabled={currentPage === 1} />
                         <Pagination.Prev onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1} />
-                        
+
                         {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                            <Pagination.Item 
-                                key={page} 
-                                active={page === currentPage} 
+                            <Pagination.Item
+                                key={page}
+                                active={page === currentPage}
                                 onClick={() => paginate(page)}
                             >
                                 {page}
                             </Pagination.Item>
                         ))}
-                        
+
                         <Pagination.Next onClick={() => paginate(currentPage + 1)} disabled={currentPage === totalPages} />
                         <Pagination.Last onClick={() => paginate(totalPages)} disabled={currentPage === totalPages} />
                     </Pagination>
