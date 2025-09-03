@@ -7,6 +7,7 @@ import texts from '../i18n/texts';
 import Cookie from 'js-cookie';
 
 const ADMIN_DASHBOARD_URL = import.meta.env.VITE_ADMIN_DASHBOARD_PATH;
+const ROLE_ADMIN = import.meta.env.VITE_ROLE_ADMIN;
 
 const LoginPage = () => {
     const { data, loading, error, fetchData: loginUser } = useAuthApi();
@@ -35,7 +36,7 @@ const LoginPage = () => {
                 localStorage.setItem("email", result.email);
                 localStorage.setItem("role", result.role);
 
-                if (result.role === "ADMIN") {
+                if (result.role === ROLE_ADMIN) {
                     navigate(ADMIN_DASHBOARD_URL);
 
                 } else {

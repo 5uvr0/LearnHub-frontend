@@ -285,3 +285,9 @@ textarea.form-control {
   border-color: var(--border-color) !important;
 }
 /* ------------------------------------------ */
+
+/* Student Card in Admin Dashboard */
+.card-img-top-custom {
+    height: 150px;
+    object-fit: cover;
+}

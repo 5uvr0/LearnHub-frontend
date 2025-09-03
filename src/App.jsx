@@ -29,6 +29,8 @@ import RegistrationPage from "./auth-pages/RegistrationPage.jsx";
 import Logout from "./auth-pages/Logout.jsx";
 import LoginErrorPage from './ErrorPages/LoginErrorPage.jsx';
 import EmailVerificationPage from './auth-pages/EmailVerificationPage.jsx';
+import StudentDetailsPageAdmin from './auth-pages/StudentDetailsPage-Admin.jsx';
+import InstructorDetailsPageAdmin from './auth-pages/InstructorDetailsPage-Admin.jsx';
 
 import StudentDashboard from './learner-pages/student/Dashboard.jsx';
 import StudentCourseDetailPage from "./learner-pages/student/enrolledCourses/CourseDetail.jsx";
@@ -214,6 +216,16 @@ function AppContent() {
                     <Route path="/admin/user-management/:userId" element={
                         <ProtectedRoute>
                             <UserManagementPage />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/admin/students" element={
+                        <ProtectedRoute>
+                            <StudentDetailsPageAdmin />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/admin/instructors" element={
+                        <ProtectedRoute>
+                            <InstructorDetailsPageAdmin />
                         </ProtectedRoute>
                     } />
                     <Route path="/logout" element={
