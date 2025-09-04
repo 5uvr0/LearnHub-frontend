@@ -305,7 +305,8 @@ const TeacherCourseDetailsPage = () => {
                 payload.resourceLink = formDataFromModal?.resourceLink;
 
             } else if (originalContentRelease?.type === 'QUIZ') {
-                payload.questions = [...(originalContentRelease?.questions || []), ...(formDataFromModal?.questions || [])];            }
+                payload.questions = [...(formDataFromModal?.questions || [])];
+            }
 
             // Capture the response from the publish API call
             const publishedContent = await publishContentRelease?.(payload?.id, payload);
