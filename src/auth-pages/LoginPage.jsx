@@ -31,7 +31,7 @@ const LoginPage = () => {
                 setMessage(result.message || texts.auth?.loginSuccess);
                 setMessageVariant('success');
 
-                Cookie.set("accessToken", result.accessToken);
+                Cookie.set("accessToken", result.accessToken, { expires: 1/24 });
                 localStorage.setItem("refreshToken", result.refreshToken);
                 localStorage.setItem("email", result.email);
                 localStorage.setItem("role", result.role);
