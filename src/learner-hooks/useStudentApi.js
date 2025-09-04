@@ -44,6 +44,11 @@ const useStudentApi = () => {
     [fetchData]
   );
 
+  const hardDeleteStudent = useCallback(
+      (id) => fetchData(`/students/hard/${id}`, { method: 'DELETE' }),
+      [fetchData]
+  );
+
   return {
     data,
     loading,
@@ -51,9 +56,10 @@ const useStudentApi = () => {
     getAllStudents,
     createStudent,
     getStudentById,
-      getStudentFromToken,
+    getStudentFromToken,
     updateStudent,
     softDeleteStudent,
+    hardDeleteStudent,
   };
 };
 

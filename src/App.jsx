@@ -45,6 +45,8 @@ import LecturePage from "./learner-pages/student/enrolledCourses/content/Lecture
 import QuizPage from "./learner-pages/student/enrolledCourses/content/Quiz.jsx";
 import SubmissionPage from "./learner-pages/student/enrolledCourses/content/Submission.jsx";
 import StudentContentPage from "./learner-pages/student/enrolledCourses/content/ContentDetail.jsx";
+import UnenrollAllAction from "./learner-pages/student/UnenrollAllPage.jsx";
+import DeleteAndLogoutAction from "./learner-pages/student/DeleteAndLogoutAction.jsx";
 
 // Define public routes that don't require authentication
 const PUBLIC_ROUTES = [
@@ -260,6 +262,18 @@ function AppContent() {
                     <Route path="/student/courses/:courseId/content/:contentId" element={
                         <ProtectedRoute>
                             <StudentContentPage />
+                        </ProtectedRoute>
+                    } />
+
+                    <Route path="/student/unenroll-all" element={
+                        <ProtectedRoute>
+                            <UnenrollAllAction />
+                        </ProtectedRoute>
+                    } />
+
+                    <Route path="/student/delete-and-logout" element={
+                        <ProtectedRoute>
+                            <DeleteAndLogoutAction />
                         </ProtectedRoute>
                     } />
 
