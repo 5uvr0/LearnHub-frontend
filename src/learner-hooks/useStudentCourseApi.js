@@ -106,6 +106,14 @@ const useStudentCourseApi = () => {
         [fetchData]
     );
 
+    const unenrollFromAllCourse = useCallback(
+        (studentId) =>
+            fetchData(`/student-course/unenroll/student/${studentId}`, {
+                method: "POST",
+            }),
+        [fetchData]
+    );
+
   return {
     data,
     loading,
@@ -119,7 +127,8 @@ const useStudentCourseApi = () => {
     getAllStudentProgressForCourse,
     getContentStatus,
     markContentCompleted,
-      isContentCompleted,
+    isContentCompleted,
+    unenrollFromAllCourse
   };
 };
 
