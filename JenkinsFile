@@ -1,0 +1,36 @@
+pipeline {
+    agent any
+
+    environment {
+        BASE_LOG_DIR = "/home/app-rnd01/Desktop/logs/frontend"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                echo "Checking out frontend code from ${env.BRANCH_NAME} branch..."
+                git branch: 'dev', url: 'https://github.com/5uvr0/LearnHub-frontend', credentialsId: 'github-pat'
+            }
+        }
+
+        stage('Build & Run Frontend') {
+
+            steps {
+                script {
+                    echo "Stopping old frontend container (if running)..."
+                    sh 'docker compose down frontend || true'
+
+                    echo "Building and starting frontend container..."
+                    sh 'docker compose up -d --build frontend'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            echo "Cleaning up dangling images/containers..."
+            sh 'docker system prune -f || true'
+        }
+    }
+}
