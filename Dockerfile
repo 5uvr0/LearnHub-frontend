@@ -11,7 +11,6 @@ COPY . .
 EXPOSE 5173
 
 CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
-
 ### How to Run this Dockerfile
 #1.  **Build the image**: In your project's root directory, run the following command to build the Docker image. The `--tag` flag gives your image a name.
 #    ```bash
