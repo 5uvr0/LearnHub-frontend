@@ -11,7 +11,7 @@ const CourseForm = ({ initialData = {}, onSubmit, isEditMode = false }) => {
     const [formData, setFormData] = useState({
         name: initialData.name || '',
         description: initialData.description || '',
-        instructorId: initialData.instructorId || '',
+        instructorId: 0,
     });
     const [formErrors, setFormErrors] = useState({});
 
@@ -26,7 +26,6 @@ const CourseForm = ({ initialData = {}, onSubmit, isEditMode = false }) => {
             setFormData({
                 name: initialData.name || '',
                 description: initialData.description || '',
-                instructorId: initialData.instructorId || '',
             });
         }
     }, [initialData, isEditMode]);
@@ -60,7 +59,6 @@ const CourseForm = ({ initialData = {}, onSubmit, isEditMode = false }) => {
         if (!formData.name.trim()) errors.name = 'Course name is required.';
         // The check for the description remains the same
         if (!formData.description.trim()) errors.description = 'Course description is required.';
-        if (!formData.instructorId) errors.instructorId = 'Instructor is required.';
         setFormErrors(errors);
         return Object.keys(errors).length === 0;
     };
@@ -101,29 +99,6 @@ const CourseForm = ({ initialData = {}, onSubmit, isEditMode = false }) => {
                 />
                 {/* Custom feedback styling if needed, or use a separate component */}
                 <div className="invalid-feedback d-block">{formErrors.description}</div>
-            </Form.Group>
-
-            <Form.Group className="mb-4" controlId="instructorId">
-                <Form.Label>{texts.forms.selectInstructor}</Form.Label>
-                <Form.Select
-                    name="instructorId"
-                    value={formData.instructorId}
-                    onChange={handleChange}
-                    isInvalid={!!formErrors.instructorId}
-                    disabled={loadingInstructors}
-                >
-                    <option value="">{texts.forms.selectInstructor}...</option>
-                    {loadingInstructors ? (
-                        <option disabled>Loading instructors...</option>
-                    ) : (
-                        instructors && instructors.map((instructor) => (
-                            <option key={instructor.id} value={instructor.id}>
-                                {instructor.name} ({instructor.email})
-                            </option>
-                        ))
-                    )}
-                </Form.Select>
-                <Form.Control.Feedback type="invalid">{formErrors.instructorId}</Form.Control.Feedback>
             </Form.Group>
 
             <div className="d-grid">

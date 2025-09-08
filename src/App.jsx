@@ -24,7 +24,8 @@ import SubmissionDetailsPage from './course-pages/SubmissionDetailsPage';
 import LoginPage from './auth-pages/LoginPage.jsx';
 import AdminDashboardPage from './auth-pages/AdminDashboardPage.jsx';
 import UserManagementPage from './auth-pages/UserManagementPage';
-import InstructorProfilePage from './course-pages/InstructorProfilePage'
+import InstructorProfilePage from './course-pages/InstructorProfilePage';
+import SubmittedFilesPage from "./course-pages/SubmittedFiles.jsx";
 import RegistrationPage from "./auth-pages/RegistrationPage.jsx";
 import ResetPasswordPage from "./auth-pages/ResetPasswordPage.jsx";
 import EmailEntryPassReset from "./auth-pages/EmailEntryPassResetPage.jsx";
@@ -47,6 +48,8 @@ import LecturePage from "./learner-pages/student/enrolledCourses/content/Lecture
 import QuizPage from "./learner-pages/student/enrolledCourses/content/Quiz.jsx";
 import SubmissionPage from "./learner-pages/student/enrolledCourses/content/Submission.jsx";
 import StudentContentPage from "./learner-pages/student/enrolledCourses/content/ContentDetail.jsx";
+import UnenrollAllAction from "./learner-pages/student/UnenrollAllPage.jsx";
+import DeleteAndLogoutAction from "./learner-pages/student/DeleteAndLogoutAction.jsx";
 
 // Define public routes that don't require authentication
 const PUBLIC_ROUTES = [
@@ -208,6 +211,11 @@ function AppContent() {
                             <SubmissionDetailsPage />
                         </ProtectedRoute>
                     } />
+                    <Route path="/teacher/submission/attachments/:contentId" element={
+                        <ProtectedRoute>
+                            <SubmittedFilesPage />
+                        </ProtectedRoute>
+                    } />
 
                     {/* Admin Routes */}
                     <Route path="/admin/dashboard" element={
@@ -265,6 +273,24 @@ function AppContent() {
                         </ProtectedRoute>
                     } />
 
+                    <Route path="/student/unenroll-all" element={
+                        <ProtectedRoute>
+                            <UnenrollAllAction />
+                        </ProtectedRoute>
+                    } />
+
+                    <Route path="/student/delete-and-logout" element={
+                        <ProtectedRoute>
+                            <DeleteAndLogoutAction />
+                        </ProtectedRoute>
+                    } />
+
+                    {/* Student Content Endpoints */}
+                    {/*<Route path="/student/content/:contentId/lecture" element={<LecturePage />} />*/}
+                    {/*<Route path="/student/content/:contentId/quiz" element={<QuizPage />} />*/}
+                    {/*<Route path="/student/content/:contentId/submission" element={<SubmissionPage />} />*/}
+
+                    {/* Student Submission Related Endpoints */}
                     {/* Fallback for unknown routes */}
                     <Route path="*" element={
                         <div className="py-5 text-center">

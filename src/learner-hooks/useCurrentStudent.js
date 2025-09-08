@@ -16,8 +16,10 @@ const useCurrentStudent = () => {
 
             if (studentId) {
                 studentData = await getStudentById(studentId);
+
             } else {
                 studentData = await getStudentFromToken();
+
                 if (studentData?.id) {
                     Cookies.set("studentId", studentData.id, { expires: 7 });
                 }

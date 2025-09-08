@@ -13,7 +13,7 @@ const StudentContentPage = () => {
 
     const { getStudentContentDetails } = useContentApi();
     const { student } = useCurrentStudent();
-    const { getEnrolledCourseIdsByStudent } = useStudentCourseApi()
+    const { getEnrolledCourseIdsByStudent, isContentCompleted } = useStudentCourseApi()
 
     const [content, setContent] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -44,8 +44,11 @@ const StudentContentPage = () => {
                 // 2. Fetch content details
                 const data = await getStudentContentDetails(contentId);
 
+                const isCompleted = await isContentCompleted(student?.id, courseId, contentId);
+
                 if (data) {
                     data.courseId = courseId;
+                    data.completed = isCompleted;
                 }
 
                 setContent(data);
@@ -59,7 +62,7 @@ const StudentContentPage = () => {
         };
 
         fetchContent();
-    }, [contentId, courseId, getStudentContentDetails, student?.id, getEnrolledCourseIdsByStudent]);
+    }, [contentId, courseId, getStudentContentDetails, student?.id, getEnrolledCourseIdsByStudent, isContentCompleted]);
 
 
     if (loading) return <Spinner animation="border" className="d-block mx-auto mt-5" />;

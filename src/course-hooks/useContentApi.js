@@ -60,6 +60,7 @@ const useContentApi = () => {
 
     //Student APIS
     const getStudentContentDetails = useCallback((contentId) => fetchData(`/contents/detail/${contentId}`, { method: 'GET' }), [fetchData]);
+    const getCourse = useCallback((contentReleaseId) => fetchData(`/contents/getCourse/${contentReleaseId}`, { method: 'GET' }), [fetchData]);
 
 
     return {
@@ -70,7 +71,8 @@ const useContentApi = () => {
         createNewQuizQuestion, deleteQuizQuestion, getAllQuizQuestions,
         editQuizQuestion, editQuizOption,
         getAllContentDrafts, // NEW: Return the new function
-        getStudentContentDetails
+        getStudentContentDetails,
+        getCourse
     };
 };
 

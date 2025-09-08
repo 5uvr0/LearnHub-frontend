@@ -49,7 +49,7 @@ const CourseCard = ({ course, onDetailsClick, learnMoreText }) => {
         <Card.Text className="text-secondary flex-grow-1">
           {course?.description}
         </Card.Text>
-        <CustomButton variant="outline-primary" onClick={() => onDetailsClick?.(course?.courseId)}>
+        <CustomButton variant="outline-primary" onClick={() => onDetailsClick?.(course?.id)}>
           {learnMoreText}
         </CustomButton>
       </Card.Body>

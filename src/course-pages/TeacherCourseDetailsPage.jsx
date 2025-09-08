@@ -11,7 +11,14 @@ import texts from '../i18n/texts';
 import useCourseApi from '../course-hooks/useCourseApi';
 import useModuleApi from '../course-hooks/useModuleApi';
 import useContentApi from '../course-hooks/useContentApi';
-import {faArrowsUpDown, faCloudUploadAlt, faCodeCompare, faEdit, faPlusCircle, faUsers} from '@fortawesome/free-solid-svg-icons';
+import {
+    faArrowsUpDown,
+    faCloudUploadAlt,
+    faCodeCompare,
+    faEdit,
+    faPlusCircle,
+    faUsers
+} from '@fortawesome/free-solid-svg-icons';
 import {getRandomModerateColor} from '../utils/colorUtils';
 import MarkdownRenderer from '../components/common/MarkdownRender';
 import ModuleReorderModal from '../components/course/modals/ModuleReorderModal';
@@ -290,10 +297,15 @@ const TeacherCourseDetailsPage = () => {
 
             if (originalContentRelease?.type === 'LECTURE' || originalContentRelease?.type === 'SUBMISSION') {
                 payload.description = formDataFromModal?.description;
+
                 if (originalContentRelease?.type === 'LECTURE') {
                     payload.videoUrl = formDataFromModal?.videoUrl;
                 }
+
                 payload.resourceLink = formDataFromModal?.resourceLink;
+
+            } else if (originalContentRelease?.type === 'QUIZ') {
+                payload.questions = [...(formDataFromModal?.questions || [])];
             }
 
             // Capture the response from the publish API call
@@ -316,7 +328,7 @@ const TeacherCourseDetailsPage = () => {
                         navigationPath = `/teacher/submissions/${publishedContent.id}`;
                         break;
                     case 'QUIZ':
-                        navigationPath = `/teacher/quizzes/${publishedContent.id}/configure`;
+                        navigationPath = `/teacher/quizzes/${publishedContent.id}`;
                         break;
                     default:
                         // Fallback or do nothing if type is unknown

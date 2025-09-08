@@ -19,28 +19,30 @@ const ModuleCard = ({ module, eventKey }) => {
 
     return (
         <Accordion.Item eventKey={eventKey}>
-            <Accordion.Header onClick={(e) => e.preventDefault()}>
+            <Accordion.Header
+                onClick={(e) => {
+                    e.preventDefault(); // block default accordion behavior
+                    setShowContents(!showContents);
+                }}
+            >
                 <div className="d-flex justify-content-between align-items-center w-100">
                     {/* Module title + badge */}
                     <span className="fw-bold text-primary">
             {module.orderIndex}. {module.title}
                         <span className="ms-3 badge bg-secondary">
-              {module.completedContentCount}/{module.numberOfContents} Completed
+                {module.completedContentCount}/{module.numberOfContents} Completed
             </span>
-          </span>
+        </span>
 
-                    {/* Toggle icon on the right */}
+                    {/* Icon just reflects state */}
                     <FontAwesomeIcon
                         icon={showContents ? faChevronDown : faChevronRight}
                         className="text-primary"
-                        style={{ fontSize: "1.3rem", cursor: "pointer" }}
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            setShowContents(!showContents);
-                        }}
+                        style={{ fontSize: "1.3rem" }}
                     />
                 </div>
             </Accordion.Header>
+
 
             <Accordion.Body className="p-0">
                 <Card className="border-0 rounded-0">

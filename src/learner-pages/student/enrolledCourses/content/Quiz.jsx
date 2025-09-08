@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Container, Button, Card, Row, Col, Spinner, Alert } from "react-bootstrap";
+import {Container, Button, Card, Row, Col, Spinner, Alert, Badge} from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import useSubmissionApi from "../../../../learner-hooks/useSubmisionApi.js";
 import useCurrentStudent from "../../../../learner-hooks/useCurrentStudent.js";
@@ -39,7 +39,9 @@ const Quiz = ({ content }) => {
                 }`
             );
 
-            navigate(-1);
+            if(result.passed) {
+                navigate(-1);
+            }
 
         } catch (err) {
             console.error(err);
@@ -66,7 +68,25 @@ const Quiz = ({ content }) => {
 
     return (
         <Container className="py-4">
-            <h2 className="fw-bold mb-3">{content.title}</h2>
+            <div className="d-flex align-items-center justify-content-between mb-3">
+                <h2 className="fw-bold mb-0">{content.title}</h2>
+                {content.completed && (
+                    <Badge
+                        bg="success"
+                        className="fs-6 px-3 py-1 rounded-pill shadow-sm"
+                        style={{ fontWeight: "500" }}
+                    >
+                        ✓ Completed
+                    </Badge>
+                )}
+            </div>
+
+
+            {content.completed && (
+                <Alert variant="success" className="fw-semibold">
+                    ✅ You have already completed this quiz and passed!
+                </Alert>
+            )}
 
             {content.description && (
                 <p dangerouslySetInnerHTML={{ __html: content.description }}></p>
@@ -111,22 +131,24 @@ const Quiz = ({ content }) => {
                         &larr; Back
                     </Button>
                 </Col>
-                <Col className="text-end">
-                    <Button
-                        variant="primary"
-                        onClick={handleSubmit}
-                        disabled={submitLoading}
-                    >
-                        {submitLoading ? (
-                            <>
-                                <Spinner animation="border" size="sm" className="me-2" />
-                                Submitting...
-                            </>
-                        ) : (
-                            "Submit"
-                        )}
-                    </Button>
-                </Col>
+                {!content.completed && (
+                    <Col className="text-end">
+                        <Button
+                            variant="primary"
+                            onClick={handleSubmit}
+                            disabled={submitLoading}
+                        >
+                            {submitLoading ? (
+                                <>
+                                    <Spinner animation="border" size="sm" className="me-2" />
+                                    Submitting...
+                                </>
+                            ) : (
+                                "Submit"
+                            )}
+                        </Button>
+                    </Col>
+                )}
             </Row>
         </Container>
     );
