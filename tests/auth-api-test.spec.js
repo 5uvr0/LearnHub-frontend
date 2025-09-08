@@ -20,6 +20,7 @@ test.describe.serial('Auth API Endpoints', () => {
         const registerJson = await registerResponse.json();
 
         const verificationToken = registerJson.message;
+        console.log("Provided verification token:", verificationToken);
 
         const verifyResponse = await request.get(`${BASE_URL}/api/verify-email?token=${verificationToken}`);
 
@@ -74,11 +75,14 @@ test.describe.serial('Auth API Endpoints', () => {
 
     test('should delete a user successfully', async ({ request }) => {
         const deleteResponse = await request.delete(`${BASE_URL}/api/delete`, {
-            data: { accessToken: accessToken }
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
         });
 
         const jsonResponse = await deleteResponse.json();
         expect(deleteResponse.status()).toBe(HttpStatusCode.Ok);
         expect(jsonResponse.message).toBe('User deleted successfully');
     });
+
 });

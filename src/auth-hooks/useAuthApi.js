@@ -58,7 +58,7 @@ const useAuthApi = (initialLoading = false) => {
             let message = "An unknown error occurred.";
             
             if (axios.isAxiosError(err) && err.response) {
-                message = JSON.stringify(err.response.data);
+                 message = err.response.data;
 
             } else if (err.request) {
                 message = "No response from server. Please check your network connection.";

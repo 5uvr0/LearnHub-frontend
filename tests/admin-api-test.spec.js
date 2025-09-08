@@ -3,6 +3,7 @@ import { test, expect } from '@playwright/test';
 import { HttpStatusCode } from 'axios';
 
 const BASE_URL = 'http://localhost:8090/auth';
+// const BASE_URL = 'https://app-rnd01.therapbd.net/learnhub/auth';
 
 test.describe('Admin API Endpoints', () => {
     let accessToken;

@@ -76,6 +76,11 @@ const texts = {
         previous: "An Older Version"
     },
     forms: {
+        resetPassword: "Reset Password",
+        newPassword: "Enter a new password",
+        confirmPassword: "Confirm your new password",
+        passwordRecovery: "Password Recovery",
+        emailEntry: "Enter the email with which you created an account",
         courseName: "Course Name",
         courseDescription: "Course Description",
         instructorId: "Instructor",
@@ -184,6 +189,8 @@ const texts = {
         loginSuccess: "Login successful!",
         loginFailed: "Login failed. Kindly check your credentials", 
         loggingIn: "Logging in...",
+        resettingPass: "Reset in progress...",
+        resetFailed: "Failed to reset password. Try again.",
         registrationSuccess: "Registration successful! Check your email to verify your account and then log in.", 
         registrationSuccessAlert: "Registration successful! You need to activate your account first before you can log in.",
         registrationFailed: "Registration failed.",
@@ -192,6 +199,9 @@ const texts = {
         confirmPasswordPlaceholder: 'Re-enter your password',
         passwordMismatch: 'Passwords do not match.',
         validationFailed: "Validation failed. Please check the form errors.",
+        emailVerified: "Email verified successfully!",
+        resettingPass: "Resetting your password",
+        resetFailed: "Password reset failed!"
     },
 };
 
