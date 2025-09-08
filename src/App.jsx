@@ -1,7 +1,8 @@
 // src/App.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 import Cookies from 'js-cookie';
+import axios from 'axios';
 import AppNavbar from './components/course/layout/AppNavbar';
 import AppFooter from './components/course/layout/AppFooter';
 import AppSidebar from './components/course/layout/AppSidebar';
@@ -21,11 +22,13 @@ import CourseVersionComparisonPage from './course-pages/CourseVersionComparisonP
 import LectureDetailsPage from './course-pages/LectureDetailsPage';
 import SubmissionDetailsPage from './course-pages/SubmissionDetailsPage';
 import LoginPage from './auth-pages/LoginPage.jsx';
-import AdminDashboardPage from './auth-pages/AdminDashboard.jsx';
+import AdminDashboardPage from './auth-pages/AdminDashboardPage.jsx';
 import UserManagementPage from './auth-pages/UserManagementPage';
 import InstructorProfilePage from './course-pages/InstructorProfilePage';
 import SubmittedFilesPage from "./course-pages/SubmittedFiles.jsx";
 import RegistrationPage from "./auth-pages/RegistrationPage.jsx";
+import ResetPasswordPage from "./auth-pages/ResetPasswordPage.jsx";
+import EmailEntryPassReset from "./auth-pages/EmailEntryPassResetPage.jsx";
 import Logout from "./auth-pages/Logout.jsx";
 import LoginErrorPage from './ErrorPages/LoginErrorPage.jsx';
 import EmailVerificationPage from './auth-pages/EmailVerificationPage.jsx';
@@ -57,36 +60,51 @@ const PUBLIC_ROUTES = [
     '/about',
     '/contact',
     '/public-course-view',
-    '/public-instructors'
+    '/public-instructors',
+    '/email-entry',
+    '/reset-password',
+    '/email-verification'
 ];
 
-// Component to handle protected routes
 function ProtectedRoute({ children }) {
     const navigate = useNavigate();
     const location = useLocation();
-    const cookie = Cookies.get("accessToken");
+    const accessToken = Cookies.get("accessToken");
+    const refreshToken = localStorage.getItem("refreshToken");
     
     React.useEffect(() => {
-        if (!cookie) {
-            // Check if current path is a public route
-            const isPublicRoute = PUBLIC_ROUTES.some(route => {
-                if (route === '/') return location.pathname === '/';
-                if (route === '/public-course-view') return location.pathname.startsWith('/public-course-view/');
-                if (route === '/public-instructors') return location.pathname.startsWith('/public-instructors/');
-                return location.pathname === route;
-            });
-            
-            if (!isPublicRoute) {
-                navigate('/login/error');
+        const isPublicRoute = PUBLIC_ROUTES.some(route => {
+            if (route === '/') return location.pathname === '/';
+            if (route === '/public-course-view') return location.pathname.startsWith('/public-course-view/');
+            if (route === '/public-instructors') return location.pathname.startsWith('/public-instructors/');
+            if (route === '/reset-password') return location.pathname.startsWith('/reset-password/');
+            return location.pathname === route;
+        });
+        
+        if (isPublicRoute) return;
+        
+        if (!accessToken) {
+            if (refreshToken) {
+                navigate('/login/error', { 
+                    replace: true,
+                    state: { from: location.pathname }
+                });
+
+            } else {
+                navigate('/login', { 
+                    replace: true,
+                    state: { from: location.pathname }
+                });
             }
         }
-    }, [cookie, location.pathname, navigate]);
+    }, [accessToken, refreshToken, location.pathname, navigate]);
     
     return children;
 }
 
 function AppContent() {
     const [showSidebar, setShowSidebar] = useState(false);
+    const navigate = useNavigate();
     const cookie = Cookies.get("accessToken");
 
     const handleCloseSidebar = () => setShowSidebar(false);
@@ -110,21 +128,11 @@ function AppContent() {
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/register" element={<RegistrationPage />} />
                     <Route path="/login/error" element={<LoginErrorPage />} />
+                    <Route path="/email-entry" element={<EmailEntryPassReset />} />
+                    <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
                     <Route path="/public-course-view/:id" element={<CoursePublicView />} />
                     <Route path="/public-instructors/:id" element={<InstructorPublicViewPage />} />
                     <Route path="/email-verification" element={<EmailVerificationPage />} />
-                    <Route path="/about" element={
-                        <div className="py-5 text-center">
-                            <h2>About Us</h2>
-                            <p>LearnHub is dedicated to providing quality online education.</p>
-                        </div>
-                    } />
-                    <Route path="/contact" element={
-                        <div className="py-5 text-center">
-                            <h2>Contact Us</h2>
-                            <p>Reach out to us at support@learnhub.com</p>
-                        </div>
-                    } />
 
                     {/* Protected Routes - Authentication required */}
                     <Route path="/courses" element={
@@ -283,7 +291,6 @@ function AppContent() {
                     {/*<Route path="/student/content/:contentId/submission" element={<SubmissionPage />} />*/}
 
                     {/* Student Submission Related Endpoints */}
-
                     {/* Fallback for unknown routes */}
                     <Route path="*" element={
                         <div className="py-5 text-center">

@@ -28,8 +28,7 @@ const RegistrationPage = () => {
                 setMessage(result.message || texts.auth?.registrationSuccess);
                 setMessageVariant('success');
 
-                // navigate("/login");
-                navigate("/email-verification", { state: { token: result.message } });
+                navigate("/email-verification", { state: { token: result.message, to: '/login' } });
             }
 
         } catch (err) {
@@ -45,20 +44,17 @@ const RegistrationPage = () => {
             console.log('Error state updated:', error);
             
             try {
-                const parsedError = JSON.parse(error);
-                console.log('Parsed error in useEffect:', parsedError);
-
-                let message = parsedError.message;
+                let message = error.message;
                 
-                if (parsedError.formErrors && Object.keys(parsedError.formErrors).length > 0) {
-                    setFormErrors(parsedError.formErrors);
+                if (error.formErrors && Object.keys(error.formErrors).length > 0) {
+                    setFormErrors(error.formErrors);
 
                 } else {
                     setFormErrors({});
                 }
                 
-                if (parsedError.error) {
-                    message = message + " " + parsedError.error;
+                if (error.error) {
+                    message = message + " " + error.error;
                 }
 
                 setMessage(message);

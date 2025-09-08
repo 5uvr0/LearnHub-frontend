@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
+import texts from "../i18n/texts.js";
 import { Container, Card, Button, Spinner } from 'react-bootstrap';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelopeOpenText, faExclamationCircle, faEnvelope } from '@fortawesome/free-solid-svg-icons';
-import useAuthApi from '../auth-hooks/useAuthApi';
+import useAuthApi from '../auth-hooks/useAuthApi.js';
 
 const VERIFICATION_PATH = import.meta.env.VITE_AUTH_VERIFICATION_PATH;
 
@@ -16,6 +17,7 @@ const EmailVerificationPage = () => {
 	const [message, setMessage] = useState('');
 
 	const token = location.state?.token;
+	const to = location.state?.to;
 
 	const handleVerifyClick = async () => {
 		if (!token) {
@@ -26,18 +28,18 @@ const EmailVerificationPage = () => {
 
 		setStatus('verifying');
 
-		try {
-			const response = await fetchData(VERIFICATION_PATH, {
+		const result = await fetchData(VERIFICATION_PATH, {
 				method: 'GET',
 				params: { token }
 			});
 
+		if (result != null) {
 			setStatus('success');
-			setMessage('Email verified successfully!');
-			setTimeout(() => navigate('/login'), 2000);
+			setMessage(texts.auth?.emailVerified);
 
-
-		} catch (error) {
+			setTimeout(() => navigate(to), 2000);
+		
+		} else {
 			setStatus('error');
 			setMessage('Verification failed. Please try again.');
 		}
@@ -77,7 +79,7 @@ const EmailVerificationPage = () => {
 								<FontAwesomeIcon icon={faEnvelopeOpenText} size="3x" className="text-success mb-3" />
 								<h4>Verification Successful!</h4>
 								<p className="text-success">{message}</p>
-								<p>Redirecting to login page...</p>
+								<Spinner animation="border" className="text-primary mb-3" />
 							</>
 						)}
 

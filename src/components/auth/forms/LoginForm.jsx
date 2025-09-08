@@ -69,7 +69,7 @@ const LoginForm = ({ onSubmit, isLoading = false, apiErrors = {} }) => {
 
             <div className="text-center mt-3">
                 <small>
-                    <Link to="/forgot-password" className="text-muted">
+                    <Link to="/email-entry" className="text-muted">
                         {texts.auth?.forgotPassword || 'Forgot your password?'}
                     </Link>
                 </small>

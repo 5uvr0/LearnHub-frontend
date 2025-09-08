@@ -24,13 +24,10 @@ const AppNavbar = () => {
     const isLoggedIn = Cookies.get('accessToken') !== undefined;
     const userRole = localStorage.getItem('role');
 
-    // Define menu items for each role
     const commonMenuItems = useMemo(() => ([
         { name: texts.nav?.home || 'Home', icon: <Home size={20} />, path: '/' },
         { name: texts.nav?.courses || 'Courses', icon: <GraduationCap size={20} />, path: '/courses' },
         { name: texts.nav?.instructors || 'Instructors', icon: <Users size={20} />, path: '/instructors' },
-        { name: texts.nav?.aboutUs || 'About Us', icon: <Info size={20} />, path: '/about' },
-        { name: texts.nav?.contact || 'Contact', icon: <Mail size={20} />, path: '/contact' },
     ]), []);
 
     const studentSpecificMenuItems = useMemo(() => ([

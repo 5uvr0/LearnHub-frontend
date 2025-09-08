@@ -31,7 +31,7 @@ const LoginPage = () => {
                 setMessage(result.message || texts.auth?.loginSuccess);
                 setMessageVariant('success');
 
-                Cookie.set("accessToken", result.accessToken);
+                Cookie.set("accessToken", result.accessToken, { expires: 1/24 });
                 localStorage.setItem("refreshToken", result.refreshToken);
                 localStorage.setItem("email", result.email);
                 localStorage.setItem("role", result.role);
@@ -46,7 +46,6 @@ const LoginPage = () => {
 
         } catch (err) {
             setMessageVariant('danger');
-            console.log('Caught error:', err);
             
             setMessage(texts.auth?.loginFailed);
         }
@@ -57,14 +56,11 @@ const LoginPage = () => {
             console.log('Error state updated:', error);
             
             try {
-                const parsedError = JSON.parse(error);
-                console.log('Parsed error in useEffect:', parsedError);
-                
-                if (parsedError.formErrors && Object.keys(parsedError.formErrors).length > 0) {
-                    setFormErrors(parsedError.formErrors);
+                if (error.formErrors && Object.keys(error.formErrors).length > 0) {
+                    setFormErrors(error.formErrors);
                 }
 
-                setMessage(parsedError.message + " " + parsedError.error);
+                setMessage(error.message + " " + error.error);
 
                 setMessageVariant('danger');
                 
