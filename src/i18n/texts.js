@@ -78,7 +78,7 @@ const texts = {
     forms: {
         resetPassword: "Reset Password",
         newPassword: "Enter a new password",
-        confirmPassword: "Confirm your new password",
+        confirmPassword: "Confirm password",
         passwordRecovery: "Password Recovery",
         emailEntry: "Enter the email with which you created an account",
         courseName: "Course Name",
